@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:dev": "docker build -f Dockerfile.dev -t frontend . && docker run -it -p 5173:5173 -v $(pwd):/app -v /app/node_modules frontend",
+    "docker:prod": "docker build -f Dockerfile.prod -t frontend . && docker run -p 5173:5173 frontend"
   },
   "dependencies": {
     "vue": "^3.5.24"

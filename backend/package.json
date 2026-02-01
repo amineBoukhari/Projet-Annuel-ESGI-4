@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:dev": "docker build -f Dockerfile.dev -t backend . && docker run -it -p 3000:3000 -v $(pwd):/app -v /app/node_modules backend",
+    "docker:prod": "docker build -f Dockerfile.prod -t backend . && docker run -p 3000:3000 backend"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.6",
     "express": "^5.2.1"
   }
 }
