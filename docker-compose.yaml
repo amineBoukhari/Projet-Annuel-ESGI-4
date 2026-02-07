@@ -1,4 +1,18 @@
 services:
+  db : 
+    image : postgres:15
+    environment :
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: projet_annuel_esgi4
+    ports :
+      - "5433:5432"
+    
+    volumes :
+      - pgdata:/var/lib/postgresql/data
+
+    networks:
+      - back-tier
   frontend:
     build:
       context: ./frontend
@@ -31,8 +45,18 @@ services:
 
     command: nodemon server.js
 
-
-
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - back-tier
 
 networks:
   # The presence of these objects is sufficient to define them
@@ -42,3 +66,5 @@ networks:
 # This defines the named volume
 volumes:
   node_modules:
+  pgdata:
+  pgadmin_data:
