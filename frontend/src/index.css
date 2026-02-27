@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #3ab7bf;
+  --color-secondary: #FFC851;
+  --color-background: #E0E5EC;
+}
+
 :root {
   font-family: 'Jost', sans-serif;
+}
+
+body {
+  @apply bg-background h-screen
 }

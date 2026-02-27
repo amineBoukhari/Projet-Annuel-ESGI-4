@@ -1,16 +1,20 @@
-import { BrowserRouter, Route, Routes } from 'react-router'
-import Dashboard from './Pages/Dashboard'
+import { BrowserRouter, Route, Routes } from 'react-router';
+import Dashboard from './Pages/Dashboard';
+import Layout from './Components/Layouts/Layout';
+import Stocks from './Pages/Stocks';
 
 function App() {
-
   return (
-    <div>
+    <>
      <BrowserRouter>
       <Routes>
-        <Route index path='/' element={<Dashboard />} />
+        <Route element={<Layout />}>
+          <Route index path='/' element={<Dashboard />} />
+          <Route index path='/stocks' element={<Stocks />} />
+        </Route>
       </Routes>
      </BrowserRouter>
-    </div>
+    </>
   )
 }
 
