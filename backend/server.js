@@ -4,7 +4,8 @@ const cors = require("cors");
 const sequelize = require('./src/db/index');
 const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
-const authMiddleware = require('./src/modules/auth/auth.middleware');
+const authMiddleware = require('./src/middlewares/auth.middleware');
+const checkIfAdmin = require('./src/middlewares/role.middlewares');
 
 app.use(cors({ origin: "http://127.0.0.1:5173" }));
 
@@ -17,7 +18,7 @@ async function startServer (){
     console.log('Connection has been established successfully.');
 
     if (process.env.NODE_ENV === 'dev'){
-      await sequelize.sync({ force: false});
+      await sequelize.sync({ alter: true });
 
       console.log('All models were synchronized successfully.'); 
     }
@@ -29,7 +30,7 @@ async function startServer (){
 
 startServer();
 
-app.use('/api/users',authMiddleware, userRoutes );
+app.use('/api/users',authMiddleware,checkIfAdmin, userRoutes );
 app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {

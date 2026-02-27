@@ -13,8 +13,13 @@ async function checkAuth (req,res,next) {
 
     // decodedToken will contain 
     // { id : user.id, email : user.email, iat : timestamp, exp : timestamp }
+    
     try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decodedToken){
+        return res.status(403).json({error : "Invalid token"});
+    }
+    req.user = decodedToken;
     }catch (error) {
         if (error.name === 'TokenExpiredError') {
             return res.status(403).json({error : "Token expired"});
@@ -22,11 +27,9 @@ async function checkAuth (req,res,next) {
 
         return res.status(403).json({error : "Invalid token"});
     }
-    if (!decodedToken){
-        return res.status(403).json({error : "Invalid token"});
-    }
+    
 
-    req.user = decodedToken;
+    
     
     next();
 

@@ -24,15 +24,39 @@ async function getUSerWithId(req, res) {
 
 async function getAllUsers (req, res) {
 
-    res.status(200).json({message : "Get all users"});
+    const users = await User.findAll()
+    if(!users || users.length == 0) {
+        res.status(200).json({message : "no user was found"})
+    }
+    res.status(200).json(users);
 }
 
-async function updateUser (req, res) {
-
-}
 
 async function deleteUser (req, res) {
 
+}
+
+
+async function deleteUser (req, res) {
+
+}
+
+async function updateUser (req, res) {
+    const userId = req.params.id;
+    const keyToUpdate = req.body.key;
+    const newValue = req.body.value;
+     try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({error : "User not found"});
+        }
+        user[keyToUpdate] = newValue;
+        await user.save();
+        res.status(200).json(user);
+     } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({error: 'Failed to update user'});
+     }
 }
 
 

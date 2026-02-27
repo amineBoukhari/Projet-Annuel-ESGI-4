@@ -21,4 +21,9 @@ docker-compose up --build
 ### Frontend: http://localhost:5173
 
 
+sudo lsof -i :5433
+
+sudo kill <PID>
+
+
 
