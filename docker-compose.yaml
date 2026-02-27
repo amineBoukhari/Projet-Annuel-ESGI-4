@@ -26,7 +26,7 @@ services:
     volumes :
       - ./frontend:/app
       - /app/node_modules 
-      
+
     command: sh -c "npm install && npm run dev"
 
   backend:
@@ -43,19 +43,15 @@ services:
       - ./backend:/app
       - node_modules:/app/node_modules
 
-    command: nodemon server.js
+    command: nodemon server.js  
 
-  # pgadmin:
-    # image: dpage/pgadmin4
-    # environment:
-      # PGADMIN_DEFAULT_EMAIL: admin@example.com
-      # PGADMIN_DEFAULT_PASSWORD: admin
-    # ports:
-      # - "${PGADMIN_PORT}:80"
-    # volumes:
-      # - pgadmin_data:/var/lib/pgadmin
-    # networks:
-      # - back-tier
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"   # map to host port you want
+    networks:
+      - back-tier
 
 networks:
   # The presence of these objects is sufficient to define them
