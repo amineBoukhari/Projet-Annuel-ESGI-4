@@ -13,7 +13,7 @@ export default function Header({setOpenMenu}){
             {/*  HERO BUTTON */}
             <div className="flex items-center max-w-1/5 gap-3 hover:opacity-75 hover:cursor-pointer">
                 <p className="uppercase font-semibold text-primary">Jane Smith</p>
-                <Avatar attributes={"rounded-full size-12 border-outside border-2"}/>
+                <Avatar attributes={"rounded-full size-12 border-3 border-primary"}/>
             </div>
         </header>
     )
