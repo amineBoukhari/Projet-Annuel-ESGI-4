@@ -12,7 +12,7 @@ Quick start (development)
 1. Build and run both services (rebuild images):
 
 ```
-docker-compose up --build
+make start
 ```
 
 ### Backend: http://localhost:3000
