@@ -45,8 +45,6 @@ services:
 
     command: sh -c "npm install && nodemon server.js"
 
-  
-
   adminer:
     image: adminer
     restart: always
