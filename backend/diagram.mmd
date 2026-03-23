@@ -1,0 +1,55 @@
+classDiagram
+
+%% =========================
+%% RESTAURANT
+%% =========================
+class Restaurant {
+  +id: UUID
+  +name: String
+  +address: String
+  +createdAt: Date
+}
+
+%% =========================
+%% USER
+%% =========================
+class User {
+  +id: UUID
+  +name: String
+  +email: String
+  +passwordHash: String
+  +status: UserStatus
+}
+
+Restaurant "1" --> "many" User : contains
+
+%% =========================
+%% ROLE
+%% =========================
+class Role {
+  +id: UUID
+  +name: String
+  +description: String
+}
+
+User --> Role : has
+
+%% =========================
+%% PERMISSION
+%% =========================
+class Permission {
+  +id: UUID
+  +name: String
+  +description: String
+}
+
+%% =========================
+%% ROLE_PERMISSION (Pivot)
+%% =========================
+class RolePermission {
+  +roleId: UUID
+  +permissionId: UUID
+}
+
+Role "1" --> "many" RolePermission
+Permission "1" --> "many" RolePermission

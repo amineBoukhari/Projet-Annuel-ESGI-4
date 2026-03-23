@@ -6,6 +6,8 @@ const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
 const authMiddleware = require('./src/middlewares/auth.middleware');
 const checkIfAdmin = require('./src/middlewares/role.middlewares');
+const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
+const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
 
 app.use(cors({ origin: "http://127.0.0.1:5173" }));
 
@@ -21,6 +23,7 @@ async function startServer (){
       await sequelize.sync({ alter: true });
 
       console.log('All models were synchronized successfully.'); 
+      await seedRolesAndPermissions();
     }
   }
   catch (error) {
@@ -32,6 +35,7 @@ startServer();
 
 app.use('/api/users',authMiddleware,checkIfAdmin, userRoutes );
 app.use('/api/auth', authRoutes);
+app.use('/api/restaurants', restaurantRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!!!')
