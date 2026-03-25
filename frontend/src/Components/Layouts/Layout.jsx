@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Header from "../Shared/Header";
 import { useState } from "react";
+import SideMenu from "../Shared/SideMenu";
 
 export default function Layout(){
 
@@ -16,6 +17,7 @@ const handleSideMenu = () => {
             
                 <aside className={open? "bg-white rounded-2xl h-full" : "hidden"}>
                     {/* TODO: ADD SIDE MENU */}
+                    <SideMenu />
                 </aside>
             </div>
             <div className="hero-menu w-full h-full flex flex-col gap-3">

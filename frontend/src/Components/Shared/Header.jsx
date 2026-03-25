@@ -4,7 +4,7 @@ import Avatar from "../Temp/Avatar";
 export default function Header({setOpenMenu}){
     return (
         <header className="bg-white flex items-center justify-between px-3 py-3 rounded-2xl">
-            <button className="hover:opacity-50 hover:cursor-pointer text-primary" onClick={() => setOpenMenu(!setOpenMenu)}>
+            <button className="hover:opacity-50 hover:cursor-pointer text-primary" onClick={() => setOpenMenu()}>
                 <SidebarIcon />
             </button>
 
