@@ -1,49 +1,67 @@
-import Role from '../modules/role/role.model.js';
-import Permission from '../modules/permission/permission.model.js';
-import RolePermission from '../modules/role/rolePermission.model.js';
+const Role = require('../modules/role/role.model');
+const Permission = require('../modules/permission/permission.model');
+const RolePermission = require('../modules/role/rolePermission.model');
+const { Op } = require('sequelize');
+
+console.log('Role:', Role);
+console.log('Permission:', Permission);
+console.log('RolePermission:', RolePermission);
+console.log('setPermissions:', typeof Role.prototype.setPermissions);
+console.log('Role associations:', Role.associations);
 
 
-export const ROLES = [
-  { name: 'Owner', description: 'Full access' },
-  { name: 'Manager', description: 'Manage restaurants and users' },
-  { name: 'Employee', description: 'Limited access' },
+console.log('🔄 Seeding roles and permissions...');
+
+const ROLES = [
+  { name: 'Admin'},
+  { name: 'Manager' },
+  { name: 'Employee' },
 ];
 
-
-export const PERMISSIONS = [
-  { name: 'create_user', description: 'Can create users' },
-  { name: 'delete_user', description: 'Can delete users' },
-  { name: 'view_restaurant', description: 'Can view restaurants' },
-  { name: 'create_restaurant', description: 'Can create restaurants' },
- 
+const PERMISSIONS = [
+  { name: 'create_user'},
+  { name: 'delete_user' },
+  { name: 'view_restaurant' },
+  { name: 'create_restaurant' },
 ];
 
-
-export async function seedRolesAndPermissions() {
-
+async function seedRolesAndPermissions() {
   for (const perm of PERMISSIONS) {
-    await Permission.findOrCreate({
-      where: { name: perm.name },
-      defaults: perm,
-    });
+    try {
+      await Permission.findOrCreate({
+        where: { name: perm.name },
+        defaults: { name: perm.name },
+      });
+    } catch (error) {
+      console.error(`❌ Error seeding permission ${perm.name}:`, error);
+    }
   }
 
- 
   for (const role of ROLES) {
-    await Role.findOrCreate({
-      where: { name: role.name },
-      defaults: role,
-    });
+    try {
+      await Role.findOrCreate({
+        where: { name: role.name },
+        defaults: { name: role.name },
+      });
+    } catch (error) {
+      console.error(`❌ Error seeding role ${role.name}:`, error);
+    }
   }
 
-
+  console.log('setPermissions type:', typeof Role.prototype.setPermissions);
   const adminRole = await Role.findOne({ where: { name: 'Admin' } });
-  const allPermissions = await Permission.findAll();
-  await adminRole.setPermissions(allPermissions);
+  if (adminRole) {
+    const allPermissions = await Permission.findAll();
+    await adminRole.setPermissions(allPermissions);
+  }
 
   const managerRole = await Role.findOne({ where: { name: 'Manager' } });
-  const managerPerms = await Permission.findAll({
-    where: { name: ['create_restaurant', 'view_restaurant'] },
-  });
-  await managerRole.setPermissions(managerPerms);
+  if (managerRole) {
+    const managerPerms = await Permission.findAll({
+      where: { name: { [Op.in]: ['create_restaurant', 'view_restaurant'] } },
+    });
+    await managerRole.setPermissions(managerPerms);
+  }
 }
+
+module.exports = { seedRolesAndPermissions, ROLES, PERMISSIONS };

@@ -7,6 +7,8 @@ const authRoutes = require('./src/modules/auth/auth.routes');
 const authMiddleware = require('./src/middlewares/auth.middleware');
 const checkIfAdmin = require('./src/middlewares/role.middlewares');
 const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
+const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
+const reportsRoutes = require('./src/modules/invoice/reports.routes');
 const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
 
 app.use(cors({ origin: "http://127.0.0.1:5173" }));
@@ -33,9 +35,11 @@ async function startServer (){
 
 startServer();
 
-app.use('/api/users',authMiddleware,checkIfAdmin, userRoutes );
+app.use('/api/users', authMiddleware, checkIfAdmin, userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/invoices', invoiceRoutes);
+app.use('/api/reports', reportsRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!!!')
