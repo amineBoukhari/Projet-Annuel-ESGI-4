@@ -3,20 +3,28 @@ import Permission from '../modules/permission/permission.model.js';
 import RolePermission from '../modules/role/rolePermission.model.js';
 
 
-export const ROLES = [
+const ROLES = [
   { name: 'Owner', description: 'Full access' },
   { name: 'Manager', description: 'Manage restaurants and users' },
   { name: 'Employee', description: 'Limited access' },
 ];
 
 
-export const PERMISSIONS = [
+const PERMISSIONS = [
   { name: 'create_user', description: 'Can create users' },
   { name: 'delete_user', description: 'Can delete users' },
   { name: 'view_restaurant', description: 'Can view restaurants' },
   { name: 'create_restaurant', description: 'Can create restaurants' },
  
 ];
+
+const ROLE_PERMISSIONS = [
+  { roleName: 'Owner', permissionNames: ['create_user', 'delete_user', 'view_restaurant', 'create_restaurant'] },
+  { roleName: 'Manager', permissionNames: ['view_restaurant', 'create_restaurant'] },
+  { roleName: 'Employee', permissionNames: ['view_restaurant'] },
+];
+
+
 
 
 export async function seedRolesAndPermissions() {
@@ -37,13 +45,11 @@ export async function seedRolesAndPermissions() {
   }
 
 
-  const adminRole = await Role.findOne({ where: { name: 'Admin' } });
-  const allPermissions = await Permission.findAll();
-  await adminRole.setPermissions(allPermissions);
-
-  const managerRole = await Role.findOne({ where: { name: 'Manager' } });
-  const managerPerms = await Permission.findAll({
-    where: { name: ['create_restaurant', 'view_restaurant'] },
-  });
-  await managerRole.setPermissions(managerPerms);
+  for (const rp of ROLE_PERMISSIONS) {
+    const role = await Role.findOne({ where: { name: rp.roleName } });
+    const permissions = await Permission.findAll({
+      where: { name: rp.permissionNames },
+    });
+    await role.setPermissions(permissions);
+  }
 }

@@ -22,7 +22,7 @@ const User = sequelize.define('User', {
         allowNull: false,
     },
     role: {
-        type: DataTypes.ENUM('employee', 'owner' , 'admin'),
+        type: DataTypes.STRING,
         defaultValue: 'employee',
     },
     restaurantId  : {
@@ -38,6 +38,13 @@ User.associate = (models) => {
   User.belongsTo(models.Restaurant, { 
     foreignKey: 'restaurantId', 
     as: 'restaurant',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE'
+  });
+
+  User.belongsTo(models.Role, { 
+    foreignKey: 'roleId', 
+    as: 'role',
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE'
   });
