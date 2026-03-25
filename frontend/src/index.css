@@ -11,5 +11,5 @@
 }
 
 body {
-  @apply bg-background h-screen
+  @apply bg-background h-screen;
 }
