@@ -1,7 +1,7 @@
 const sequelize = require('../../db/index');
 const { DataTypes } = require('sequelize');
 
-const Role = sequelize.define('Role', {
+const Permission = sequelize.define('Permission', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -15,4 +15,4 @@ const Role = sequelize.define('Role', {
   timestamps: false,
 });
 
-module.exports = Role;
+module.exports = Permission;
