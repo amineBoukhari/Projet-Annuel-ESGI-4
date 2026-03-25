@@ -31,6 +31,13 @@ const Restaurant = sequelize.define("Restaurant", {
       onDelete: 'CASCADE',       
       onUpdate: 'CASCADE'
     });
+
+     Restaurant.hasMany(models.Invoice, { 
+      foreignKey: 'restaurantId',  
+      as: 'invoices',                 
+      onDelete: 'CASCADE',       
+      onUpdate: 'CASCADE'
+    });
     
   };
 

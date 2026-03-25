@@ -7,8 +7,6 @@ async function createInvoice(req, res) {
 
 
 }
-
-
 async function updateInvoice(req, res) {
 
 }

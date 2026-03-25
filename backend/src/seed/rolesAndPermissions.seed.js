@@ -49,6 +49,7 @@ async function seedRolesAndPermissions() {
   }
 
   console.log('setPermissions type:', typeof Role.prototype.setPermissions);
+  
   const adminRole = await Role.findOne({ where: { name: 'Admin' } });
   if (adminRole) {
     const allPermissions = await Permission.findAll();

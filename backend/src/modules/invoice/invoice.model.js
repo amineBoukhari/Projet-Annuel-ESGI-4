@@ -7,7 +7,10 @@ const Invoice = sequelize.define('Invoice', {
     primaryKey: true,
     autoIncrement: true,
   },
-
+  restaurantId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
   orderId: {
     type: DataTypes.INTEGER,
     allowNull: true,
@@ -53,5 +56,15 @@ const Invoice = sequelize.define('Invoice', {
 }, {
   timestamps: true,
 });
+
+
+Invoice.associate = (models) => {
+  Invoice.belongsTo(models.Restaurant, {
+    foreignKey: 'restaurantId',
+    as: 'restaurant',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  });
+};
 
 module.exports = Invoice;
