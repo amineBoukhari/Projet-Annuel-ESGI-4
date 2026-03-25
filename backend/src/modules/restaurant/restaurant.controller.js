@@ -1,6 +1,6 @@
 const Restaurant = require('./restaurant.model')
 const {createUser} = require('../user/user.controller')
-const { Op } = require('@sequelize/core');
+const { Op } = require('sequelize');
 const authtService = require('../auth/auth.service');
 const User =  require('../user/user.model');
 

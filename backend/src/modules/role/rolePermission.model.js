@@ -1,4 +1,4 @@
-import { DataTypes } from '@sequelize/core';
+import { DataTypes } from 'sequelize';
 import sequelize from '../../db/index.js';
 import Role from './role.model.js';
 import Permission from '../permission/permission.model.js';
