@@ -23,11 +23,13 @@ async function createRestaurant(req,res) {
     const admin = await User.findOne({where : { email : adminEmail}})
 
     if(admin) {
-        res.status(400).json({message : "admin with this email already exist"})
+        console.log("Admin with email already exists:", adminEmail);
+        return res.status(400).json({message : "admin with this email already exist"})
     }
 
     if(restaurant) {
-        res.status(400).json({message : "restaurant already exist"})
+        console.log("Restaurant with name or address already exists:", name, adress);
+        return res.status(400).json({message : "restaurant already exist"})
     }
 
     try {

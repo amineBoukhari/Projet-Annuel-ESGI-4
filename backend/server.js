@@ -55,7 +55,7 @@ startServer();
 // Routes
 app.use('/api/users', authMiddleware, checkIfAdmin, userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/restaurants', restaurantRoutes);
+app.use('/api/restaurants', checkIfAdmin ,restaurantRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World!!!');
