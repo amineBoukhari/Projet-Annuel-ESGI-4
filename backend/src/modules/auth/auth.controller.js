@@ -1,5 +1,8 @@
 const User = require('../user/user.model'); 
+const Role = require('../role/role.model');
+const Permission = require('../permission/permission.model');
 const authtService = require('../auth/auth.service');
+const {extractRole , extractPermissions} = require('../auth/auth.service');
 
 
 
@@ -32,7 +35,21 @@ async function login (req,res) {
     const password = req.body.password;
 
     try {
-        const user = await User.findOne({where : {email : email}, include : "role"});
+        const user = await User.findOne({
+        where: { email: email },
+        include: [
+            {
+            model: Role,
+            as: "role",
+            include: [
+                {
+                model: Permission,
+                as: "permissions",
+                }
+            ]
+            }
+        ]
+        });
         if (!user){
             return res.status(400).json({error : "Invalid email or password"});
         }
@@ -41,11 +58,11 @@ async function login (req,res) {
         if (!isPasswordValid){
             return res.status(400).json({error : "Invalid email or password"});
         }
-
+          console.log("Generating token for user:", user);
         const token = await authtService.generateToken(user);
 
         // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-        res.json({token});
+        res.json({ user, role: extractRole(token), permissions: extractPermissions(token) });
 
 
     }catch (error) {
