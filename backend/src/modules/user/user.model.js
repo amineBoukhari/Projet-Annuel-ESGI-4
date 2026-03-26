@@ -21,9 +21,9 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    role: {
-        type: DataTypes.STRING,
-        defaultValue: 'employee',
+    roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
     },
     restaurantId  : {
         type : DataTypes.UUID,
@@ -41,7 +41,6 @@ User.associate = (models) => {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE'
   });
-
   User.belongsTo(models.Role, { 
     foreignKey: 'roleId', 
     as: 'role',

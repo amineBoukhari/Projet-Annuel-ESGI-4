@@ -4,6 +4,7 @@ import RolePermission from '../modules/role/rolePermission.model.js';
 
 
 const ROLES = [
+  { name: 'Admin', description: 'Full access' },
   { name: 'Owner', description: 'Full access' },
   { name: 'Manager', description: 'Manage restaurants and users' },
   { name: 'Employee', description: 'Limited access' },
@@ -19,6 +20,7 @@ const PERMISSIONS = [
 ];
 
 const ROLE_PERMISSIONS = [
+  { roleName: 'Admin', permissionNames: ['create_user', 'delete_user', 'view_restaurant', 'create_restaurant'] },
   { roleName: 'Owner', permissionNames: ['create_user', 'delete_user', 'view_restaurant', 'create_restaurant'] },
   { roleName: 'Manager', permissionNames: ['view_restaurant', 'create_restaurant'] },
   { roleName: 'Employee', permissionNames: ['view_restaurant'] },

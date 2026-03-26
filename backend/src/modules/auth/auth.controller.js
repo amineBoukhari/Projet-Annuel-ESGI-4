@@ -7,7 +7,7 @@ async function register (req,res) {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-    const role = req.body.role || "user";
+    const role = req.body.role || 0;
 
     const existingUser = await User.findOne({where : {email :email}});
     if (existingUser){
@@ -31,7 +31,7 @@ async function login (req,res) {
     const password = req.body.password;
 
     try {
-        const user = await User.findOne({where : {email :email}});
+        const user = await User.findOne({where : {email : email}, include : "role"});
         if (!user){
             return res.status(400).json({error : "Invalid email or password"});
         }

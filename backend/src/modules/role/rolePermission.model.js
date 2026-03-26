@@ -1,9 +1,9 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../../db/index.js';
-import Role from './role.model.js';
-import Permission from '../permission/permission.model.js';
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../db/index');
+const Role = require('./role.model');
+const Permission = require('../permission/permission.model');
 
-const rolePermission = sequelize.define('RolePermission', {
+const RolePermission = sequelize.define('RolePermission', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -13,7 +13,7 @@ const rolePermission = sequelize.define('RolePermission', {
   timestamps: false,
 });
 
-Role.belongsToMany(Permission, { through: rolePermission, foreignKey: 'roleId' });
-Permission.belongsToMany(Role, { through: rolePermission, foreignKey: 'permissionId' });
+Role.belongsToMany(Permission, { through: RolePermission, foreignKey: 'roleId' });
+Permission.belongsToMany(Role, { through: RolePermission, foreignKey: 'permissionId' });
 
-export default rolePermission;
+module.exports = RolePermission;

@@ -11,10 +11,12 @@ async function hashPassword(password) {
 }
 
 async function generateToken(user) {
+    console.log("Generating token for user:", user);
     const payload = {
         id : user.id,
         email : user.email,
-        role : user.role
+        role : user.role,
+        permissions : user.role.permissions 
     };
     return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : '1h'});
 }
