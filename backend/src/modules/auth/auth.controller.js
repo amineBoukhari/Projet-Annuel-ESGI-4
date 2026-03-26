@@ -7,7 +7,8 @@ async function register (req,res) {
     const username = req.body.username;
     const email = req.body.email;
     const password = req.body.password;
-    const role = req.body.role || 0;
+    const roleId = req.body.role || 3; // default role is employee
+    const restaurantId = req.body.restaurantId || null; 
 
     const existingUser = await User.findOne({where : {email :email}});
     if (existingUser){
@@ -16,7 +17,7 @@ async function register (req,res) {
     
     try {
         const hashedPassword = await authtService.hashPassword(password);
-        await User.create({username, email, password: hashedPassword, role});
+        await User.create({username, email, password: hashedPassword, roleId: roleId, restaurantId: restaurantId});
         res.status(201).json({message: "User registered successfully"});
     }catch (error) {
         console.error('Error registering user:', error);
