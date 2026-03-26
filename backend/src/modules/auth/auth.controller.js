@@ -62,7 +62,7 @@ async function login (req,res) {
         const token = await authtService.generateToken(user);
 
         // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-        return res.json({ user, token });
+        return res.json({token});
 
 
     }catch (error) {
