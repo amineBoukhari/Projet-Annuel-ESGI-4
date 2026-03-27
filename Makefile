@@ -5,7 +5,7 @@ EXEC_BACK=$(COMPOSE) exec backend
 start:
 	docker compose up -d --build 
 
-start-with-logs:
+logs:
 	docker compose up --build 
 
 front-bash:
