@@ -1,6 +1,8 @@
 const Role = require('../modules/role/role.model');
 const Permission = require('../modules/permission/permission.model');
+const User = require('../modules/user/user.model');
 const RolePermission = require('../modules/role/rolePermission.model');
+const authtService = require('../modules/auth/auth.service');
 
 
 const ROLES = [
@@ -204,6 +206,8 @@ const ROLE_PERMISSIONS = [
 
 async function seedRolesAndPermissions() {
 
+
+
   for (const perm of PERMISSIONS) {
     await Permission.findOrCreate({
       where: { name: perm.name },
@@ -227,7 +231,21 @@ async function seedRolesAndPermissions() {
     });
     await role.setPermissions(permissions);
   }
+
+
+    User.findOrCreate({
+    where: { email: 'admin@gmail.com' },
+    defaults: {
+      username: ' Super Admin',
+      email: 'supera.dmin@gmail.com',
+      password: await authtService.hashPassword('admin123'),
+      roleId: 1, // Assuming the Admin role has ID 1
+    },
+  });
 }
+
+
+
 
 
 module.exports = { seedRolesAndPermissions };
