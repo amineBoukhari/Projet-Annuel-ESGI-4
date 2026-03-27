@@ -1,6 +1,6 @@
-import Role from '../modules/role/role.model.js';
-import Permission from '../modules/permission/permission.model.js';
-import RolePermission from '../modules/role/rolePermission.model.js';
+const Role = require('../modules/role/role.model');
+const Permission = require('../modules/permission/permission.model');
+const RolePermission = require('../modules/role/rolePermission.model');
 
 
 const ROLES = [
@@ -202,7 +202,7 @@ const ROLE_PERMISSIONS = [
 
 
 
-export async function seedRolesAndPermissions() {
+async function seedRolesAndPermissions() {
 
   for (const perm of PERMISSIONS) {
     await Permission.findOrCreate({
@@ -228,3 +228,6 @@ export async function seedRolesAndPermissions() {
     await role.setPermissions(permissions);
   }
 }
+
+
+module.exports = { seedRolesAndPermissions };

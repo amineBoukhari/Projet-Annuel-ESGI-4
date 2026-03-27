@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-
+console.log('Auth middleware loaded');
 
 async function checkAuth (req,res,next) {
     const authHeader = req.headers.authorization;
@@ -13,19 +13,21 @@ async function checkAuth (req,res,next) {
 
     // decodedToken will contain 
     // { id : user.id, email : user.email, iat : timestamp, exp : timestamp }
-    
+    console.log(token.trim);
     try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    
     if (!decodedToken){
-        return res.status(403).json({error : "Invalid token"});
+        return res.status(403).json({error :decodedToken});
     }
     req.user = decodedToken;
+    req.token = token;
     }catch (error) {
         if (error.name === 'TokenExpiredError') {
             return res.status(403).json({error : "Token expired"});
         }
 
-        return res.status(403).json({error : "Invalid token"});
+        return res.status(403).json({error : error.decodedToken});
     }
     
 
