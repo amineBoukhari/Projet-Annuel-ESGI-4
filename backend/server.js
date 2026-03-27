@@ -6,7 +6,6 @@ const sequelize = require('./src/db/index');
 const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
 const authMiddleware = require('./src/middlewares/auth.middleware');
-const checkIfAdmin = require('./src/middlewares/role.middlewares');
 const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
 const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
 
@@ -53,12 +52,12 @@ async function startServer() {
 startServer();
 
 // Routes
-app.use('/api/users', authMiddleware, checkIfAdmin, userRoutes);
+app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/restaurants', checkIfAdmin ,restaurantRoutes);
+app.use('/api/restaurants',authMiddleware ,restaurantRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Hello World!!!');
+  res.send('Hello World ...sfsf');
 });
 
 app.listen(port, () => {

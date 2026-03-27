@@ -28,6 +28,10 @@ const User = sequelize.define('User', {
     restaurantId  : {
         type : DataTypes.UUID,
         allowNull : true,
+    },
+    mustChangePassword : {
+        type : DataTypes.BOOLEAN,
+        defaultValue : false,
     }
 }, {
     timestamps: true, 
