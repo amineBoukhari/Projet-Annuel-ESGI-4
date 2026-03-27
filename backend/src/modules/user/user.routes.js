@@ -12,7 +12,7 @@ router.post('/createEmployee', requireRole('Admin','Owner','Manager'), userContr
 
 router.get('/get/:id', userController.getUSerWithId);
 router.get('/getAll', userController.getAllUsers);
-router.delete('/delete/:id', userController.deleteUser);
+router.delete('/delete/:id', requireRole('Admin','Owner','Manager'), userController.deleteUser);
 router.put('/update/:id', userController.updateUser);
 
 module.exports = router;
