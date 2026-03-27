@@ -36,6 +36,7 @@ const User = sequelize.define('User', {
 }, {
     timestamps: true, 
 });
+
 User.associate = (models) => {
 
   User.belongsTo(models.Restaurant, { 
