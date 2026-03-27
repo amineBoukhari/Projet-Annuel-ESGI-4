@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 async function comparePasswords(password , userPassword) {
+    
     return await bcrypt.compare(password, userPassword);
 }
 

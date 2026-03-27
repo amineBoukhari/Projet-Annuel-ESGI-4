@@ -42,7 +42,7 @@ async function login (req,res) {
         const token = await authtService.generateToken(user);
 
         // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-        return res.json({token, mustChangePassword : user.mustChangePassword});
+        return res.json({token, user : user});
 
 
     }catch (error) {
@@ -53,7 +53,7 @@ async function login (req,res) {
 
 async function changePassword(req, res) {
     console.log(req.user)
-    const userId = 1;
+    const userId = req.user.id;
     const { oldPassword, newPassword } = req.body;
 
     try {
@@ -75,7 +75,7 @@ async function changePassword(req, res) {
         return res.json({ message: 'Password changed successfully' });
     } catch (error) {
         console.error('Error changing password:', error);
-        return res.status(500).json({ error: 'Failed to change password' });
+        return res.status(500).json({ error: error.message });
     }
 }
 

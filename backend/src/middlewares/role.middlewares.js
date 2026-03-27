@@ -5,10 +5,11 @@ const { extractRole , extractPermissions} = require('../modules/auth/auth.servic
 // Ici on a utilisé une "factory function " qui fait que créer la fonction middleware
 function requireRole(...roles) {
   return (req, res, next) => {
-    const role = extractRole(req.token );
+    const role = extractRole(req.token);
     if (!roles.includes(role.name)) {
       return res.status(403).json({ message: 'Forbidden: insufficient role' , actualRole : role.name , roles : roles});
     }
+    res.status(200).json({ message: 'Access granted', actualRole : role.name , requiredRoles : roles});
     return next();
   };
 }
