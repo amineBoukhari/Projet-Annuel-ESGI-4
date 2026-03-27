@@ -237,7 +237,7 @@ async function seedRolesAndPermissions() {
     where: { email: 'admin@gmail.com' },
     defaults: {
       username: ' Super Admin',
-      email: 'supera.dmin@gmail.com',
+      email: 'admin@gmail.com',
       password: await authtService.hashPassword('admin123'),
       roleId: 1, // Assuming the Admin role has ID 1
     },
