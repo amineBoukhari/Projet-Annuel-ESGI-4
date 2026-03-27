@@ -1,8 +1,5 @@
 const User = require('../user/user.model'); 
-const Role = require('../role/role.model');
-const Permission = require('../permission/permission.model');
 const authtService = require('../auth/auth.service');
-const { INTEGER } = require('sequelize');
 
 
 
