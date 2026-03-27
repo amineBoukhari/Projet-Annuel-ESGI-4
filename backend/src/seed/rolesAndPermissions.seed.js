@@ -1,25 +1,212 @@
-import Role from '../modules/role/role.model.js';
-import Permission from '../modules/permission/permission.model.js';
-import RolePermission from '../modules/role/rolePermission.model.js';
+const Role = require('../modules/role/role.model');
+const Permission = require('../modules/permission/permission.model');
+const User = require('../modules/user/user.model');
+const RolePermission = require('../modules/role/rolePermission.model');
+const authtService = require('../modules/auth/auth.service');
 
 
-export const ROLES = [
-  { name: 'Owner', description: 'Full access' },
+const ROLES = [
+   { name: 'Admin', description: 'Full system access - manages the platform itself' },
+   { name: 'Owner', description: 'Full access to their restaurant data' },
   { name: 'Manager', description: 'Manage restaurants and users' },
   { name: 'Employee', description: 'Limited access' },
 ];
 
 
-export const PERMISSIONS = [
+const PERMISSIONS = [
+  // Users
   { name: 'create_user', description: 'Can create users' },
+  { name: 'read_user', description: 'Can read users' },
+  { name: 'update_user', description: 'Can update users' },
   { name: 'delete_user', description: 'Can delete users' },
-  { name: 'view_restaurant', description: 'Can view restaurants' },
+  { name: 'assign_roles', description: 'Can assign roles to users' },
+
+  // Roles & Permissions
+  { name: 'create_role', description: 'Can create roles' },
+  { name: 'read_role', description: 'Can read roles' },
+  { name: 'update_role', description: 'Can update roles' },
+  { name: 'delete_role', description: 'Can delete roles' },
+
+  // Restaurants
   { name: 'create_restaurant', description: 'Can create restaurants' },
- 
+  { name: 'read_restaurant', description: 'Can view restaurants' },
+  { name: 'update_restaurant', description: 'Can update restaurants' },
+  { name: 'delete_restaurant', description: 'Can delete restaurants' },
+
+  // Dashboard & Stats
+  { name: 'read_dashboard', description: 'Can view dashboard and statistics' },
+  { name: 'read_own_dashboard', description: 'Can view own dashboard only' },
+
+  // Invoices
+  { name: 'create_invoice', description: 'Can create invoices' },
+  { name: 'read_invoice', description: 'Can read invoices' },
+  { name: 'update_invoice', description: 'Can update invoices' },
+  { name: 'delete_invoice', description: 'Can delete invoices' },
+  { name: 'export_invoice', description: 'Can export invoices to PDF' },
+  { name: 'print_invoice', description: 'Can print invoices' },
+
+  // Payments
+  { name: 'create_payment', description: 'Can create payments' },
+  { name: 'read_payment', description: 'Can read payments' },
+  { name: 'update_payment', description: 'Can update payments' },
+
+  // Reports
+  { name: 'read_report', description: 'Can read reports' },
+  { name: 'generate_report', description: 'Can generate reports' },
+
+  // Stock
+  { name: 'create_stock', description: 'Can add products to stock' },
+  { name: 'read_stock', description: 'Can view stock' },
+  { name: 'update_stock', description: 'Can update stock quantities' },
+  { name: 'delete_stock', description: 'Can delete stock entries' },
+  { name: 'add_expiry_date', description: 'Can add expiry dates to products' },
+
+  // Waste & Expiry
+  { name: 'read_waste', description: 'Can view waste and expiry data' },
+  { name: 'manage_waste', description: 'Can manage waste and expired products' },
+
+  // Suppliers
+  { name: 'create_supplier', description: 'Can create suppliers' },
+  { name: 'read_supplier', description: 'Can view suppliers' },
+  { name: 'update_supplier', description: 'Can update suppliers' },
+  { name: 'delete_supplier', description: 'Can delete suppliers' },
+  { name: 'compare_supplier_prices', description: 'Can compare prices between suppliers' },
+
+  // Supplier Orders
+  { name: 'create_supplier_order', description: 'Can create supplier orders' },
+  { name: 'read_supplier_order', description: 'Can view supplier orders' },
+  { name: 'update_supplier_order', description: 'Can update supplier orders' },
+  { name: 'delete_supplier_order', description: 'Can delete supplier orders' },
+
+  // Planning
+  { name: 'create_planning', description: 'Can create planning entries' },
+  { name: 'read_planning', description: 'Can view all planning' },
+  { name: 'read_own_planning', description: 'Can view own planning only' },
+  { name: 'update_planning', description: 'Can update planning entries' },
+  { name: 'delete_planning', description: 'Can delete planning entries' },
+  { name: 'request_planning_modification', description: 'Can request planning modifications' },
+  { name: 'set_planning_constraints', description: 'Can set planning constraints' },
+
+  // Alerts
+  { name: 'receive_all_alerts', description: 'Can receive all alerts' },
+  { name: 'receive_stock_alerts', description: 'Can receive stock alerts' },
+  { name: 'receive_expiry_alerts', description: 'Can receive expiry alerts' },
+  { name: 'receive_planning_alerts', description: 'Can receive planning alerts' },
+  { name: 'receive_own_planning_alerts', description: 'Can receive own planning alerts only' },
+  { name: 'receive_price_alerts', description: 'Can receive supplier price variation alerts' },
 ];
 
 
-export async function seedRolesAndPermissions() {
+const ROLE_PERMISSIONS = [
+  {
+    roleName: 'Admin',
+    permissionNames: [
+      // Users
+      'create_user', 'read_user', 'update_user', 'delete_user', 'assign_roles',
+      // Roles
+      'create_role', 'read_role', 'update_role', 'delete_role',
+      // Restaurants
+      'create_restaurant', 'read_restaurant', 'update_restaurant', 'delete_restaurant',
+      // Dashboard
+      'read_dashboard',
+      // Invoices
+      'create_invoice', 'read_invoice', 'update_invoice', 'delete_invoice', 'export_invoice', 'print_invoice',
+      // Payments
+      'create_payment', 'read_payment', 'update_payment',
+      // Reports
+      'read_report', 'generate_report',
+      // Stock
+      'create_stock', 'read_stock', 'update_stock', 'delete_stock', 'add_expiry_date',
+      // Waste
+      'read_waste', 'manage_waste',
+      // Suppliers
+      'create_supplier', 'read_supplier', 'update_supplier', 'delete_supplier', 'compare_supplier_prices',
+      // Supplier Orders
+      'create_supplier_order', 'read_supplier_order', 'update_supplier_order', 'delete_supplier_order',
+      // Planning
+      'create_planning', 'read_planning', 'update_planning', 'delete_planning', 'set_planning_constraints',
+      // Alerts
+      'receive_all_alerts',
+    ],
+  },
+  {
+    roleName: 'Owner',
+    permissionNames: [
+      // Users
+      'create_user', 'read_user', 'update_user', 'delete_user',
+      // Restaurants
+      'create_restaurant', 'read_restaurant', 'update_restaurant', 'delete_restaurant',
+      // Dashboard
+      'read_dashboard',
+      // Invoices
+      'create_invoice', 'read_invoice', 'update_invoice', 'delete_invoice', 'export_invoice', 'print_invoice',
+      // Payments
+      'create_payment', 'read_payment', 'update_payment',
+      // Reports
+      'read_report', 'generate_report',
+      // Stock
+      'create_stock', 'read_stock', 'update_stock', 'delete_stock', 'add_expiry_date',
+      // Waste
+      'read_waste', 'manage_waste',
+      // Suppliers
+      'create_supplier', 'read_supplier', 'update_supplier', 'delete_supplier', 'compare_supplier_prices',
+      // Supplier Orders
+      'create_supplier_order', 'read_supplier_order', 'update_supplier_order', 'delete_supplier_order',
+      // Planning
+      'create_planning', 'read_planning', 'update_planning', 'delete_planning', 'set_planning_constraints',
+      // Alerts
+      'receive_all_alerts',
+    ],
+  },
+  {
+    roleName: 'Manager',
+    permissionNames: [
+      // Users
+      'read_user',
+      // Restaurants
+      'read_restaurant',
+      // Dashboard
+      'read_dashboard',
+      // Invoices
+      'create_invoice', 'read_invoice', 'update_invoice',
+      // Payments
+      'read_payment',
+      // Reports
+      'read_report', 'generate_report',
+      // Stock
+      'create_stock', 'read_stock', 'update_stock',
+      // Waste
+      'read_waste', 'manage_waste',
+      // Suppliers
+      'create_supplier', 'read_supplier', 'update_supplier',
+      // Supplier Orders
+      'create_supplier_order', 'read_supplier_order',
+      // Planning
+      'create_planning', 'read_planning', 'update_planning', 'delete_planning',
+      // Alerts
+      'receive_stock_alerts', 'receive_expiry_alerts', 'receive_planning_alerts', 'receive_price_alerts',
+    ],
+  },
+  {
+    roleName: 'Employee',
+    permissionNames: [
+      // Dashboard
+      'read_own_dashboard',
+      // Stock
+      'update_stock', 'add_expiry_date',
+      // Planning
+      'read_own_planning', 'request_planning_modification',
+      // Alerts
+      'receive_own_planning_alerts',
+    ],
+  },
+];
+
+
+
+async function seedRolesAndPermissions() {
+
+
 
   for (const perm of PERMISSIONS) {
     await Permission.findOrCreate({
@@ -37,13 +224,28 @@ export async function seedRolesAndPermissions() {
   }
 
 
-  const adminRole = await Role.findOne({ where: { name: 'Admin' } });
-  const allPermissions = await Permission.findAll();
-  await adminRole.setPermissions(allPermissions);
+  for (const rp of ROLE_PERMISSIONS) {
+    const role = await Role.findOne({ where: { name: rp.roleName } });
+    const permissions = await Permission.findAll({
+      where: { name: rp.permissionNames },
+    });
+    await role.setPermissions(permissions);
+  }
 
-  const managerRole = await Role.findOne({ where: { name: 'Manager' } });
-  const managerPerms = await Permission.findAll({
-    where: { name: ['create_restaurant', 'view_restaurant'] },
+
+    User.findOrCreate({
+    where: { email: 'admin@gmail.com' },
+    defaults: {
+      username: ' Super Admin',
+      email: 'admin@gmail.com',
+      password: await authtService.hashPassword('admin123'),
+      roleId: 1, // Assuming the Admin role has ID 1
+    },
   });
-  await managerRole.setPermissions(managerPerms);
 }
+
+
+
+
+
+module.exports = { seedRolesAndPermissions };

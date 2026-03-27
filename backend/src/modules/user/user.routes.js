@@ -1,13 +1,20 @@
 const express = require('express');
 const router = express.Router();
+const {requireRole} = require('../../middlewares/role.middlewares');
 
 const userController = require('./user.controller');
 
 
 router.post('/createUser', userController.createUser);
-router.get('/get/:id', userController.getUSerWithId);
-router.get('/getAll', userController.getAllUsers);
-router.delete('/delete/:id', userController.deleteUser);
-router.put('/update/:id', userController.updateUser);
+router.post('/createOwner', requireRole('Admin','Owner'), userController.createUser);
+router.post('/createManager', requireRole('Admin','Owner'), userController.createUser);
+router.post('/createEmployee', requireRole('Admin','Owner','Manager'), userController.createUser);
+
+router.get('/get/:id', requireRole('Admin','Owner','Manager'), userController.getUSerWithId);
+router.get('/getAll', requireRole('Admin','Owner','Manager'), userController.getAllUsers);
+router.delete('/delete/:id', requireRole('Admin','Owner','Manager'), userController.deleteUser);
+router.put('/update/:id', requireRole('Admin','Owner','Manager'), userController.updateUser);
+router.put('/updateRole/:id', requireRole('Admin','Owner','Manager'), userController.updateRole);
+
 
 module.exports = router;

@@ -1,23 +1,57 @@
-const User = require('./user.model');
+const User = require('../user/user.model'); 
+const authtService = require('../auth/auth.service');
+
+
+
+const ROUTE_ROLE_MAP = {
+  '/createUser': 3, // default role is employee
+  '/createOwner':   1,
+  '/createManager': 2,
+  '/createEmployee': 3,
+};
+
+const AVAILABLE_ROLES = {
+    1 : 'Admin',
+    2 : 'Owner',
+    3 : 'Manager',
+    4 : 'Employee'
+}
 
 async function createUser(req, res) { 
     console.log("Creating user with data:", req.body);
     const name = req.body.name;
     const email = req.body.email;
     const password = req.body.password;
-    try {
-        const newUser = await User.create({username : name, email : email, password :password});
-        res.status(201).json({message: "User created successfully"});
-
-    }catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({error: 'Failed to create user'});
-
+    const roleId = ROUTE_ROLE_MAP[req.route.path];
+    const username = req.body.username;
+    const mustChangePassword = req.body.mustChangePassword !== undefined ? req.body.mustChangePassword : true;
+    const restaurantId = req.body.restaurantId || null; 
+    const existingUser = await User.findOne({where : {email :email}});
+    if (existingUser){
+            return res.status(400).json({error : "User with this email already exists"});
     }
+        
+    try {
+        const hashedPassword = await authtService.hashPassword(password);
+        await User.create({username, email, password: hashedPassword, roleId: roleId, restaurantId: restaurantId, mustChangePassword: mustChangePassword});
+        res.status(201).json({message: "User registered successfully"});
+    }catch (error) {
+            console.error('Error registering user:', error);
+            res.status(500).json({error: 'Failed to create user'});
+        }
 
 }
 
 async function getUSerWithId(req, res) {
+    const userId = req.params.id;
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) { return res.status(404).json({error : "User not found"});}
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({error: 'Error While fetching user'});
+    }
     
 
 }
@@ -33,16 +67,22 @@ async function getAllUsers (req, res) {
 
 
 async function deleteUser (req, res) {
+    const userId = req.params.id;
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) {return res.status(404).json({error : "User not found"});}
+        await user.destroy();
+        res.status(200).json({message: "User deleted successfully"});
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({error: 'Failed to delete user'});
+    }
 
 }
 
-
-async function deleteUser (req, res) {
-
-}
 
 async function updateUser (req, res) {
-    const userId = req.params.id;
+    const userId = req.user.id
     const keyToUpdate = req.body.key;
     const newValue = req.body.value;
      try {
@@ -59,5 +99,31 @@ async function updateUser (req, res) {
      }
 }
 
+async function updateRole(req,res){
+  
+    const userId = req.user.id
+    let newRole = req.body.newRole
+    if(typeof newRole == "integer" &&  Object.keys(AVAILABLE_ROLES).includes(newRole)  ) {
 
-module.exports = {createUser, getUSerWithId, getAllUsers, updateUser, deleteUser}
+    }
+    else if(typeof newRole == "string" &&  Object.values(AVAILABLE_ROLES).some(v => v.toLowerCase() === newRole.toLowerCase()) ) {
+        newRole = Object.keys(AVAILABLE_ROLES).find(key => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase());
+    }
+    
+    try {
+
+     const user = await  User.findByPk(userId);
+     if(!user) {
+        res.status(400).json({error : "User not found"});
+     }
+     user["roleId"] = newRole
+    res.status(201).json({message : "User role updated successfully to "+AVAILABLE_ROLES[newRole]});
+
+    }catch(err){
+        console.log(err.message)
+        res.status(500).json({error: 'Erro whie updating user Role' + err.message});
+    }
+}
+
+
+module.exports = {createUser, getUSerWithId, getAllUsers, updateUser, deleteUser,updateRole}
