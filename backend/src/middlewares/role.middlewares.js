@@ -9,7 +9,7 @@ function requireRole(...roles) {
     if (!roles.includes(role.name)) {
       return res.status(403).json({ message: 'Forbidden: insufficient role' , actualRole : role.name , roles : roles});
     }
-    res.status(200).json({ message: 'Access granted', actualRole : role.name , requiredRoles : roles});
+   
     return next();
   };
 }
