@@ -21,24 +21,45 @@ const RECIPES = [
 const INGREDIENTS_RECIPES = [
   {
     recipeName: 'Pancakes',
-    ingredientNames: ['Flour', 'Eggs', 'Milk', 'Butter'],
+    ingredients: [
+      { name: 'Flour',  quantity: 200, unit: 'g' },
+      { name: 'Eggs',   quantity: 2,   unit: 'pcs' },
+      { name: 'Milk',   quantity: 100, unit: 'ml' },
+      { name: 'Butter', quantity: 50,  unit: 'g' },
+    ],
   },
   {
     recipeName: 'Chocolate Cake',
-    ingredientNames: ['Flour', 'Sugar', 'Eggs', 'Butter'],
+    ingredients: [
+      { name: 'Flour',  quantity: 300, unit: 'g' },
+      { name: 'Sugar',  quantity: 200, unit: 'g' },
+      { name: 'Eggs',   quantity: 3,   unit: 'pcs' },
+      { name: 'Butter', quantity: 100, unit: 'g' },
+    ],
   },
   {
     recipeName: 'Omelette',
-    ingredientNames: ['Eggs', 'Milk', 'Butter'],
+    ingredients: [
+      { name: 'Eggs',   quantity: 3,  unit: 'pcs' },
+      { name: 'Milk',   quantity: 50, unit: 'ml' },
+      { name: 'Butter', quantity: 20, unit: 'g' },
+    ],
   },
   {
     recipeName: 'Bread',
-    ingredientNames: ['Flour'],
+    ingredients: [
+      { name: 'Flour', quantity: 500, unit: 'g' },
+    ],
   },
   {
     recipeName: 'Cookies',
-    ingredientNames: ['Flour', 'Sugar', 'Eggs', 'Butter'], 
-  }
+    ingredients: [
+      { name: 'Flour',  quantity: 250, unit: 'g' },
+      { name: 'Sugar',  quantity: 150, unit: 'g' },
+      { name: 'Eggs',   quantity: 2,   unit: 'pcs' },
+      { name: 'Butter', quantity: 100, unit: 'g' },
+    ],
+  },
 ];
 
 const STOCK_MOVEMENTS = [
@@ -303,13 +324,22 @@ async function seedRolesAndPermissions(models) {
 
   for (const ir of INGREDIENTS_RECIPES) {
     const recipe = await models.Recipe.findOne({ where: { name: ir.recipeName } });
-    const ingredients = await models.Ingredient.findAll({
-      where: { name: ir.ingredientNames },
-    });
 
-    console.log(`Associating recipe "${recipe.name}" with ingredients: ${ingredients.map(i => i.name).join(', ')}`);
-    await recipe.setIngredients(ingredients);
-  }
+    for (const ing of ir.ingredients) {
+      const ingredient = await models.Ingredient.findOne({ where: { name: ing.name } });
+
+      await models.RecipeIngredient.findOrCreate({
+        where: { 
+          recipeId: recipe.id, 
+          ingredientId: ingredient.id 
+        },
+        defaults: {
+          quantity: ing.quantity,
+          unit: ing.unit,
+        },
+      });
+    }
+}
 
 
     models.User.findOrCreate({

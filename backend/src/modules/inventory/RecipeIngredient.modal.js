@@ -8,7 +8,16 @@ const RecipeIngredient = sequelize.define("RecipeIngredient",{
         autoIncrement : true
 
     } , 
-
+    quantity : {
+        type : DataTypes.FLOAT,
+        allowNull : false,
+        defaultValue : 0
+    },
+    unit : {
+        type : DataTypes.STRING,
+        allowNull : false,
+        defaultValue : 'unit'
+    }
 })
 
 module.exports = RecipeIngredient;
