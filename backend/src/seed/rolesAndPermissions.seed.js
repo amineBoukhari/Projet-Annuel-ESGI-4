@@ -1,16 +1,44 @@
-const Role = require('../modules/role/role.model');
-const Permission = require('../modules/permission/permission.model');
 const User = require('../modules/user/user.model');
 const authtService = require('../modules/auth/auth.service');
-const Ingredient = require('../modules/inventory/ingredient.model');
-const StockMovement = require('../modules/inventory/stockMovement.model');
 
 const INGREDIENTS = [
-  { name: 'Flour', unit: 'kg', quantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/flour.jpg'},
-  { name: 'Sugar', unit: 'kg', quantity: 50, minStockLevel: 10 , imageUrl: 'https://example.com/images/sugar.jpg'},
-  { name: 'Eggs', unit: 'pcs', quantity: 200, minStockLevel: 50 , imageUrl: 'https://example.com/images/eggs.jpg'},
-  { name: 'Butter', unit: 'kg', quantity: 30, minStockLevel: 5 , imageUrl: 'https://example.com/images/butter.jpg'},
-  { name: 'Milk', unit: 'liters', quantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/milk.jpg'},
+  { name: 'Flour', unit: 'kg', stockQuantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/flour.jpg'},
+  { name: 'Sugar', unit: 'kg', stockQuantity: 50, minStockLevel: 10 , imageUrl: 'https://example.com/images/sugar.jpg'},
+  { name: 'Eggs', unit: 'pcs', stockQuantity: 200, minStockLevel: 50 , imageUrl: 'https://example.com/images/eggs.jpg'},
+  { name: 'Butter', unit: 'kg', stockQuantity: 30, minStockLevel: 5 , imageUrl: 'https://example.com/images/butter.jpg'},
+  { name: 'Milk', unit: 'liters', stockQuantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/milk.jpg'},
+];
+
+
+const RECIPES = [
+  { name: 'Pancakes', description: 'Fluffy pancakes made with flour, eggs, milk, and butter.' },
+  { name: 'Chocolate Cake', description: 'Rich chocolate cake made with flour, sugar, eggs, and butter.' },
+  { name: 'Omelette', description: 'Classic omelette made with eggs, milk, and butter.' },
+  { name: 'Bread', description: 'Freshly baked bread made with flour, water, yeast, and salt.' },
+  { name: 'Cookies', description: 'Delicious cookies made with flour, sugar, eggs, and butter.' },
+];
+
+const INGREDIENTS_RECIPES = [
+  {
+    recipeName: 'Pancakes',
+    ingredientNames: ['Flour', 'Eggs', 'Milk', 'Butter'],
+  },
+  {
+    recipeName: 'Chocolate Cake',
+    ingredientNames: ['Flour', 'Sugar', 'Eggs', 'Butter'],
+  },
+  {
+    recipeName: 'Omelette',
+    ingredientNames: ['Eggs', 'Milk', 'Butter'],
+  },
+  {
+    recipeName: 'Bread',
+    ingredientNames: ['Flour'],
+  },
+  {
+    recipeName: 'Cookies',
+    ingredientNames: ['Flour', 'Sugar', 'Eggs', 'Butter'], 
+  }
 ];
 
 const STOCK_MOVEMENTS = [
@@ -220,12 +248,18 @@ const ROLE_PERMISSIONS = [
 
 
 
-async function seedRolesAndPermissions() {
+async function seedRolesAndPermissions(models) {
 
 
+    for (const ingredient of INGREDIENTS) {
+    await models.Ingredient.findOrCreate({
+      where: { name: ingredient.name },
+      defaults: ingredient,
+    });
+  }
 
   for (const stockM of STOCK_MOVEMENTS) {
-    await StockMovement.findOrCreate(
+    await models.StockMovement.findOrCreate(
       {
         where : {reason :stockM.reason},
         defaults : stockM
@@ -233,16 +267,18 @@ async function seedRolesAndPermissions() {
     )
   }
 
-  for (const ingredient of INGREDIENTS) {
-    await Ingredient.findOrCreate({
-      where: { name: ingredient.name },
-      defaults: ingredient,
+
+
+  for (const recipe of RECIPES) {
+    await models.Recipe.findOrCreate({
+      where: { name: recipe.name },
+      defaults: recipe,
     });
   }
 
 
   for (const perm of PERMISSIONS) {
-    await Permission.findOrCreate({
+    await models.Permission.findOrCreate({
       where: { name: perm.name },
       defaults: perm,
     });
@@ -250,7 +286,7 @@ async function seedRolesAndPermissions() {
 
  
   for (const role of ROLES) {
-    await Role.findOrCreate({
+    await models.Role.findOrCreate({
       where: { name: role.name },
       defaults: role,
     });
@@ -258,15 +294,25 @@ async function seedRolesAndPermissions() {
 
 
   for (const rp of ROLE_PERMISSIONS) {
-    const role = await Role.findOne({ where: { name: rp.roleName } });
-    const permissions = await Permission.findAll({
+    const role = await models.Role.findOne({ where: { name: rp.roleName } });
+    const permissions = await models.Permission.findAll({
       where: { name: rp.permissionNames },
     });
     await role.setPermissions(permissions);
   }
 
+  for (const ir of INGREDIENTS_RECIPES) {
+    const recipe = await models.Recipe.findOne({ where: { name: ir.recipeName } });
+    const ingredients = await models.Ingredient.findAll({
+      where: { name: ir.ingredientNames },
+    });
 
-    User.findOrCreate({
+    console.log(`Associating recipe "${recipe.name}" with ingredients: ${ingredients.map(i => i.name).join(', ')}`);
+    await recipe.setIngredients(ingredients);
+  }
+
+
+    models.User.findOrCreate({
     where: { email: 'admin@gmail.com' },
     defaults: {
       username: ' Super Admin',

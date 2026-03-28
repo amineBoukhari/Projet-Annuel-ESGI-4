@@ -16,13 +16,19 @@ const Restaurant = require('./src/modules/restaurant/restaurant.model');
 const Role = require('./src/modules/role/role.model');
 const Ingredient = require('./src/modules/inventory/ingredient.model');
 const StockMovement = require('./src/modules/inventory/stockMovement.model');
+const Recipe = require('./src/modules/inventory/Recipe.modal');
+const RecipeIngredient = require('./src/modules/inventory/RecipeIngredient.modal');
+const RolePermission = require('./src/modules/role/rolePermission.model');
+const Permission = require('./src/modules/permission/permission.model');
 
 // Collect models
-const models = { User, Restaurant, Role, Ingredient, StockMovement };
+const models = { User, Restaurant, Role, Ingredient, StockMovement , Recipe, RecipeIngredient, RolePermission, Permission };
 
 // Setup associations
 Object.values(models).forEach(model => {
+  console.log(`Setting up associations for model: ${model.name}`);
   if (model.associate) {
+      console.log(`Associating model: ${model.name}`);
     model.associate(models);
   }
 });
@@ -44,7 +50,7 @@ async function startServer() {
       console.log('All models and associations were synchronized successfully.');
 
       // Seed roles and permissions
-      await seedRolesAndPermissions();
+      await seedRolesAndPermissions(models);
     }
   } catch (error) {
     console.error('Error starting server:', error);

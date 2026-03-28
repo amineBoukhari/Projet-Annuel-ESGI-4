@@ -40,7 +40,10 @@ Ingredient.associate = (models) => {
     onUpdate: 'CASCADE'
   });
 
+  Ingredient.belongsToMany(models.Recipe,{ through: models.RecipeIngredient, foreignKey: 'ingredientId', as: 'recipe' })
+
 };
+
 
 
 module.exports = Ingredient;
