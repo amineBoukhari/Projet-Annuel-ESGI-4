@@ -1,9 +1,25 @@
 const Role = require('../modules/role/role.model');
 const Permission = require('../modules/permission/permission.model');
 const User = require('../modules/user/user.model');
-const RolePermission = require('../modules/role/rolePermission.model');
 const authtService = require('../modules/auth/auth.service');
+const Ingredient = require('../modules/inventory/ingredient.model');
+const StockMovement = require('../modules/inventory/stockMovement.model');
 
+const INGREDIENTS = [
+  { name: 'Flour', unit: 'kg', quantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/flour.jpg'},
+  { name: 'Sugar', unit: 'kg', quantity: 50, minStockLevel: 10 , imageUrl: 'https://example.com/images/sugar.jpg'},
+  { name: 'Eggs', unit: 'pcs', quantity: 200, minStockLevel: 50 , imageUrl: 'https://example.com/images/eggs.jpg'},
+  { name: 'Butter', unit: 'kg', quantity: 30, minStockLevel: 5 , imageUrl: 'https://example.com/images/butter.jpg'},
+  { name: 'Milk', unit: 'liters', quantity: 100, minStockLevel: 20 , imageUrl: 'https://example.com/images/milk.jpg'},
+];
+
+const STOCK_MOVEMENTS = [
+  { ingredientId: 1, reason: 'Initial Stock 1', quantity: 100, date: new Date() },
+  { ingredientId: 2, reason: 'Initial Stock 2', quantity: 50, date: new Date() },
+  { ingredientId: 3, reason: 'Initial Stock 3', quantity: 200, date: new Date() },
+  { ingredientId: 4, reason: 'Initial Stock 4', quantity: 30, date: new Date() },
+  { ingredientId: 5, reason: 'Initial Stock 5', quantity: 100, date: new Date()},
+];
 
 const ROLES = [
    { name: 'Admin', description: 'Full system access - manages the platform itself' },
@@ -206,6 +222,23 @@ const ROLE_PERMISSIONS = [
 
 async function seedRolesAndPermissions() {
 
+
+
+  for (const stockM of STOCK_MOVEMENTS) {
+    await StockMovement.findOrCreate(
+      {
+        where : {reason :stockM.reason},
+        defaults : stockM
+      }
+    )
+  }
+
+  for (const ingredient of INGREDIENTS) {
+    await Ingredient.findOrCreate({
+      where: { name: ingredient.name },
+      defaults: ingredient,
+    });
+  }
 
 
   for (const perm of PERMISSIONS) {

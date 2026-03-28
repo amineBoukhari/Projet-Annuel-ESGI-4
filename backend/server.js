@@ -7,15 +7,18 @@ const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
 const authMiddleware = require('./src/middlewares/auth.middleware');
 const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
+const ingredientRoutes = require('./src/modules/inventory/ingredient.routes');
 const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
 
 // Import models
 const User = require('./src/modules/user/user.model');
 const Restaurant = require('./src/modules/restaurant/restaurant.model');
 const Role = require('./src/modules/role/role.model');
+const Ingredient = require('./src/modules/inventory/ingredient.model');
+const StockMovement = require('./src/modules/inventory/stockMovement.model');
 
 // Collect models
-const models = { User, Restaurant, Role };
+const models = { User, Restaurant, Role, Ingredient, StockMovement };
 
 // Setup associations
 Object.values(models).forEach(model => {
@@ -55,9 +58,10 @@ startServer();
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/restaurants',authMiddleware ,restaurantRoutes);
+app.use('/api/ingredients', authMiddleware, ingredientRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Hello World ...sfsf');
+  res.send('Welcome to the Restaurant Management API');
 });
 
 app.listen(port, () => {
