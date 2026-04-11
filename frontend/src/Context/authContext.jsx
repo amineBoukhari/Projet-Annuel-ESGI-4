@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user_token");
     setToken(null);
-    toast.success('Successfully disconnected')
+    toast.success("Successfully disconnected");
   };
 
   return (

@@ -6,8 +6,8 @@ export default function Input({
   type,
   errorMessage,
   placeHolder,
-    children,
-  ref
+  children,
+  ref,
 }) {
   return (
     <div>
