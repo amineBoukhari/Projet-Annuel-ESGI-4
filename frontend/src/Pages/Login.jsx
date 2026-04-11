@@ -10,15 +10,30 @@ export default function Login() {
   const inputPasswordRef = useRef();
   const navigate = useNavigate();
   
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // TODO:Vérifier les login/mdp en bdd
-    // TODO:Créer un token JWT pour garder la sesssion
-
-    navigate('/')
+    try {
+      const response = await fetch("https://votre-backend.com/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email:inputLoginRef.current.value, password:inputPasswordRef.current.value }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Erreur ${response.status}`);
+      }
+  
+      const { token } = await response;
+      localStorage.setItem('user_token', token);
+      navigate("/");
+  
+    } catch (error) {
+      console.error("Erreur login :", error);
+    }
   }
-
     return (
       <section className="login-form flex justify-center items-center h-screen w-screen">
         <form method="post" className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl" onSubmit={handleSubmit} ref={formRef}>
