@@ -1,7 +1,3 @@
-export default function Stocks(){
-    return (
-        <>
-            Contenu des stocks
-        </>
-    )
+export default function Stocks() {
+  return <>Contenu des stocks</>;
 }

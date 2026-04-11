@@ -2,14 +2,14 @@
 
 @theme {
   --color-primary: #3ab7bf;
-  --color-secondary: #FFC851;
-  --color-background: #E0E5EC;
+  --color-secondary: #ffc851;
+  --color-background: #e0e5ec;
 }
 
 :root {
-  font-family: 'Jost', sans-serif;
+  font-family: "Jost", sans-serif;
 }
 
 body {
-  @apply bg-background h-screen
+  @apply bg-background h-screen;
 }
