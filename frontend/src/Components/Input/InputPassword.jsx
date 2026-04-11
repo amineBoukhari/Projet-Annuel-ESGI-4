@@ -2,7 +2,12 @@ import { Eye, EyeOff } from "lucide-react";
 import Input from "./Input";
 import { useState } from "react";
 
-export default function InputPassword({ ref, errorMessage, label, disableLink = false }) {
+export default function InputPassword({
+  ref,
+  errorMessage,
+  label,
+  disableLink = false,
+}) {
   const [inputType, setInputType] = useState("password");
   const [showPassword, setShowPassword] = useState(false);
 

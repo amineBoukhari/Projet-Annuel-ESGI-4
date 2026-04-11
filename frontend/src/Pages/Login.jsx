@@ -68,7 +68,6 @@ export default function Login() {
       } else {
         navigate("/");
       }
-
     } catch (error) {
       //log error
       console.log(error.message);

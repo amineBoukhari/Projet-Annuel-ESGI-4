@@ -38,7 +38,11 @@ async function login(req, res) {
     const token = await authService.generateToken(user);
 
     // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-    return res.json({ token, user: user, mustChangePassword: user.mustChangePassword });
+    return res.json({
+      token,
+      user: user,
+      mustChangePassword: user.mustChangePassword,
+    });
   } catch (error) {
     console.error("Error logging in user:", error);
     return res.status(500).json({ error: error.message });
@@ -56,7 +60,7 @@ async function changePassword(req, res) {
 
     const isOldPasswordValid = await authService.comparePasswords(
       oldPassword,
-      user.password
+      user.password,
     );
     if (!isOldPasswordValid) {
       return res.status(400).json({ error: "Invalid old password" });
@@ -65,11 +69,14 @@ async function changePassword(req, res) {
     const hashedNewPassword = await authService.hashPassword(newPassword);
     user.password = hashedNewPassword;
     user.mustChangePassword = false; // reset the flag after changing password
-      await user.save();
-      
+    await user.save();
+
     const token = await authService.generateToken(user);
 
-    return res.json({ newToken: token, message: "Password changed successfully" });
+    return res.json({
+      newToken: token,
+      message: "Password changed successfully",
+    });
   } catch (error) {
     console.error("Error changing password:", error);
     return res.status(500).json({ error: error.message });

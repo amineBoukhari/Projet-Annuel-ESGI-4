@@ -28,7 +28,7 @@ Object.values(models).forEach((model) => {
 
 app.use(
   cors({
-    origin:  "*",
+    origin: "*",
   }),
 );
 app.use(express.json()); // Parse JSON bodies

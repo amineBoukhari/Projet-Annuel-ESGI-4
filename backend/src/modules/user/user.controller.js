@@ -130,12 +130,9 @@ async function updateRole(req, res) {
       res.status(400).json({ error: "User not found" });
     }
     user["roleId"] = newRole;
-    res
-      .status(201)
-      .json({
-        message:
-          "User role updated successfully to " + AVAILABLE_ROLES[newRole],
-      });
+    res.status(201).json({
+      message: "User role updated successfully to " + AVAILABLE_ROLES[newRole],
+    });
   } catch (err) {
     console.log(err.message);
     res

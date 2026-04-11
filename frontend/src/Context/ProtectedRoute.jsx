@@ -11,11 +11,11 @@ const ProtectedRoute = () => {
 
   const { mustChangePassword } = JSON.parse(atob(token.split(".")[1]));
 
-  if (location.pathname !== '/change-password' && mustChangePassword) {
+  if (location.pathname !== "/change-password" && mustChangePassword) {
     return <Navigate to="/change-password" replace />;
   }
 
-  if (location.pathname === '/change-password' && !mustChangePassword) {
+  if (location.pathname === "/change-password" && !mustChangePassword) {
     return <Navigate to="/" replace />;
   }
 
