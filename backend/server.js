@@ -28,7 +28,7 @@ Object.values(models).forEach((model) => {
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === "dev" ? "*" : "http://127.0.0.1:5173",
+    origin:  "*",
   }),
 );
 app.use(express.json()); // Parse JSON bodies

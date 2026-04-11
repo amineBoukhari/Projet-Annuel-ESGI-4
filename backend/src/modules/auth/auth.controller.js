@@ -35,15 +35,10 @@ async function login(req, res) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    if (user.mustChangePassword) {
-      return res.json({ mustChangePassword: true });
-      // Lucas should redirect the user to a change password page and then call the change password endpoint
-    }
-
     const token = await authService.generateToken(user);
 
     // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-    return res.json({ token, user: user });
+    return res.json({ token, user: user, mustChangePassword: user.mustChangePassword });
   } catch (error) {
     console.error("Error logging in user:", error);
     return res.status(500).json({ error: error.message });
@@ -51,30 +46,30 @@ async function login(req, res) {
 }
 
 async function changePassword(req, res) {
-  console.log(req.user);
-  const userId = req.user.id;
-  const { oldPassword, newPassword } = req.body;
+  const { id, oldPassword, newPassword } = req.body;
 
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const isOldPasswordValid = await authtService.comparePasswords(
+    const isOldPasswordValid = await authService.comparePasswords(
       oldPassword,
-      user.password,
+      user.password
     );
     if (!isOldPasswordValid) {
       return res.status(400).json({ error: "Invalid old password" });
     }
 
-    const hashedNewPassword = await authtService.hashPassword(newPassword);
+    const hashedNewPassword = await authService.hashPassword(newPassword);
     user.password = hashedNewPassword;
     user.mustChangePassword = false; // reset the flag after changing password
-    await user.save();
+      await user.save();
+      
+    const token = await authService.generateToken(user);
 
-    return res.json({ message: "Password changed successfully" });
+    return res.json({ newToken: token, message: "Password changed successfully" });
   } catch (error) {
     console.error("Error changing password:", error);
     return res.status(500).json({ error: error.message });

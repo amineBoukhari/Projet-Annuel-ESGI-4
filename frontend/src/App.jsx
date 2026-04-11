@@ -6,6 +6,7 @@ import Login from "./Pages/Login";
 import ProtectedRoute from "./Context/ProtectedRoute";
 import { AuthProvider } from "./Context/authContext";
 import { Toaster } from "react-hot-toast";
+import ChangePassword from "./Pages/ChangePassword";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route element={<ProtectedRoute />}>
+              <Route path="/change-password" element={<ChangePassword />} />
               <Route element={<Layout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="/stocks" element={<Stocks />} />
