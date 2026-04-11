@@ -1,26 +1,28 @@
 import { createContext, useContext, useState } from "react";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  let userStorage = localStorage.getItem("user");
-  const [user, setUser] = useState(
-    userStorage ? JSON.parse(userStorage) : null
-  );
+  const [token, setToken] = useState(() => {
+    const stored = localStorage.getItem("user_token");
+    return stored;
+  });
 
-  const setAuth = (user) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    setUser(user);
+  const setAuth = (newToken) => {
+    localStorage.setItem("user_token", JSON.stringify(newToken));
+    setToken(newToken);
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
-    setUser(null);
+    localStorage.removeItem("user_token");
+    setToken(null);
+    toast.success('Successfully disconnected')
   };
 
   return (
-    <AuthContext.Provider value={{ user, setAuth, logout }}>
+    <AuthContext.Provider value={{ token, setAuth, logout }}>
       {children}
     </AuthContext.Provider>
   );

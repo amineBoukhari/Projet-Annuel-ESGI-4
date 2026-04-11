@@ -7,15 +7,13 @@ const Restaurant = sequelize.define("Restaurant", {
         type : DataTypes.UUID ,
         primaryKey : true,
         defaultValue: DataTypes.UUIDV4,
-
-
     },
     name : {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
     },
-    adress : {
+    address : {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,

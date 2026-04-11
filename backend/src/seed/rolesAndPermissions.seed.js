@@ -2,7 +2,7 @@ const Role = require('../modules/role/role.model');
 const Permission = require('../modules/permission/permission.model');
 const User = require('../modules/user/user.model');
 const RolePermission = require('../modules/role/rolePermission.model');
-const authtService = require('../modules/auth/auth.service');
+const authService = require('../modules/auth/auth.service');
 
 
 const ROLES = [
@@ -234,14 +234,25 @@ async function seedRolesAndPermissions() {
 
 
     User.findOrCreate({
-    where: { email: 'admin@gmail.com' },
-    defaults: {
-      username: ' Super Admin',
-      email: 'admin@gmail.com',
-      password: await authtService.hashPassword('admin123'),
-      roleId: 1, // Assuming the Admin role has ID 1
-    },
-  });
+      where: { email: "admin@gmail.com" },
+      defaults: {
+        username: " Super Admin",
+        email: "admin@gmail.com",
+        password: await authService.hashPassword("admin123"),
+        roleId: 1, // Assuming the Admin role has ID 1
+      },
+    });
+  
+    User.findOrCreate({
+      where: { email: "johndoe@gmail.com" },
+      defaults: {
+        username: "John Doe",
+        email: "johndoe@gmail.com",
+        password: await authService.hashPassword("xxx"),
+        mustChangePassword: true,
+        roleId: 4, // Assuming the Employee role has ID 4
+      },
+    });
 }
 
 

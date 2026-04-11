@@ -5,22 +5,26 @@ import Stocks from "./Pages/Stocks";
 import Login from "./Pages/Login";
 import ProtectedRoute from "./Context/ProtectedRoute";
 import { AuthProvider } from "./Context/authContext";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="/stocks" element={<Stocks />} />
+    <>
+      <Toaster duration={4000} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="/stocks" element={<Stocks />} />
+              </Route>
             </Route>
-            </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </>
   );
 }
 

@@ -1,9 +1,7 @@
 const User = require('../user/user.model'); 
 const Role = require('../role/role.model');
 const Permission = require('../permission/permission.model');
-const authtService = require('../auth/auth.service');
-
-
+const authService = require('../auth/auth.service');
 
 async function login (req,res) {
     const email = req.body.email;
@@ -29,7 +27,10 @@ async function login (req,res) {
             return res.status(400).json({error : "Invalid email or password"});
         }
 
-        const isPasswordValid = await authtService.comparePasswords(password, user.password);
+        const isPasswordValid = await authService.comparePasswords(
+          password,
+          user.password
+        );
         if (!isPasswordValid){
             return res.status(400).json({error : "Invalid email or password"});
         }
@@ -39,7 +40,7 @@ async function login (req,res) {
             // Lucas should redirect the user to a change password page and then call the change password endpoint
         }
 
-        const token = await authtService.generateToken(user);
+        const token = await authService.generateToken(user);
 
         // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
         return res.json({token, user : user});
@@ -47,7 +48,7 @@ async function login (req,res) {
 
     }catch (error) {
         console.error('Error logging in user:', error);
-        return res.status(500).json({error: 'Failed to login user'});
+        return res.status(500).json({error: error.message});
     }
 }
 

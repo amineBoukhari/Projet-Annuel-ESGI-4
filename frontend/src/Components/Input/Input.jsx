@@ -17,16 +17,20 @@ export default function Input({
       {errorMessage && (
         <p className="text-red-500 text-xs px-2">{errorMessage}</p>
       )}
-      <div className="border rounded-lg flex items-center">
+      <div
+        className={`border rounded-lg flex items-center ${
+          errorMessage ? "border-red-500" : ""
+        }`}
+      >
         <input
           className="outline-none size-full px-2 py-1 rounded-lg text-sm"
           {...(placeHolder !== null && { placeholder: placeHolder })}
           type={type}
-            name={identifier}
-            ref={ref}
+          name={identifier}
+          ref={ref}
         />
         {children}
-        </div>
+      </div>
     </div>
   );
 }
