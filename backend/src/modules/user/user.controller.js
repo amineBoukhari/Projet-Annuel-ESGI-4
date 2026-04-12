@@ -125,5 +125,4 @@ async function updateRole(req, res) {
     }
 }
 
-
 module.exports = {createUser, getUSerWithId, getAllUsers, updateUser, deleteUser,updateRole}
