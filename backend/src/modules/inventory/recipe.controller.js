@@ -89,7 +89,7 @@ const updateRecipe = async (req, res) => {
     console.error('Error updating recipe:', error);
     res.status(500).json({ error: 'Failed to update recipe' });
   }
-}
+};
 
 const deleteRecipe = async (req, res) => {
   try {
