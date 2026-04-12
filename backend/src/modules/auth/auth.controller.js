@@ -34,12 +34,14 @@ async function login (req,res) {
             return res.status(400).json({error : "Invalid email or password"});
         }
 
+         const token = await authtService.generateToken(user);
         if(user.mustChangePassword) {
-            return res.json({mustChangePassword : true});
+            
+            return res.json({mustChangePassword : true , token });
             // Lucas should redirect the user to a change password page and then call the change password endpoint
         }
 
-        const token = await authtService.generateToken(user);
+       
 
         // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
         return res.json({token, user : user});

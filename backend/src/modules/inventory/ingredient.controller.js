@@ -1,6 +1,7 @@
 const ingredientService = require('./ingredient.service');
 const ingredientModel = require('./ingredient.model');
 const Ingredient = require('./ingredient.model');
+const StockMovement = require('./stockMovement.model');
 
 
 async function addIngredient(req, res) {
@@ -67,5 +68,52 @@ async function deleteIngredient(req, res) {
   }
 }
 
-module.exports = {addIngredient,getIngredientById,getAllIngredients,updateIngredient,deleteIngredient,
+async function addStockMovementHandler(req, res) {
+  try {
+    const { ingredientId, quantity, reason } = req.body;
+    if (!ingredientId || quantity === undefined || !reason) {
+      return res.status(400).json({ message: 'ingredientId, quantity, and reason are required' });
+    }
+    const movement = await ingredientService.addStockMovement(ingredientId, quantity, reason);
+    res.status(201).json(movement);
+  } catch (error) {
+    console.error('Error adding stock movement:', error);
+    res.status(400).json({ message: error.message });
+  }
+}
+
+async function getStockMovements(req, res) {
+  try {
+    const ingredient = await Ingredient.findByPk(req.params.id, {
+      include: [{ model: StockMovement, as: 'stockMovements' }],
+    });
+    if (!ingredient) {
+      return res.status(404).json({ message: 'Ingredient not found' });
+    }
+    res.json(ingredient.stockMovements);
+  } catch (error) {
+    console.error('Error fetching stock movements:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+async function getLowStock(req, res) {
+  try {
+    const ingredients = await ingredientService.getLowStockIngredients();
+    res.json(ingredients);
+  } catch (error) {
+    console.error('Error fetching low stock:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+module.exports = {
+  addIngredient,
+  getIngredientById,
+  getAllIngredients,
+  updateIngredient,
+  deleteIngredient,
+  addStockMovementHandler,
+  getStockMovements,
+  getLowStock,
 };

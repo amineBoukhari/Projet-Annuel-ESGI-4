@@ -1,6 +1,7 @@
 const Recipe = require('./Recipe.modal');
 const Ingredient = require('./ingredient.model');
 const RecipeIngredient = require('./RecipeIngredient.modal');
+const RecipeStockStrategy = require('./strategies/recipeStockStrategy');
 
 const addRecipe = async (req, res) => {
   try {
@@ -106,4 +107,19 @@ const deleteRecipe = async (req, res) => {
   }
 };
 
-module.exports = {addRecipe,getRecipeById,getAllRecipes,updateRecipe,deleteRecipe};
+const cookRecipe = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const portions = req.body.portions || 1;
+
+    const strategy = new RecipeStockStrategy();
+    const movements = await strategy.execute({ recipeId: id, portions });
+
+    res.json({ message: `Recipe cooked x${portions}. Stock updated.`, movements });
+  } catch (error) {
+    console.error('Error cooking recipe:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = {addRecipe, getRecipeById, getAllRecipes, updateRecipe, deleteRecipe, cookRecipe};

@@ -10,6 +10,7 @@ const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
 const ingredientRoutes = require('./src/modules/inventory/ingredient.routes');
 const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
 const recipeRoutes = require('./src/modules/inventory/recipe.routes');
+const permissionRoutes = require('./src/modules/permission/permission.routes');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -64,9 +65,10 @@ startServer();
 // Routes
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/restaurants',authMiddleware ,restaurantRoutes);
+app.use('/api/restaurants', authMiddleware, restaurantRoutes);
 app.use('/api/ingredients', authMiddleware, ingredientRoutes);
-app.use('/api/recipes', recipeRoutes);
+app.use('/api/recipes', authMiddleware, recipeRoutes);
+app.use('/api/permissions', authMiddleware, permissionRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Restaurant Management API');
