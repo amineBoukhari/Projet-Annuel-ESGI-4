@@ -88,46 +88,48 @@ async function deleteUser(req, res) {
   }
 }
 
-async function updateUser(req, res) {
-  const userId = req.user.id;
-  const keyToUpdate = req.body.key;
-  const newValue = req.body.value;
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-    user[keyToUpdate] = newValue;
-    await user.save();
-    res.status(200).json(user);
-  } catch (error) {
-    console.error("Error updating user:", error);
-    res.status(500).json({ error: "Failed to update user" });
-  }
+
+async function updateUser (req, res) {
+    const userId = req.user.id
+    const keyToUpdate = req.body.key;
+    const newValue = req.body.value;
+     try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({error : "User not found"});
+        }
+        user[keyToUpdate] = newValue;
+        await user.save();
+        res.status(200).json(user);
+     } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({error: 'Failed to update user'});
+     }
 }
 
 async function updateRole(req, res) {
-  const userId = req.user.id;
-  let newRole = req.body.newRole;
-  if (
-    typeof newRole == "integer" &&
-    Object.keys(AVAILABLE_ROLES).includes(newRole)
-  ) {
-  } else if (
-    typeof newRole == "string" &&
-    Object.values(AVAILABLE_ROLES).some(
-      (v) => v.toLowerCase() === newRole.toLowerCase(),
-    )
-  ) {
-    newRole = Object.keys(AVAILABLE_ROLES).find(
-      (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase(),
-    );
-  }
+    const userId = req.params.id;
+    let newRole = req.body.newRole;
 
-  try {
-    const user = await User.findByPk(userId);
-    if (!user) {
-      res.status(400).json({ error: "User not found" });
+    if (typeof newRole === 'number' && Object.keys(AVAILABLE_ROLES).includes(String(newRole))) {
+        // newRole is already a valid numeric ID — keep as-is
+    } else if (typeof newRole === 'string' && Object.values(AVAILABLE_ROLES).some(v => v.toLowerCase() === newRole.toLowerCase())) {
+        newRole = parseInt(Object.keys(AVAILABLE_ROLES).find(key => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase()));
+    } else {
+        return res.status(400).json({ error: 'Invalid role value' });
+    }
+
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        user.roleId = newRole;
+        await user.save();
+        return res.status(200).json({ message: 'User role updated successfully to ' + AVAILABLE_ROLES[newRole] });
+    } catch (err) {
+        console.log(err.message);
+        return res.status(500).json({ error: 'Error while updating user role: ' + err.message });
     }
     user["roleId"] = newRole;
     res

@@ -1,7 +1,5 @@
-const { DataTypes } = require("sequelize");
-const sequelize = require("../../db/index");
-const Role = require("./role.model");
-const Permission = require("../permission/permission.model");
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../db/index');
 
 const RolePermission = sequelize.define(
   "RolePermission",
@@ -12,20 +10,21 @@ const RolePermission = sequelize.define(
       autoIncrement: true,
     },
   },
-  {
-    timestamps: false,
+  roleId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
-);
+  permissionId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+}, {
+  timestamps: false,
+});
 
-Role.belongsToMany(Permission, {
-  through: RolePermission,
-  foreignKey: "roleId",
-  as: "permissions",
-});
-Permission.belongsToMany(Role, {
-  through: RolePermission,
-  foreignKey: "permissionId",
-  as: "roles",
-});
+RolePermission.associate = (models) => {
+  RolePermission.belongsTo(models.Role, { foreignKey: 'roleId', as: 'role' });
+  RolePermission.belongsTo(models.Permission, { foreignKey: 'permissionId', as: 'permission' });
+};
 
 module.exports = RolePermission;

@@ -16,24 +16,34 @@ async function login(req, res) {
           as: "role",
           include: [
             {
-              model: Permission,
-              as: "permissions",
-            },
-          ],
-        },
-      ],
-    });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
+            model: Role,
+            as: "role",
+            include: [
+                {
+                model: Permission,
+                as: "permissions",
+                }
+            ]
+            }
+        ]
+        });
+        if (!user){
+            return res.status(400).json({error : "Invalid email or password"});
+        }
 
-    const isPasswordValid = await authService.comparePasswords(
-      password,
-      user.password,
-    );
-    if (!isPasswordValid) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
+        const isPasswordValid = await authtService.comparePasswords(password, user.password);
+        if (!isPasswordValid){
+            return res.status(400).json({error : "Invalid email or password"});
+        }
+
+         const token = await authtService.generateToken(user);
+        if(user.mustChangePassword) {
+            
+            return res.json({mustChangePassword : true , token });
+            // Lucas should redirect the user to a change password page and then call the change password endpoint
+        }
+
+       
 
     if (user.mustChangePassword) {
       return res.json({ mustChangePassword: true });
