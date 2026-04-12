@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const cors = require("cors");
-const sequelize = require('./src/db/index');
+const sequelize = require("./src/db/index");
 
 const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
@@ -35,7 +35,11 @@ Object.values(models).forEach(model => {
   }
 });
 
-app.use(cors({ origin: "http://127.0.0.1:5173" }));
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === "dev" ? "*" : "http://127.0.0.1:5173",
+  }),
+);
 app.use(express.json()); // Parse JSON bodies
 
 const port = process.env.PORT || 3000;
@@ -44,18 +48,20 @@ async function startServer() {
   try {
     // Authenticate database
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    console.log("Connection has been established successfully.");
 
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === "dev") {
       // Sync all models and associations
       await sequelize.sync({ alter: true });
-      console.log('All models and associations were synchronized successfully.');
+      console.log(
+        "All models and associations were synchronized successfully.",
+      );
 
       // Seed roles and permissions
       await seedRolesAndPermissions(models);
     }
   } catch (error) {
-    console.error('Error starting server:', error);
+    console.error("Error starting server:", error);
   }
 }
 

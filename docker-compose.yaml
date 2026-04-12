@@ -18,14 +18,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
-      - "5173:80"
+      - "5173:5173"
     networks:
       - front-tier
       - back-tier
 
     volumes :
       - ./frontend:/app
-      - /app/node_modules 
 
     command: sh -c "npm install && npm run dev"
 
@@ -49,7 +48,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - "8081:8080"   # map to host port you want
+      - "8080:8080"   # map to host port you want
     networks:
       - back-tier
 

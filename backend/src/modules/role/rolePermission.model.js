@@ -1,11 +1,14 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../db/index');
 
-const RolePermission = sequelize.define('RolePermission', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
+const RolePermission = sequelize.define(
+  "RolePermission",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
   },
   roleId: {
     type: DataTypes.INTEGER,
