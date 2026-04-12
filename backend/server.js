@@ -12,6 +12,7 @@ const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed
 const recipeRoutes = require('./src/modules/inventory/recipe.routes');
 const permissionRoutes = require('./src/modules/permission/permission.routes');
 const supplierRoutes = require('./src/modules/supplier/supplier.routes');
+const purchaseOrderRoutes = require('./src/modules/purchaseOrder/purchaseOrder.routes');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -24,9 +25,11 @@ const RecipeIngredient = require('./src/modules/inventory/RecipeIngredient.modal
 const RolePermission = require('./src/modules/role/rolePermission.model');
 const Permission = require('./src/modules/permission/permission.model');
 const Supplier = require('./src/modules/supplier/supplier.model');
+const PurchaseOrder = require('./src/modules/purchaseOrder/purchaseOrder.model');
+const PurchaseOrderItem = require('./src/modules/purchaseOrder/purchaseOrderItem.model');
 
 // Collect models
-const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier };
+const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem };
 
 // Setup associations
 Object.values(models).forEach(model => {
@@ -71,12 +74,13 @@ app.use('/api/restaurants', authMiddleware, restaurantRoutes);
 app.use('/api/ingredients', authMiddleware, ingredientRoutes);
 app.use('/api/recipes', authMiddleware, recipeRoutes);
 app.use('/api/permissions', authMiddleware, permissionRoutes);
+app.use('/api/suppliers', authMiddleware, supplierRoutes);
+app.use('/api/purchaseOrders', authMiddleware, purchaseOrderRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Restaurant Management API');
 });
 
 app.listen(port, () => {
-app.use('/api/suppliers', authMiddleware, supplierRoutes);
   console.log(`Example app listening on port: http://localhost:${port}`);
 });
