@@ -7,7 +7,11 @@ function requireRole(...roles) {
   return (req, res, next) => {
     const role = extractRole(req.token);
     if (!roles.includes(role.name)) {
-      return res.status(403).json({ message: 'Forbidden: insufficient role' , actualRole : role.name , roles : roles});
+      return res.status(403).json({
+        message: "Forbidden: insufficient role",
+        actualRole: role.name,
+        roles: roles,
+      });
     }
    
     return next();

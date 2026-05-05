@@ -12,13 +12,14 @@ async function hashPassword(password) {
 }
 
 async function generateToken(user) {
-    const payload = {
-        id : user.id,
-        email : user.email,
-        role : user.role,
-        permissions : user.role.permissions 
-    };
-    return jwt.sign(payload, process.env.JWT_SECRET, {expiresIn : '1h'});
+  const payload = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    permissions : user.role.permissions,
+    mustChangePassword: user.mustChangePassword,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 }
 
 function extractRole(token) {

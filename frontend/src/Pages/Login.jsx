@@ -10,13 +10,10 @@ import * as z from "zod";
 
 export default function Login() {
   const { setAuth } = useAuth();
-  const formRef = useRef();
   const inputLoginRef = useRef();
   const inputPasswordRef = useRef();
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
-
-  console.log(errors);
 
   const loginSchema = z.object({
     email: z.email("Email invalide").min(1, "Le champs ne doit pas être vide"),
@@ -58,7 +55,8 @@ export default function Login() {
       if (!response.ok) {
         const { error } = await response.json();
         toast.error(error);
-        console.log(response);
+
+        return;
       }
 
       const { token, mustChangePassword } = await response.json();
@@ -81,7 +79,6 @@ export default function Login() {
         method="post"
         className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl"
         onSubmit={handleSubmit}
-        ref={formRef}
       >
         <div className="w-full flex justify-center">
           <span className="bg-primary rounded-full font-bold text-white p-8 size-6 flex items-center justify-center text-4xl">
@@ -100,6 +97,7 @@ export default function Login() {
         />
         <InputPassword
           ref={inputPasswordRef}
+          label="Mot de passe"
           errorMessage={errors["password"]}
         />
         <button className="bg-primary rounded-lg py-2 text-white hover:cursor-pointer hover:opacity-90">

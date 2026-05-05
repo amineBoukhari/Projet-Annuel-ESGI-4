@@ -35,7 +35,11 @@ Object.values(models).forEach(model => {
   }
 });
 
-app.use(cors({ origin: "http://127.0.0.1:5173" }));
+app.use(
+  cors({
+    origin: "*",
+  }),
+);
 app.use(express.json()); // Parse JSON bodies
 
 const port = process.env.PORT || 3000;
