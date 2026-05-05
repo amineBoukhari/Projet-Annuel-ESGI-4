@@ -1,7 +1,7 @@
 const Restaurant = require("./restaurant.model");
 const { createUser } = require("../user/user.controller");
 const { Op } = require("sequelize");
-const authtService = require("../auth/auth.service");
+const authService = require("../auth/auth.service");
 const User = require("../user/user.model");
 const Role = require("../role/role.model");
 
@@ -31,13 +31,13 @@ async function createRestaurant(req, res) {
     console.log(
       "Restaurant with name or address already exists:",
       name,
-      adress,
+      adress
     );
     return res.status(400).json({ message: "restaurant already exist" });
   }
 
   try {
-    const hashedPassword = await authtService.hashPassword(adminPassword);
+    const hashedPassword = await authService.hashPassword(adminPassword);
     const newRestaurant = await Restaurant.create({
       name: name,
       adress: adress,

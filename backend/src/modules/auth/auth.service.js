@@ -1,12 +1,14 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 
-async function comparePasswords(password, userPassword) {
-  return await bcrypt.compare(password, userPassword);
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+async function comparePasswords(password , userPassword) {
+    
+    return await bcrypt.compare(password, userPassword);
 }
 
 async function hashPassword(password) {
-  return await bcrypt.hash(password, 10);
+    return await bcrypt.hash(password, 10);
 }
 
 async function generateToken(user) {
@@ -14,6 +16,7 @@ async function generateToken(user) {
     id: user.id,
     email: user.email,
     role: user.role,
+    permissions : user.role.permissions,
     mustChangePassword: user.mustChangePassword,
   };
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
@@ -29,10 +32,5 @@ function extractPermissions(token) {
   return decoded.permissions;
 }
 
-module.exports = {
-  comparePasswords,
-  hashPassword,
-  generateToken,
-  extractRole,
-  extractPermissions,
-};
+
+module.exports = {comparePasswords, hashPassword , generateToken,extractRole, extractPermissions}

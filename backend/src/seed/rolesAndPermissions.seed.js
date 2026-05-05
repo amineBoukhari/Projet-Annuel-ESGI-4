@@ -1,8 +1,142 @@
-const Role = require("../modules/role/role.model");
-const Permission = require("../modules/permission/permission.model");
 const User = require("../modules/user/user.model");
-const RolePermission = require("../modules/role/rolePermission.model");
 const authService = require("../modules/auth/auth.service");
+
+const INGREDIENTS = [
+  {
+    name: "Flour",
+    unit: "kg",
+    stockQuantity: 100,
+    minStockLevel: 20,
+    imageUrl: "https://example.com/images/flour.jpg",
+  },
+  {
+    name: "Sugar",
+    unit: "kg",
+    stockQuantity: 50,
+    minStockLevel: 10,
+    imageUrl: "https://example.com/images/sugar.jpg",
+  },
+  {
+    name: "Eggs",
+    unit: "pcs",
+    stockQuantity: 200,
+    minStockLevel: 50,
+    imageUrl: "https://example.com/images/eggs.jpg",
+  },
+  {
+    name: "Butter",
+    unit: "kg",
+    stockQuantity: 30,
+    minStockLevel: 5,
+    imageUrl: "https://example.com/images/butter.jpg",
+  },
+  {
+    name: "Milk",
+    unit: "liters",
+    stockQuantity: 100,
+    minStockLevel: 20,
+    imageUrl: "https://example.com/images/milk.jpg",
+  },
+];
+
+const RECIPES = [
+  {
+    name: "Pancakes",
+    description: "Fluffy pancakes made with flour, eggs, milk, and butter.",
+  },
+  {
+    name: "Chocolate Cake",
+    description:
+      "Rich chocolate cake made with flour, sugar, eggs, and butter.",
+  },
+  {
+    name: "Omelette",
+    description: "Classic omelette made with eggs, milk, and butter.",
+  },
+  {
+    name: "Bread",
+    description: "Freshly baked bread made with flour, water, yeast, and salt.",
+  },
+  {
+    name: "Cookies",
+    description: "Delicious cookies made with flour, sugar, eggs, and butter.",
+  },
+];
+
+const INGREDIENTS_RECIPES = [
+  {
+    recipeName: "Pancakes",
+    ingredients: [
+      { name: "Flour", quantity: 200, unit: "g" },
+      { name: "Eggs", quantity: 2, unit: "pcs" },
+      { name: "Milk", quantity: 100, unit: "ml" },
+      { name: "Butter", quantity: 50, unit: "g" },
+    ],
+  },
+  {
+    recipeName: "Chocolate Cake",
+    ingredients: [
+      { name: "Flour", quantity: 300, unit: "g" },
+      { name: "Sugar", quantity: 200, unit: "g" },
+      { name: "Eggs", quantity: 3, unit: "pcs" },
+      { name: "Butter", quantity: 100, unit: "g" },
+    ],
+  },
+  {
+    recipeName: "Omelette",
+    ingredients: [
+      { name: "Eggs", quantity: 3, unit: "pcs" },
+      { name: "Milk", quantity: 50, unit: "ml" },
+      { name: "Butter", quantity: 20, unit: "g" },
+    ],
+  },
+  {
+    recipeName: "Bread",
+    ingredients: [{ name: "Flour", quantity: 500, unit: "g" }],
+  },
+  {
+    recipeName: "Cookies",
+    ingredients: [
+      { name: "Flour", quantity: 250, unit: "g" },
+      { name: "Sugar", quantity: 150, unit: "g" },
+      { name: "Eggs", quantity: 2, unit: "pcs" },
+      { name: "Butter", quantity: 100, unit: "g" },
+    ],
+  },
+];
+
+const STOCK_MOVEMENTS = [
+  {
+    ingredientId: 1,
+    reason: "Initial Stock 1",
+    quantity: 100,
+    date: new Date(),
+  },
+  {
+    ingredientId: 2,
+    reason: "Initial Stock 2",
+    quantity: 50,
+    date: new Date(),
+  },
+  {
+    ingredientId: 3,
+    reason: "Initial Stock 3",
+    quantity: 200,
+    date: new Date(),
+  },
+  {
+    ingredientId: 4,
+    reason: "Initial Stock 4",
+    quantity: 30,
+    date: new Date(),
+  },
+  {
+    ingredientId: 5,
+    reason: "Initial Stock 5",
+    quantity: 100,
+    date: new Date(),
+  },
+];
 
 const ROLES = [
   {
@@ -304,47 +438,80 @@ const ROLE_PERMISSIONS = [
   },
 ];
 
-async function seedRolesAndPermissions() {
+async function seedRolesAndPermissions(models) {
+  for (const ingredient of INGREDIENTS) {
+    await models.Ingredient.findOrCreate({
+      where: { name: ingredient.name },
+      defaults: ingredient,
+    });
+  }
+
+  for (const stockM of STOCK_MOVEMENTS) {
+    await models.StockMovement.findOrCreate({
+      where: { reason: stockM.reason },
+      defaults: stockM,
+    });
+  }
+
+  for (const recipe of RECIPES) {
+    await models.Recipe.findOrCreate({
+      where: { name: recipe.name },
+      defaults: recipe,
+    });
+  }
+
   for (const perm of PERMISSIONS) {
-    await Permission.findOrCreate({
+    await models.Permission.findOrCreate({
       where: { name: perm.name },
       defaults: perm,
     });
   }
 
   for (const role of ROLES) {
-    await Role.findOrCreate({
+    await models.Role.findOrCreate({
       where: { name: role.name },
       defaults: role,
     });
   }
 
   for (const rp of ROLE_PERMISSIONS) {
-    const role = await Role.findOne({ where: { name: rp.roleName } });
-    const permissions = await Permission.findAll({
+    const role = await models.Role.findOne({ where: { name: rp.roleName } });
+    const permissions = await models.Permission.findAll({
       where: { name: rp.permissionNames },
     });
     await role.setPermissions(permissions);
   }
 
-  User.findOrCreate({
+  for (const ir of INGREDIENTS_RECIPES) {
+    const recipe = await models.Recipe.findOne({
+      where: { name: ir.recipeName },
+    });
+
+    for (const ing of ir.ingredients) {
+      const ingredient = await models.Ingredient.findOne({
+        where: { name: ing.name },
+      });
+
+      await models.RecipeIngredient.findOrCreate({
+        where: {
+          recipeId: recipe.id,
+          ingredientId: ingredient.id,
+        },
+        defaults: {
+          quantity: ing.quantity,
+          unit: ing.unit,
+        },
+      });
+    }
+  }
+
+  models.User.findOrCreate({
     where: { email: "admin@gmail.com" },
     defaults: {
       username: " Super Admin",
       email: "admin@gmail.com",
       password: await authService.hashPassword("admin123"),
       roleId: 1, // Assuming the Admin role has ID 1
-    },
-  });
-
-  User.findOrCreate({
-    where: { email: "johndoe@gmail.com" },
-    defaults: {
-      username: "John Doe",
-      email: "johndoe@gmail.com",
-      password: await authService.hashPassword("xxx"),
-      mustChangePassword: true,
-      roleId: 4, // Assuming the Employee role has ID 4
     },
   });
 }

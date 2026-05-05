@@ -29,7 +29,7 @@ async function login(req, res) {
 
     const isPasswordValid = await authService.comparePasswords(
       password,
-      user.password,
+      user.password
     );
     if (!isPasswordValid) {
       return res.status(400).json({ error: "Invalid email or password" });
@@ -60,7 +60,7 @@ async function changePassword(req, res) {
 
     const isOldPasswordValid = await authService.comparePasswords(
       oldPassword,
-      user.password,
+      user.password
     );
     if (!isOldPasswordValid) {
       return res.status(400).json({ error: "Invalid old password" });

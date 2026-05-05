@@ -1,5 +1,5 @@
 const User = require("../user/user.model");
-const authtService = require("../auth/auth.service");
+const authService = require("../auth/auth.service");
 
 const ROUTE_ROLE_MAP = {
   "/createUser": 3, // default role is employee
@@ -35,7 +35,7 @@ async function createUser(req, res) {
   }
 
   try {
-    const hashedPassword = await authtService.hashPassword(password);
+    const hashedPassword = await authService.hashPassword(password);
     await User.create({
       username,
       email,
@@ -107,37 +107,47 @@ async function updateUser(req, res) {
 }
 
 async function updateRole(req, res) {
-  const userId = req.user.id;
+  const userId = req.params.id;
   let newRole = req.body.newRole;
+
   if (
-    typeof newRole == "integer" &&
-    Object.keys(AVAILABLE_ROLES).includes(newRole)
+    typeof newRole === "number" &&
+    Object.keys(AVAILABLE_ROLES).includes(String(newRole))
   ) {
+    // newRole is already a valid numeric ID — keep as-is
   } else if (
-    typeof newRole == "string" &&
+    typeof newRole === "string" &&
     Object.values(AVAILABLE_ROLES).some(
-      (v) => v.toLowerCase() === newRole.toLowerCase(),
+      (v) => v.toLowerCase() === newRole.toLowerCase()
     )
   ) {
-    newRole = Object.keys(AVAILABLE_ROLES).find(
-      (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase(),
+    newRole = parseInt(
+      Object.keys(AVAILABLE_ROLES).find(
+        (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase()
+      )
     );
+  } else {
+    return res.status(400).json({ error: "Invalid role value" });
   }
 
   try {
     const user = await User.findByPk(userId);
     if (!user) {
-      res.status(400).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
-    user["roleId"] = newRole;
-    res.status(201).json({
-      message: "User role updated successfully to " + AVAILABLE_ROLES[newRole],
-    });
+    user.roleId = newRole;
+    await user.save();
+    return res
+      .status(200)
+      .json({
+        message:
+          "User role updated successfully to " + AVAILABLE_ROLES[newRole],
+      });
   } catch (err) {
     console.log(err.message);
-    res
+    return res
       .status(500)
-      .json({ error: "Erro whie updating user Role" + err.message });
+      .json({ error: "Error while updating user role: " + err.message });
   }
 }
 
