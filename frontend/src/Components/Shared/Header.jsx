@@ -1,12 +1,11 @@
 import { SidebarIcon } from "lucide-react";
 import Avatar from "../Temp/Avatar";
-import toast from "react-hot-toast";
+
 import { useState } from "react";
-import { useAuth } from "../../Context/authContext";
+import ProfileMenu from "./ProfileMenu";
 
 export default function Header({ setOpenAsideMenu }) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { logout } = useAuth();
   return (
     <header className="bg-white flex items-center justify-between px-3 py-3 rounded-2xl">
       <button
@@ -15,8 +14,6 @@ export default function Header({ setOpenAsideMenu }) {
       >
         <SidebarIcon />
       </button>
-
-      <h1 className="uppercase font-bold text-2xl text-primary">Gesto-resto</h1>
 
       {/*  HERO BUTTON */}
       <div
@@ -28,9 +25,7 @@ export default function Header({ setOpenAsideMenu }) {
       </div>
 
       {menuOpened && (
-        <button className="absolute right-4 top-24" onClick={() => logout()}>
-          Se déconnecter
-        </button>
+        <ProfileMenu />
       )}
     </header>
   );
