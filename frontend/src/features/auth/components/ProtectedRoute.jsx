@@ -1,5 +1,6 @@
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useAuth } from "./authContext";
+import { useAuth } from "../hooks/useAuth";
+import { decodeTokenPayload } from "../../../utils/decodeToken";
 
 const ProtectedRoute = () => {
   const { token } = useAuth();
@@ -9,7 +10,7 @@ const ProtectedRoute = () => {
     return <Navigate to="/login" replace />;
   }
 
-  const { mustChangePassword } = JSON.parse(atob(token.split(".")[1]));
+  const { mustChangePassword } = decodeTokenPayload(token);
 
   if (location.pathname !== "/change-password" && mustChangePassword) {
     return <Navigate to="/change-password" replace />;

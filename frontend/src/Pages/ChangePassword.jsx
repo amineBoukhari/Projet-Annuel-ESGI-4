@@ -1,11 +1,10 @@
 import { Eye } from "lucide-react";
-import Input from "../Components/Input/Input";
-import InputPassword from "../Components/Input/InputPassword";
 import { useRef } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import { useAuth } from "../Context/authContext";
+import { useAuth } from "../features/auth/hooks/useAuth";
+import InputPassword from "../components/form/Input/InputPassword";
 
 export default function ChangePassword() {
   const inputOldPasswordRef = useRef();

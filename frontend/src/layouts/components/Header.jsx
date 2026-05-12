@@ -1,8 +1,9 @@
 import { SidebarIcon } from "lucide-react";
-import Avatar from "../Temp/Avatar";
 
 import { useState } from "react";
-import ProfileMenu from "./ProfileMenu";
+
+import Avatar from "../../components/ui/Temp/Avatar";
+import ProfileMenu from "../../features/profile/components/ProfileMenu";
 
 export default function Header({ setOpenAsideMenu }) {
   const [menuOpened, setMenuOpened] = useState(false);
