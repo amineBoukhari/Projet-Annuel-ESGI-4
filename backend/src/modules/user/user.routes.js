@@ -10,7 +10,7 @@ router.post('/createOwner', requireRole('Admin','Owner'), userController.createU
 router.post('/createManager', requireRole('Admin','Owner'), userController.createUser);
 router.post('/createEmployee', requireRole('Admin','Owner','Manager'), userController.createUser);
 
-router.get('/get/:id', requireRole('Admin','Owner','Manager'), userController.getUSerWithId);
+router.get('/get/:id', userController.getUSerWithId);
 router.get('/getAll', requireRole('Admin','Owner','Manager'), userController.getAllUsers);
 router.delete('/delete/:id', requireRole('Admin','Owner','Manager'), userController.deleteUser);
 router.put('/update/:id', requireRole('Admin','Owner','Manager'), userController.updateUser);

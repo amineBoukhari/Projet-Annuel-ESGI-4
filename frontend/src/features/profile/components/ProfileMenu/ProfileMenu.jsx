@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { useAuth } from "../../../auth/hooks/useAuth";
 import ProfileMenuItem from "./ProfileMenuItem";
+import toast from "react-hot-toast";
 
 export default function ProfileMenu() {
   const { logout } = useAuth();
@@ -10,7 +11,7 @@ export default function ProfileMenu() {
       <ProfileMenuItem text={"Profil"} onClickAction={() => navigate('/my-profile')} />
       <ProfileMenuItem
         text={"Se déconnecter"}
-        onClickAction={() => logout()}
+        onClickAction={() => { logout(); toast.success('Successfully disconnected'); }}
         danger
       />
     </div>

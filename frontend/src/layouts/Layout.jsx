@@ -13,7 +13,7 @@ export default function Layout() {
       </div>
       <div className="hero-menu w-full h-full flex flex-col gap-3">
         <Header />
-        <main className="content h-full w-full rounded-2xl">
+        <main className="content h-full w-full rounded-2xl grid grid-cols-3 grid-rows-3 wrap">
           <Outlet />
         </main>
       </div>

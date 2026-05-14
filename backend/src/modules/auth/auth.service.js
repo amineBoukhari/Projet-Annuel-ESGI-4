@@ -19,7 +19,7 @@ async function generateToken(user) {
     permissions : user.role.permissions,
     mustChangePassword: user.mustChangePassword,
   };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" });
 }
 
 function extractRole(token) {

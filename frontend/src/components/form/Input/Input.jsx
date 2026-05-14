@@ -8,6 +8,7 @@ export default function Input({
   placeHolder,
   children,
   ref,
+  
 }) {
   return (
     <div>
