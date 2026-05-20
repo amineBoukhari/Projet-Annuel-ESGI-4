@@ -2,6 +2,8 @@ import React, { useRef } from "react";
 import { Upload } from "lucide-react";
 import { useAuth } from "../../auth/hooks/useAuth";
 import Input from "../../../components/form/Input/Input";
+import userService from "../../../services/userService";
+import toast from "react-hot-toast";
 
 export default function ProfileForm() {
   const { user } = useAuth();
@@ -9,12 +11,26 @@ export default function ProfileForm() {
   const inputEmailRef = useRef();
   const inputUsernameRef = useRef();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+
+    try {
+      await userService.updateProfile(
+        user.id,
+        inputEmailRef.current.value,
+        inputUsernameRef.current.value
+      );
+
+      toast.success('Le profil à bien été mis à jour');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      event.target.reset();
+    }
   }
 
   return (
-    <>
+    <form onSubmit={(event) => handleSubmit(event)}>
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-slate-900">Mon profil</h2>
         <p className="text-sm text-slate-500 mt-1">
@@ -49,7 +65,7 @@ export default function ProfileForm() {
 
       <hr className="border-slate-100 my-8" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Input
             label="Nom d'utilisateur"
@@ -68,7 +84,7 @@ export default function ProfileForm() {
             ref={inputEmailRef}
           />
         </div>
-      </div>
+      </form>
 
       {/* Bouton de sauvegarde */}
       <div className="flex justify-end mt-8">
@@ -76,6 +92,6 @@ export default function ProfileForm() {
           Enregistrer les modifications
         </button>
       </div>
-    </>
+    </form>
   );
 }

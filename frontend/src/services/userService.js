@@ -1,13 +1,13 @@
 const backDomain = import.meta.env.VITE_BACKEND_DOMAIN;
 
-const updatePassword = async (id, token, oldPassword, newPassword) => {
+const updatePassword = async (id, oldPassword, newPassword) => {
   try {
     const response = await fetch(`${backDomain}/api/auth/changePassword`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         id: id,
         oldPassword: oldPassword,
@@ -25,18 +25,18 @@ const updatePassword = async (id, token, oldPassword, newPassword) => {
   }
 };
 
-const updateUser = async (id, token, oldPassword, newPassword) => {
+const updateProfile = async (id, newEmail, newUsername) => {
   try {
-    const response = await fetch(`${backDomain}/api/auth/changePassword`, {
+    const response = await fetch(`${backDomain}/api/users/update/${id}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
+      credentials: 'include',
       body: JSON.stringify({
         id: id,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
+        email: newEmail,
+        username: newUsername,
       }),
     });
 
@@ -44,17 +44,17 @@ const updateUser = async (id, token, oldPassword, newPassword) => {
       return {
         status: "error",
         message:
-          "Une erreur est survenue lors de la mise à jour du mot de passe",
+          "Une erreur est survenue lors de la mise à jour du profil",
       };
     }
 
     return await response.json();
   } catch (error) {
-    console.log("test: " + error);
+    return { 'status': 'error', message: error.message}
   }
 };
 
 export default {
   updatePassword,
-  updateUser
-}
+  updateProfile,
+};

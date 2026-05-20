@@ -59,7 +59,6 @@ export default function ChangePasswordForm() {
             label="Ancien mot de passe"
             type="text"
             identifier="login"
-            disableLink={true}
             errorMessage={errors["email"]}
             rightIcon={<Eye size={16} />}
             ref={inputOldPasswordRef}
