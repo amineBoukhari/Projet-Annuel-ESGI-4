@@ -2,18 +2,12 @@ const jwt = require('jsonwebtoken');
 console.log('Auth middleware loaded');
 
 async function checkAuth (req,res,next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
-    }
-    const token  = authHeader.split(' ')[1];
+    const token = req.cookies.token;
+    
     if (!token) {
-        return res.status(401).json({error : "Access denied"});
+        return res.status(401).json({error : "Access denied. Token not found"});
     }
 
-    // decodedToken will contain 
-    // { id : user.id, email : user.email, iat : timestamp, exp : timestamp }
-    console.log(token.trim);
     try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     
@@ -30,11 +24,7 @@ async function checkAuth (req,res,next) {
         return res.status(403).json({error : error.decodedToken});
     }
     
-
-    
-    
     next();
-
 }
 
 

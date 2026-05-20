@@ -1,6 +1,7 @@
 const User = require("../user/user.model");
 const authService = require("../auth/auth.service");
 const Role = require("../role/role.model");
+const jwt = require('jsonwebtoken');
 
 const ROUTE_ROLE_MAP = {
   "/createUser": 3, // default role is employee
@@ -78,6 +79,26 @@ async function getAllUsers(req, res) {
     res.status(200).json({ message: "no user was found" });
   }
   res.status(200).json(users);
+}
+
+async function getMyProfile(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findOne({
+      where: { id: userId },
+      include: "role",
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching current user profile:", error);
+    return res.status(500).json({ error: "Error while fetching profile" });
+  }
 }
 
 async function deleteUser(req, res) {
@@ -165,4 +186,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateRole,
+  getMyProfile
 };

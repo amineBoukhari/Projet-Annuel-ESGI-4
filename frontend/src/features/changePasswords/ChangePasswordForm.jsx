@@ -6,13 +6,14 @@ import toast from "react-hot-toast";
 
 import InputPassword from "../../components/form/Input/InputPassword";
 import { useAuth } from "../auth/hooks/useAuth";
+import userService from "../../services/userService";
 
 
 export default function ChangePasswordForm() {
   const inputOldPasswordRef = useRef();
   const inputNewPasswordRef = useRef();
   const [errors, setErrors] = useState([]);
-  const { token, setAuth } = useAuth();
+  const { token } = useAuth();
   const { id } = JSON.parse(atob(token.split(".")[1]));
   const navigate = useNavigate();
 
@@ -20,33 +21,15 @@ export default function ChangePasswordForm() {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/auth/changePassword`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            id: id,
-            oldPassword: inputOldPasswordRef.current.value,
-            newPassword: inputNewPasswordRef.current.value,
-          }),
-        }
-      );
+      const response = await userService.updatePassword(id, token, inputOldPasswordRef.current.value, inputNewPasswordRef.current.value)
 
-      if (!response.ok) {
-        console.log(response, "ça a pas marché");
-        toast.error(
-          "une erreur est survenue lors de la modification de mot de passe"
-        );
+      if (response.status === 'error') {
+        toast.error(response.message);
+
         return;
       }
 
-      const { newToken, message } = await response.json();
-      setAuth(newToken);
-      toast.success(message);
+      toast.success(response.message);
 
       navigate("/");
     } catch (error) {

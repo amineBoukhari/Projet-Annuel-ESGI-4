@@ -1,20 +1,20 @@
 import { Outlet } from "react-router";
+import Aside from "./components/Aside/Aside";
 import Header from "./components/Header";
 
-export default function Layout() {
+export default function DashboardLayout() {
+
   return (
-    <div className="p-3 flex gap-3 h-full">
-      <div className="side-menu w-1/3">
-        <aside className="bg-white rounded-2xl h-full flex justify-center pt-3">
-          <h1 className="uppercase font-bold text-2xl text-primary">
-            Gesto-resto
-          </h1>
-        </aside>
-      </div>
-      <div className="hero-menu w-full h-full flex flex-col gap-3">
-        <Header />
-        <main className="content h-full w-full rounded-2xl grid grid-cols-3 grid-rows-3 wrap">
-          <Outlet />
+    <div className="min-h-screen p-4">
+      <div className="flex gap-4 h-[calc(100vh-32px)]">
+        <Aside />
+
+        <main className="flex-1 bg-[#efefef] rounded-4xl p-6 overflow-auto">
+          <Header />
+
+          <div className="mt-6 grid gap-6 grid-cols-3">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

@@ -2,14 +2,16 @@ import { Drum, Eye } from "lucide-react";
 import { useRef } from "react";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 import toast from "react-hot-toast";
 import * as z from "zod";
 import Input from "../../../components/form/Input/Input.jsx";
 import InputPassword from "../../../components/form/Input/InputPassword.jsx";
+import Button from "../../../components/ui/Button.jsx";
+import { useAuth } from "../hooks/useAuth.jsx";
+import { authService } from "../../../services/authService.js";
 
 export default function LoginForm() {
-  const { setAuth } = useAuth();
+  const { loginSuccess } = useAuth();
   const inputLoginRef = useRef();
   const inputPasswordRef = useRef();
   const navigate = useNavigate();
@@ -41,26 +43,9 @@ export default function LoginForm() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: inputLoginRef.current.value,
-          password: inputPasswordRef.current.value,
-        }),
-      });
-
-      if (!response.ok) {
-        const { error } = await response.json();
-        toast.error(error);
-
-        return;
-      }
-
-      const { token, mustChangePassword } = await response.json();
-      setAuth(token);
+      const { user, mustChangePassword } = await authService.login(inputLoginRef.current.value, inputPasswordRef.current.value);
+      
+      loginSuccess(user);
       toast.success("Successfully logged in", { duration: 4000 });
 
       if (mustChangePassword) {
@@ -98,10 +83,8 @@ export default function LoginForm() {
           ref={inputPasswordRef}
           label="Mot de passe"
           errorMessage={errors["password"]}
-        />
-        <button className="bg-primary rounded-lg py-2 text-white hover:cursor-pointer hover:opacity-90">
-          Se connecter
-        </button>
+      />
+      <Button text={'Se connecter'}/>
       </form>
   );
 }

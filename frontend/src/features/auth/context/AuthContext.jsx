@@ -1,31 +1,20 @@
 import { createContext, useEffect, useState } from "react";
-import { storage } from "../../../utils/storage";
-import { auth } from "../../../utils/auth";
+import { authService } from "../../../services/authService";
 
 const AuthContext = createContext(null);
- 
+
 const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(() => storage.getToken());
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      if (!token) {
-        setUser(null);
-        setIsLoading(false);
-        return;
-      }
-
       try {
         setIsLoading(true);
-        // On attend (await) la résolution de la promesse ici !
-        const userData = await auth.fetchUser(token);
+        const userData = await authService.fetchUser();
         setUser(userData);
       } catch (error) {
-        console.error("Erreur de récupération utilisateur", error);
-        storage.clearToken();
-        setToken(null);
+        console.error("Session expirée ou non connecté", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -33,19 +22,23 @@ const AuthProvider = ({ children }) => {
     };
 
     initAuth();
-  }, [token]);
+  }, []);
 
-  const setAuth = (newToken) => {
-    storage.setToken(newToken);
-    setToken(newToken);
+  const loginSuccess = (userData) => {
+    setUser(userData);
   };
 
-  const logout = () => {
-    storage.clearToken();
-    setToken(null)
+  const logout = async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error("Erreur lors de la déconnexion", error);
+    } finally {
+      setUser(null);
+    }
   };
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
 
   if (isLoading) {
     return (
@@ -56,7 +49,9 @@ const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated, setAuth, logout, user }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, loginSuccess, logout, user }}
+    >
       {children}
     </AuthContext.Provider>
   );

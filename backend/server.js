@@ -1,4 +1,5 @@
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const cors = require("cors");
 const sequelize = require('./src/db/index');
@@ -37,10 +38,13 @@ Object.values(models).forEach(model => {
 
 app.use(
   cors({
-    origin:  process.env.NODE_ENV === 'dev' ? "*" : "http://127.0.0.1:5173",
-  }),
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true, 
+  })
 );
-app.use(express.json()); // Parse JSON bodies
+
+app.use(express.json()); 
+app.use(cookieParser());
 
 const port = process.env.PORT || 3000;
 

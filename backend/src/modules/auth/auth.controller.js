@@ -37,10 +37,21 @@ async function login(req, res) {
 
     const token = await authService.generateToken(user);
 
-    // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // ✅ lax en dev
+      maxAge: 60 * 60 * 1000,
+    });
+
+    const cleanUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email
+    }
+
     return res.json({
-      token,
-      user: user,
+      user: cleanUser,
       mustChangePassword: user.mustChangePassword,
     });
   } catch (error) {
@@ -83,4 +94,19 @@ async function changePassword(req, res) {
   }
 }
 
-module.exports = { login, changePassword };
+async function logout(req, res) {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    return res.status(200).json({ message: "Déconnexion réussie" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res.status(500).json({ error: "Failed to logout" });
+  }
+}
+
+module.exports = { login, changePassword, logout };

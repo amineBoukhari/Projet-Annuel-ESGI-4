@@ -1,13 +1,25 @@
-export default function ContentContainer({ size, children }) {
-    const boxSize = () => {
-        const x = size.split("x")[0];
-        const y = size.split("x")[1];
+export default function ContentContainer({ x = 1, y = 1, children }) {
+  const boxSizes = (x, y) => {
+    const heights = {
+      1: 'row-span-1',
+      2: 'row-span-2',
+      3: 'row-span-3'
+    };
 
-        return `row-span-${x} col-span-${y}`;
-    } 
+    const widths = {
+      1: "col-span-1",
+      2: "col-span-2",
+      3: "col-span-3",
+    };
+
+    return heights[y].concat(' ', widths[x])
+  } 
+
   return (
     <>
-      <div className={`bg-white rounded-2xl flex flex-col gap-3 ${boxSize()} p-3`}>
+      <div
+        className={`bg-white rounded-2xl flex flex-col gap-3 ${boxSizes(x, y)} p-6`}
+      >
         {children}
       </div>
     </>
