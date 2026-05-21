@@ -11,7 +11,7 @@ import { useAuth } from "../hooks/useAuth.jsx";
 import { authService } from "../../../services/authService.js";
 
 export default function LoginForm() {
-  const { loginSuccess } = useAuth();
+  const { login } = useAuth();
   const inputLoginRef = useRef();
   const inputPasswordRef = useRef();
   const navigate = useNavigate();
@@ -45,17 +45,20 @@ export default function LoginForm() {
     try {
       const { user, mustChangePassword } = await authService.login(inputLoginRef.current.value, inputPasswordRef.current.value);
       
-      loginSuccess(user);
+      login(user);
       toast.success("Successfully logged in", { duration: 4000 });
 
       if (mustChangePassword) {
+        console.log("redirect vers /change-password");
         navigate("/change-password");
       } else {
         navigate("/");
       }
     } catch (error) {
-      //log error
-      console.log(error.message);
+      console.log(error.message || 'error');
+        if (error.message === 'Invalid email or password') {
+        toast.error("Identifiants invalides");
+      }
     }
   };
   return (

@@ -2,48 +2,40 @@ const backDomain = import.meta.env.VITE_BACKEND_DOMAIN;
 
 export const authService = {
   fetchUser: async () => {
-    try {
-      const response = await fetch(`${backDomain}/api/users/getMe`, {
-        headers: {
-          "Content-type": "application/json",
-        },
-        credentials: "include",
-      });
+    const response = await fetch(`${backDomain}/api/users/getMe`, {
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.log("Erreur dans fetchUser service:", error.message);
-      throw error;
+    if (!response.ok) {
+      const err = new Error(`HTTP Error: ${response.status}`);
+      err.status = response.status;
+      throw err;
     }
+
+    return await response.json();
   },
 
   login: async (inputLogin, inputPassword) => {
-    try {
-      const response = await fetch(`${backDomain}/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: inputLogin,
-          password: inputPassword,
-        }),
-      });
+    const response = await fetch(`${backDomain}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email: inputLogin,
+        password: inputPassword,
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error('Une erreur est survenue pendant le login');
-      }
+    const data = await response.json();
 
-      return await response.json();
-    } catch (error) {
-      console.log(error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(data.error || "Une erreur est survenue pendant le login");
     }
+
+    return data;
   },
 
   logout: async () => {

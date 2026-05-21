@@ -2,6 +2,7 @@ const User = require("../user/user.model");
 const Role = require("../role/role.model");
 const Permission = require("../permission/permission.model");
 const authService = require("../auth/auth.service");
+const cookieManager = require("../../utils/cookieManager");
 
 async function login(req, res) {
   const email = req.body.email;
@@ -36,13 +37,7 @@ async function login(req, res) {
     }
 
     const token = await authService.generateToken(user);
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", // ✅ lax en dev
-      maxAge: 60 * 60 * 1000,
-    });
+    cookieManager.generateCookie(res, token);
 
     const cleanUser = {
       id: user.id,
@@ -96,11 +91,7 @@ async function changePassword(req, res) {
 
 async function logout(req, res) {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    cookieManager.clearCookie(res);
 
     return res.status(200).json({ message: "Déconnexion réussie" });
   } catch (error) {

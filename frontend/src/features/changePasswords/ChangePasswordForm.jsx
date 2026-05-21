@@ -13,21 +13,22 @@ export default function ChangePasswordForm() {
   const inputOldPasswordRef = useRef();
   const inputNewPasswordRef = useRef();
   const [errors, setErrors] = useState([]);
-  const { token } = useAuth();
-  const { id } = JSON.parse(atob(token.split(".")[1]));
   const navigate = useNavigate();
+  const { user, refreshUser } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await userService.updatePassword(id, token, inputOldPasswordRef.current.value, inputNewPasswordRef.current.value)
+      const response = await userService.updatePassword(user.id, inputOldPasswordRef.current.value, inputNewPasswordRef.current.value)
 
       if (response.status === 'error') {
         toast.error(response.message);
 
         return;
       }
+
+      refreshUser();
 
       toast.success(response.message);
 

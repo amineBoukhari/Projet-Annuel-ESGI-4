@@ -30,5 +30,4 @@ function extractPermissions(token) {
   return decoded.permissions;
 }
 
-
 module.exports = {comparePasswords, hashPassword , generateToken,extractRole, extractPermissions}

@@ -28,7 +28,7 @@ const updatePassword = async (id, oldPassword, newPassword) => {
 const updateProfile = async (id, newEmail, newUsername) => {
   try {
     const response = await fetch(`${backDomain}/api/users/update/${id}`, {
-      method: "POST",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },

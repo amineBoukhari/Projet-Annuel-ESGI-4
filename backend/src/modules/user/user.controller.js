@@ -2,6 +2,7 @@ const User = require("../user/user.model");
 const authService = require("../auth/auth.service");
 const Role = require("../role/role.model");
 const jwt = require('jsonwebtoken');
+const cookieManager = require("../../utils/cookieManager");
 
 const ROUTE_ROLE_MAP = {
   "/createUser": 3, // default role is employee
@@ -118,19 +119,22 @@ async function deleteUser(req, res) {
 
 async function updateUser(req, res) {
   const userId = req.user.id;
-  const keyToUpdate = req.body.key;
-  const newValue = req.body.value;
+  const { username, email } = req.body;
+
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    user[keyToUpdate] = newValue;
+
+    await user.update({ username, email });
+
     await user.save();
-    res.status(200).json(user);
+
+    return res.status(200).json(user);
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ error: "Failed to update user" });
+    return res.status(500).json({ error: "Failed to update user" });
   }
 }
 
