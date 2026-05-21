@@ -5,23 +5,27 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import toast from "react-hot-toast";
 
 export default function SecurityForm() {
-  const inputNewPasswordRef = useRef()
-  const inputOldPasswordRef = useRef()
+  const inputNewPasswordRef = useRef();
+  const inputOldPasswordRef = useRef();
   const { user } = useAuth();
 
-  const  handleSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    try {
-      await userService.updatePassword(user.id, inputOldPasswordRef.current.value, inputNewPasswordRef.current.value)
 
-      toast.success('Le mot de passe a bien été mis à jour');
+    try {
+      await userService.updatePassword(
+        user.id,
+        inputOldPasswordRef.current.value,
+        inputNewPasswordRef.current.value,
+      );
+
+      toast.success("Le mot de passe a bien été mis à jour");
     } catch (error) {
       toast.error(error.message);
     } finally {
       event.target.reset();
     }
-  }
+  };
 
   return (
     <>

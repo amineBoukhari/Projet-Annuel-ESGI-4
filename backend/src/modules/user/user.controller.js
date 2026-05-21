@@ -1,7 +1,7 @@
 const User = require("../user/user.model");
 const authService = require("../auth/auth.service");
 const Role = require("../role/role.model");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 const cookieManager = require("../../utils/cookieManager");
 
 const ROUTE_ROLE_MAP = {
@@ -70,7 +70,9 @@ async function getUSerWithId(req, res) {
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Error While fetching user" + error.message });
+    res
+      .status(500)
+      .json({ error: "Error While fetching user" + error.message });
   }
 }
 
@@ -150,13 +152,13 @@ async function updateRole(req, res) {
   } else if (
     typeof newRole === "string" &&
     Object.values(AVAILABLE_ROLES).some(
-      (v) => v.toLowerCase() === newRole.toLowerCase()
+      (v) => v.toLowerCase() === newRole.toLowerCase(),
     )
   ) {
     newRole = parseInt(
       Object.keys(AVAILABLE_ROLES).find(
-        (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase()
-      )
+        (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase(),
+      ),
     );
   } else {
     return res.status(400).json({ error: "Invalid role value" });
@@ -169,12 +171,9 @@ async function updateRole(req, res) {
     }
     user.roleId = newRole;
     await user.save();
-    return res
-      .status(200)
-      .json({
-        message:
-          "User role updated successfully to " + AVAILABLE_ROLES[newRole],
-      });
+    return res.status(200).json({
+      message: "User role updated successfully to " + AVAILABLE_ROLES[newRole],
+    });
   } catch (err) {
     console.log(err.message);
     return res
@@ -190,5 +189,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateRole,
-  getMyProfile
+  getMyProfile,
 };

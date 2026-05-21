@@ -7,21 +7,25 @@ const updatePassword = async (id, oldPassword, newPassword) => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         id: id,
         oldPassword: oldPassword,
         newPassword: newPassword,
       }),
     });
-  
+
     if (!response.ok) {
-      return {status: 'error', message: 'Une erreur est survenue lors de la mise à jour du mot de passe'}
+      return {
+        status: "error",
+        message:
+          "Une erreur est survenue lors de la mise à jour du mot de passe",
+      };
     }
-  
+
     return await response.json();
   } catch (error) {
-    console.log('test: ' + error)
+    console.log("test: " + error);
   }
 };
 
@@ -32,7 +36,7 @@ const updateProfile = async (id, newEmail, newUsername) => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: 'include',
+      credentials: "include",
       body: JSON.stringify({
         id: id,
         email: newEmail,
@@ -43,14 +47,13 @@ const updateProfile = async (id, newEmail, newUsername) => {
     if (!response.ok) {
       return {
         status: "error",
-        message:
-          "Une erreur est survenue lors de la mise à jour du profil",
+        message: "Une erreur est survenue lors de la mise à jour du profil",
       };
     }
 
     return await response.json();
   } catch (error) {
-    return { 'status': 'error', message: error.message}
+    return { status: "error", message: error.message };
   }
 };
 

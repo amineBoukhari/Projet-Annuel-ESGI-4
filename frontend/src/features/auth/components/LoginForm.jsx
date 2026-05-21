@@ -43,8 +43,11 @@ export default function LoginForm() {
     }
 
     try {
-      const { user, mustChangePassword } = await authService.login(inputLoginRef.current.value, inputPasswordRef.current.value);
-      
+      const { user, mustChangePassword } = await authService.login(
+        inputLoginRef.current.value,
+        inputPasswordRef.current.value,
+      );
+
       login(user);
       toast.success("Successfully logged in", { duration: 4000 });
 
@@ -55,39 +58,39 @@ export default function LoginForm() {
         navigate("/");
       }
     } catch (error) {
-      console.log(error.message || 'error');
-        if (error.message === 'Invalid email or password') {
+      console.log(error.message || "error");
+      if (error.message === "Invalid email or password") {
         toast.error("Identifiants invalides");
       }
     }
   };
   return (
-      <form
-        method="post"
-        className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl"
-        onSubmit={handleSubmit}
-      >
-        <div className="w-full flex justify-center">
-          <span className="bg-primary rounded-full font-bold text-white p-8 size-6 flex items-center justify-center text-4xl">
-            G
-          </span>
-        </div>
+    <form
+      method="post"
+      className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl"
+      onSubmit={handleSubmit}
+    >
+      <div className="w-full flex justify-center">
+        <span className="bg-primary rounded-full font-bold text-white p-8 size-6 flex items-center justify-center text-4xl">
+          G
+        </span>
+      </div>
 
-        <h1 className="m-auto text-2xl">Connexion</h1>
-        <Input
-          label="Identifiant"
-          type="text"
-          identifier="login"
-          errorMessage={errors["email"]}
-          rightIcon={<Eye size={16} />}
-          ref={inputLoginRef}
-        />
-        <InputPassword
-          ref={inputPasswordRef}
-          label="Mot de passe"
-          errorMessage={errors["password"]}
+      <h1 className="m-auto text-2xl">Connexion</h1>
+      <Input
+        label="Identifiant"
+        type="text"
+        identifier="login"
+        errorMessage={errors["email"]}
+        rightIcon={<Eye size={16} />}
+        ref={inputLoginRef}
       />
-      <Button text={'Se connecter'}/>
-      </form>
+      <InputPassword
+        ref={inputPasswordRef}
+        label="Mot de passe"
+        errorMessage={errors["password"]}
+      />
+      <Button text={"Se connecter"} />
+    </form>
   );
 }

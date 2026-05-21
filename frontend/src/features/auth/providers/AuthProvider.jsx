@@ -56,7 +56,7 @@ export const AuthProvider = ({ children }) => {
       logout,
       refreshUser,
     }),
-    [user, isLoading, error, login, logout, refreshUser]
+    [user, isLoading, error, login, logout, refreshUser],
   );
 
   if (isLoading) {

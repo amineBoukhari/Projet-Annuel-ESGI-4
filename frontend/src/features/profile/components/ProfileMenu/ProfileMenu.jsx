@@ -8,10 +8,16 @@ export default function ProfileMenu() {
   const navigate = useNavigate();
   return (
     <div className="absolute flex flex-col right-4 top-24 rounded-xl bg-white p-2">
-      <ProfileMenuItem text={"Profil"} onClickAction={() => navigate('/my-profile')} />
+      <ProfileMenuItem
+        text={"Profil"}
+        onClickAction={() => navigate("/my-profile")}
+      />
       <ProfileMenuItem
         text={"Se déconnecter"}
-        onClickAction={() => { logout(); toast.success('Successfully disconnected'); }}
+        onClickAction={() => {
+          logout();
+          toast.success("Successfully disconnected");
+        }}
         danger
       />
     </div>

@@ -1,7 +1,3 @@
-import {
-    route,
-} from "@react-router/dev/routes";
+import { route } from "@react-router/dev/routes";
 
-export default [
-    route("about", "./about.tsx")
-];
+export default [route("about", "./about.tsx")];

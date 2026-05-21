@@ -1,9 +1,9 @@
 export default function ContentContainer({ x = 1, y = 1, children }) {
   const boxSizes = (x, y) => {
     const heights = {
-      1: 'row-span-1',
-      2: 'row-span-2',
-      3: 'row-span-3'
+      1: "row-span-1",
+      2: "row-span-2",
+      3: "row-span-3",
     };
 
     const widths = {
@@ -12,8 +12,8 @@ export default function ContentContainer({ x = 1, y = 1, children }) {
       3: "col-span-3",
     };
 
-    return heights[y].concat(' ', widths[x])
-  } 
+    return heights[y].concat(" ", widths[x]);
+  };
 
   return (
     <>

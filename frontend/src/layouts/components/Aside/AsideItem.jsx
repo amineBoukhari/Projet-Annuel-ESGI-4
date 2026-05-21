@@ -15,7 +15,10 @@ export default function AsideItem({
   if (isLogout) {
     return (
       <button
-        onClick={() => { logout();  toast.success('successfully disconnected')}}
+        onClick={() => {
+          logout();
+          toast.success("successfully disconnected");
+        }}
         className={`
           flex items-center gap-4 px-4 py-3 rounded-2xl transition-all w-full text-left
           text-gray-400 hover:bg-white hover:cursor-pointer

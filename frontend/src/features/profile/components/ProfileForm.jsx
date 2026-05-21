@@ -17,7 +17,7 @@ export default function ProfileForm() {
       await userService.updateProfile(
         user.id,
         inputEmailRef.current.value,
-        inputUsernameRef.current.value
+        inputUsernameRef.current.value,
       );
       await refreshUser();
       toast.success("Le profil a bien été mis à jour");

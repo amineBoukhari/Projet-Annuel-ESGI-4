@@ -3,7 +3,6 @@ import Aside from "./components/Aside/Aside";
 import Header from "./components/Header";
 
 export default function DashboardLayout() {
-
   return (
     <div className="min-h-screen p-4">
       <div className="flex gap-4 h-[calc(100vh-32px)]">

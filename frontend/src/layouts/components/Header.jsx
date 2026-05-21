@@ -41,7 +41,10 @@ export default function Header() {
           <Bell size={20} />
         </button>
 
-        <div className="bg-white rounded-2xl px-4 py-3 flex items-center gap-4 shadow-sm hover:cursor-pointer hover:scale-105 active:scale-90" onClick={() => navigate('/my-profile')}>
+        <div
+          className="bg-white rounded-2xl px-4 py-3 flex items-center gap-4 shadow-sm hover:cursor-pointer hover:scale-105 active:scale-90"
+          onClick={() => navigate("/my-profile")}
+        >
           <img
             src="https://i.pravatar.cc/100"
             className="w-12 h-12 rounded-full"

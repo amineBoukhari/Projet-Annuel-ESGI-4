@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-console.log('Auth middleware loaded');
+const jwt = require("jsonwebtoken");
+console.log("Auth middleware loaded");
 
 async function checkAuth(req, res, next) {
   const token = req.cookies.token;
@@ -23,5 +23,4 @@ async function checkAuth(req, res, next) {
   }
 }
 
-
-module.exports = checkAuth ;
+module.exports = checkAuth;

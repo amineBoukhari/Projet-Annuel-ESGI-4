@@ -1,14 +1,12 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-
-async function comparePasswords(password , userPassword) {
-    
-    return await bcrypt.compare(password, userPassword);
+async function comparePasswords(password, userPassword) {
+  return await bcrypt.compare(password, userPassword);
 }
 
 async function hashPassword(password) {
-    return await bcrypt.hash(password, 10);
+  return await bcrypt.hash(password, 10);
 }
 
 async function generateToken(user) {
@@ -30,4 +28,10 @@ function extractPermissions(token) {
   return decoded.permissions;
 }
 
-module.exports = {comparePasswords, hashPassword , generateToken,extractRole, extractPermissions}
+module.exports = {
+  comparePasswords,
+  hashPassword,
+  generateToken,
+  extractRole,
+  extractPermissions,
+};

@@ -1,18 +1,22 @@
-const ingredientService = require('./ingredient.service');
-const ingredientModel = require('./ingredient.model');
-const Ingredient = require('./ingredient.model');
-const StockMovement = require('./stockMovement.model');
-
+const ingredientService = require("./ingredient.service");
+const ingredientModel = require("./ingredient.model");
+const Ingredient = require("./ingredient.model");
+const StockMovement = require("./stockMovement.model");
 
 async function addIngredient(req, res) {
   try {
-    
     const { name, unit, stockQuantity, minStockLevel, imageUrl } = req.body;
-    const ingredient = await ingredientModel.create({ name, unit, stockQuantity, minStockLevel, imageUrl });
+    const ingredient = await ingredientModel.create({
+      name,
+      unit,
+      stockQuantity,
+      minStockLevel,
+      imageUrl,
+    });
     res.status(201).json(ingredient);
   } catch (error) {
-    console.error('Error adding ingredient:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error adding ingredient:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -20,12 +24,12 @@ async function getIngredientById(req, res) {
   try {
     const ingredient = await ingredientModel.findByPk(req.params.id);
     if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
+      return res.status(404).json({ message: "Ingredient not found" });
     }
     res.json(ingredient);
   } catch (error) {
-    console.error('Error fetching ingredient:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching ingredient:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -34,8 +38,8 @@ async function getAllIngredients(req, res) {
     const ingredients = await Ingredient.findAll();
     res.json(ingredients);
   } catch (error) {
-    console.error('Error fetching ingredients:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching ingredients:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -43,14 +47,20 @@ async function updateIngredient(req, res) {
   try {
     const updatedIngredient = await Ingredient.findByPk(req.params.id);
     if (!updatedIngredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
+      return res.status(404).json({ message: "Ingredient not found" });
     }
     const { name, unit, stockQuantity, minStockLevel, imageUrl } = req.body;
-    await updatedIngredient.update({ name, unit, stockQuantity, minStockLevel, imageUrl });
+    await updatedIngredient.update({
+      name,
+      unit,
+      stockQuantity,
+      minStockLevel,
+      imageUrl,
+    });
     res.json(updatedIngredient);
   } catch (error) {
-    console.error('Error updating ingredient:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error updating ingredient:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -58,13 +68,13 @@ async function deleteIngredient(req, res) {
   try {
     const deleted = await Ingredient.findByPk(req.params.id);
     if (!deleted) {
-      return res.status(404).json({ message: 'Ingredient not found' });
+      return res.status(404).json({ message: "Ingredient not found" });
     }
     await deleted.destroy();
-    res.json({ message: 'Ingredient deleted successfully' });
+    res.json({ message: "Ingredient deleted successfully" });
   } catch (error) {
-    console.error('Error deleting ingredient:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error deleting ingredient:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -72,12 +82,18 @@ async function addStockMovementHandler(req, res) {
   try {
     const { ingredientId, quantity, reason } = req.body;
     if (!ingredientId || quantity === undefined || !reason) {
-      return res.status(400).json({ message: 'ingredientId, quantity, and reason are required' });
+      return res
+        .status(400)
+        .json({ message: "ingredientId, quantity, and reason are required" });
     }
-    const movement = await ingredientService.addStockMovement(ingredientId, quantity, reason);
+    const movement = await ingredientService.addStockMovement(
+      ingredientId,
+      quantity,
+      reason,
+    );
     res.status(201).json(movement);
   } catch (error) {
-    console.error('Error adding stock movement:', error);
+    console.error("Error adding stock movement:", error);
     res.status(400).json({ message: error.message });
   }
 }
@@ -85,15 +101,15 @@ async function addStockMovementHandler(req, res) {
 async function getStockMovements(req, res) {
   try {
     const ingredient = await Ingredient.findByPk(req.params.id, {
-      include: [{ model: StockMovement, as: 'stockMovements' }],
+      include: [{ model: StockMovement, as: "stockMovements" }],
     });
     if (!ingredient) {
-      return res.status(404).json({ message: 'Ingredient not found' });
+      return res.status(404).json({ message: "Ingredient not found" });
     }
     res.json(ingredient.stockMovements);
   } catch (error) {
-    console.error('Error fetching stock movements:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching stock movements:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 
@@ -102,8 +118,8 @@ async function getLowStock(req, res) {
     const ingredients = await ingredientService.getLowStockIngredients();
     res.json(ingredients);
   } catch (error) {
-    console.error('Error fetching low stock:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error("Error fetching low stock:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 }
 

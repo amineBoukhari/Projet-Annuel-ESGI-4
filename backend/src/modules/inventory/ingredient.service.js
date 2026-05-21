@@ -1,5 +1,5 @@
-const Ingredient = require('./ingredient.model');
-const StockMovement = require('./stockMovement.model');
+const Ingredient = require("./ingredient.model");
+const StockMovement = require("./stockMovement.model");
 
 /**
  * Add a stock movement and update the ingredient's stockQuantity.
@@ -16,7 +16,9 @@ async function addStockMovement(ingredientId, quantity, reason) {
 
   const newStock = ingredient.stockQuantity + quantity;
   if (newStock < 0) {
-    throw new Error(`Insufficient stock for ingredient "${ingredient.name}". Available: ${ingredient.stockQuantity}, Required: ${Math.abs(quantity)}`);
+    throw new Error(
+      `Insufficient stock for ingredient "${ingredient.name}". Available: ${ingredient.stockQuantity}, Required: ${Math.abs(quantity)}`,
+    );
   }
 
   await ingredient.update({ stockQuantity: newStock });
@@ -50,7 +52,7 @@ async function isLowStock(ingredientId) {
  */
 async function getLowStockIngredients() {
   const ingredients = await Ingredient.findAll();
-  return ingredients.filter(i => i.stockQuantity <= i.minStockLevel);
+  return ingredients.filter((i) => i.stockQuantity <= i.minStockLevel);
 }
 
 module.exports = { addStockMovement, isLowStock, getLowStockIngredients };

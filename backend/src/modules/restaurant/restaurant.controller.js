@@ -31,7 +31,7 @@ async function createRestaurant(req, res) {
     console.log(
       "Restaurant with name or address already exists:",
       name,
-      adress
+      adress,
     );
     return res.status(400).json({ message: "restaurant already exist" });
   }

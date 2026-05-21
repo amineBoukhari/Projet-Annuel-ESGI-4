@@ -21,7 +21,13 @@ const menu = [
 const general = [
   { label: "Settings", icon: Settings, route: "/settings" },
   { label: "Help", icon: CircleHelp, route: "/help" },
-  { label: "Logout", icon: LogOut, route: "/logout", danger: true, isLogout: true },
+  {
+    label: "Logout",
+    icon: LogOut,
+    route: "/logout",
+    danger: true,
+    isLogout: true,
+  },
 ];
 
 export default function Aside() {

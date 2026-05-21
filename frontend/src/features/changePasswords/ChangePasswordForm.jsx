@@ -8,7 +8,6 @@ import InputPassword from "../../components/form/Input/InputPassword";
 import { useAuth } from "../auth/hooks/useAuth";
 import userService from "../../services/userService";
 
-
 export default function ChangePasswordForm() {
   const inputOldPasswordRef = useRef();
   const inputNewPasswordRef = useRef();
@@ -20,9 +19,13 @@ export default function ChangePasswordForm() {
     event.preventDefault();
 
     try {
-      const response = await userService.updatePassword(user.id, inputOldPasswordRef.current.value, inputNewPasswordRef.current.value)
+      const response = await userService.updatePassword(
+        user.id,
+        inputOldPasswordRef.current.value,
+        inputNewPasswordRef.current.value,
+      );
 
-      if (response.status === 'error') {
+      if (response.status === "error") {
         toast.error(response.message);
 
         return;

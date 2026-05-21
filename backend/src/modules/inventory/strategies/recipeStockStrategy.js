@@ -1,7 +1,7 @@
-const StockStrategy = require('./stockStrategy');
-const { addStockMovement } = require('../ingredient.service');
-const Recipe = require('../Recipe.modal');
-const Ingredient = require('../ingredient.model');
+const StockStrategy = require("./stockStrategy");
+const { addStockMovement } = require("../ingredient.service");
+const Recipe = require("../Recipe.modal");
+const Ingredient = require("../ingredient.model");
 
 /**
  * RecipeStockStrategy - deducts ingredients from stock when a recipe is prepared.
@@ -10,14 +10,14 @@ const Ingredient = require('../ingredient.model');
 class RecipeStockStrategy extends StockStrategy {
   async execute({ recipeId, portions = 1 }) {
     if (!recipeId) {
-      throw new Error('recipeId is required for RecipeStockStrategy');
+      throw new Error("recipeId is required for RecipeStockStrategy");
     }
 
     const recipe = await Recipe.findByPk(recipeId, {
       include: {
         model: Ingredient,
-        as: 'ingredients',
-        through: { attributes: ['quantity', 'unit'] },
+        as: "ingredients",
+        through: { attributes: ["quantity", "unit"] },
       },
     });
 
@@ -27,11 +27,13 @@ class RecipeStockStrategy extends StockStrategy {
 
     const movements = [];
     for (const ingredient of recipe.ingredients) {
-      const quantityToDeduct = -(ingredient.RecipeIngredient.quantity * portions);
+      const quantityToDeduct = -(
+        ingredient.RecipeIngredient.quantity * portions
+      );
       const movement = await addStockMovement(
         ingredient.id,
         quantityToDeduct,
-        `Used in recipe "${recipe.name}" (x${portions})`
+        `Used in recipe "${recipe.name}" (x${portions})`,
       );
       movements.push(movement);
     }
