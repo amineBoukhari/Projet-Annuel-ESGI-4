@@ -43,11 +43,11 @@ async function login(req, res) {
       id: user.id,
       username: user.username,
       email: user.email,
+      mustChangePassword: user.mustChangePassword,
     };
 
     return res.json({
       user: cleanUser,
-      mustChangePassword: user.mustChangePassword,
     });
   } catch (error) {
     console.error("Error logging in user:", error);

@@ -10,6 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  console.log(user);
+
   const fetchAndSetUser = useCallback(async () => {
     try {
       setError(null);
