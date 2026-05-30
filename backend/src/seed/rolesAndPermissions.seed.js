@@ -505,6 +505,17 @@ async function seedRolesAndPermissions(models) {
     }
   }
 
+  // Create a default restaurant for seeded users
+  const [defaultRestaurant] = await models.Restaurant.findOrCreate({
+    where: { name: "Restaurant Démo" },
+    defaults: {
+      name: "Restaurant Démo",
+      address: "1 Rue de la Paix, Paris",
+    },
+  });
+
+  const defaultRestaurantId = defaultRestaurant.id;
+
   await models.User.findOrCreate({
     where: { email: "admin@gmail.com" },
     defaults: {
@@ -512,6 +523,7 @@ async function seedRolesAndPermissions(models) {
       email: "admin@gmail.com",
       password: await authService.hashPassword("admin123"),
       roleId: 1, // Admin
+      restaurantId: defaultRestaurantId,
     },
   });
 
@@ -522,6 +534,7 @@ async function seedRolesAndPermissions(models) {
       email: "owner@gmail.com",
       password: await authService.hashPassword("owner123"),
       roleId: 2, // Owner
+      restaurantId: defaultRestaurantId,
     },
   });
 
@@ -532,6 +545,7 @@ async function seedRolesAndPermissions(models) {
       email: "manager@gmail.com",
       password: await authService.hashPassword("manager123"),
       roleId: 3, // Manager
+      restaurantId: defaultRestaurantId,
     },
   });
 
@@ -543,6 +557,7 @@ async function seedRolesAndPermissions(models) {
       mustChangePassword: true,
       password: await authService.hashPassword("xxx"),
       roleId: 4, // Employee
+      restaurantId: defaultRestaurantId,
     },
   });
 }
