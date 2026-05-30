@@ -35,6 +35,9 @@ services:
     ports:
       - "${BACKEND_PORT}:3000"
 
+    depends_on:
+      - db
+
     networks:
       - back-tier
 

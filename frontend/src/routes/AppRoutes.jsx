@@ -5,7 +5,7 @@ import Stocks from "../pages/Stocks";
 import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import Layout from "../layouts/Layout";
-import Profile from "../Pages/Profile";
+import Profile from "../pages/Profile";
 import GlobalError from "../pages/errors/GlobalError";
 
 export const router = createBrowserRouter([
