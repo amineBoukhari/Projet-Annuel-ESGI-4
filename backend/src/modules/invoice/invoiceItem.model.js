@@ -31,7 +31,7 @@ const InvoiceItem = sequelize.define('InvoiceItem', {
     defaultValue: 0,
   },
   recipeId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: true,
   },
 }, {
