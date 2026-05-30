@@ -44,6 +44,7 @@ async function login(req, res) {
       username: user.username,
       email: user.email,
       mustChangePassword: user.mustChangePassword,
+      role: user.role ? { name: user.role.name } : null,
     };
 
     return res.json({
@@ -78,9 +79,9 @@ async function changePassword(req, res) {
     await user.save();
 
     const token = await authService.generateToken(user);
+    cookieManager.generateCookie(res, token);
 
     return res.json({
-      newToken: token,
       message: "Password changed successfully",
     });
   } catch (error) {
