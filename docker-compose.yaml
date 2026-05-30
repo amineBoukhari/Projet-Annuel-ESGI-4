@@ -48,7 +48,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - "8080:8080"   # map to host port you want
+      - "8081:8080"   # map to host port you want
     networks:
       - back-tier
 

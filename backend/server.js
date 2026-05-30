@@ -4,40 +4,38 @@ const app = express();
 const cors = require("cors");
 const sequelize = require("./src/db/index");
 
-const userRoutes = require("./src/modules/user/user.routes");
-const authRoutes = require("./src/modules/auth/auth.routes");
-const authMiddleware = require("./src/middlewares/auth.middleware");
-const restaurantRoutes = require("./src/modules/restaurant/restaurant.routes");
-const ingredientRoutes = require("./src/modules/inventory/ingredient.routes");
-const {
-  seedRolesAndPermissions,
-} = require("./src/seed/rolesAndPermissions.seed");
-const recipeRoutes = require("./src/modules/inventory/recipe.routes");
-const permissionRoutes = require("./src/modules/permission/permission.routes");
+const userRoutes = require('./src/modules/user/user.routes');
+const authRoutes = require('./src/modules/auth/auth.routes');
+const authMiddleware = require('./src/middlewares/auth.middleware');
+const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
+const ingredientRoutes = require('./src/modules/inventory/ingredient.routes');
+const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
+const recipeRoutes = require('./src/modules/inventory/recipe.routes');
+const permissionRoutes = require('./src/modules/permission/permission.routes');
+const supplierRoutes = require('./src/modules/supplier/supplier.routes');
+const purchaseOrderRoutes = require('./src/modules/purchaseOrder/purchaseOrder.routes');
+const purchaseReturnRoutes = require('./src/modules/purchaseReturn/purchaseReturn.routes');
+const paymentRoutes = require('./src/modules/payment/payment.routes');
 
 // Import models
-const User = require("./src/modules/user/user.model");
-const Restaurant = require("./src/modules/restaurant/restaurant.model");
-const Role = require("./src/modules/role/role.model");
-const Ingredient = require("./src/modules/inventory/ingredient.model");
-const StockMovement = require("./src/modules/inventory/stockMovement.model");
-const Recipe = require("./src/modules/inventory/Recipe.modal");
-const RecipeIngredient = require("./src/modules/inventory/RecipeIngredient.modal");
-const RolePermission = require("./src/modules/role/rolePermission.model");
-const Permission = require("./src/modules/permission/permission.model");
+const User = require('./src/modules/user/user.model');
+const Restaurant = require('./src/modules/restaurant/restaurant.model');
+const Role = require('./src/modules/role/role.model');
+const Ingredient = require('./src/modules/inventory/ingredient.model');
+const StockMovement = require('./src/modules/inventory/stockMovement.model');
+const Recipe = require('./src/modules/inventory/Recipe.modal');
+const RecipeIngredient = require('./src/modules/inventory/RecipeIngredient.modal');
+const RolePermission = require('./src/modules/role/rolePermission.model');
+const Permission = require('./src/modules/permission/permission.model');
+const Supplier = require('./src/modules/supplier/supplier.model');
+const PurchaseOrder = require('./src/modules/purchaseOrder/purchaseOrder.model');
+const PurchaseOrderItem = require('./src/modules/purchaseOrder/purchaseOrderItem.model');
+const PurchaseReturn = require('./src/modules/purchaseReturn/purchaseReturn.model');
+const PurchaseReturnItem = require('./src/modules/purchaseReturn/purchaseReturnItem.model');
+const Payment = require('./src/modules/payment/payment.model');
 
 // Collect models
-const models = {
-  User,
-  Restaurant,
-  Role,
-  Ingredient,
-  StockMovement,
-  Recipe,
-  RecipeIngredient,
-  RolePermission,
-  Permission,
-};
+const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment };
 
 // Setup associations
 Object.values(models).forEach((model) => {
@@ -85,12 +83,16 @@ async function startServer() {
 startServer();
 
 // Routes
-app.use("/api/users", authMiddleware, userRoutes);
-app.use("/api/auth", authRoutes);
-app.use("/api/restaurants", authMiddleware, restaurantRoutes);
-app.use("/api/ingredients", authMiddleware, ingredientRoutes);
-app.use("/api/recipes", authMiddleware, recipeRoutes);
-app.use("/api/permissions", authMiddleware, permissionRoutes);
+app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/restaurants', authMiddleware, restaurantRoutes);
+app.use('/api/ingredients', authMiddleware, ingredientRoutes);
+app.use('/api/recipes', authMiddleware, recipeRoutes);
+app.use('/api/permissions', authMiddleware, permissionRoutes);
+app.use('/api/suppliers', authMiddleware, supplierRoutes);
+app.use('/api/purchaseOrders', authMiddleware, purchaseOrderRoutes);
+app.use('/api/purchaseReturns', authMiddleware, purchaseReturnRoutes);
+app.use('/api/payments', authMiddleware, paymentRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");
