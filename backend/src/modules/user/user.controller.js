@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const cookieManager = require("../../utils/cookieManager");
 
 const ROUTE_ROLE_MAP = {
-  "/createUser": 3, // default role is employee
+  "/createUser": 4, // default role is employee
   "/createOwner": 1,
   "/createManager": 2,
-  "/createEmployee": 3,
+  "/createEmployee": 4,
 };
 
 const AVAILABLE_ROLES = {
@@ -77,11 +77,14 @@ async function getUSerWithId(req, res) {
 }
 
 async function getAllUsers(req, res) {
-  const users = await User.findAll();
-  if (!users || users.length == 0) {
-    res.status(200).json({ message: "no user was found" });
+  const users = await User.findAll({
+    attributes: { exclude: ["password"] },
+    include: "role",
+  });
+  if (!users || users.length === 0) {
+    return res.status(200).json({ message: "no user was found" });
   }
-  res.status(200).json(users);
+  return res.status(200).json(users);
 }
 
 async function getMyProfile(req, res) {
