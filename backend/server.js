@@ -1,7 +1,8 @@
-const express = require('express');
+const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require("cors");
-const sequelize = require('./src/db/index');
+const sequelize = require("./src/db/index");
 
 const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
@@ -37,16 +38,23 @@ const Payment = require('./src/modules/payment/payment.model');
 const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment };
 
 // Setup associations
-Object.values(models).forEach(model => {
+Object.values(models).forEach((model) => {
   console.log(`Setting up associations for model: ${model.name}`);
   if (model.associate) {
-      console.log(`Associating model: ${model.name}`);
+    console.log(`Associating model: ${model.name}`);
     model.associate(models);
   }
 });
 
-app.use(cors({ origin: "http://127.0.0.1:5173" }));
-app.use(express.json()); // Parse JSON bodies
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true,
+  }),
+);
+
+app.use(express.json());
+app.use(cookieParser());
 
 const port = process.env.PORT || 3000;
 
@@ -54,18 +62,20 @@ async function startServer() {
   try {
     // Authenticate database
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    console.log("Connection has been established successfully.");
 
-    if (process.env.NODE_ENV === 'dev') {
+    if (process.env.NODE_ENV === "dev") {
       // Sync all models and associations
       await sequelize.sync({ alter: true });
-      console.log('All models and associations were synchronized successfully.');
+      console.log(
+        "All models and associations were synchronized successfully.",
+      );
 
       // Seed roles and permissions
       await seedRolesAndPermissions(models);
     }
   } catch (error) {
-    console.error('Error starting server:', error);
+    console.error("Error starting server:", error);
   }
 }
 
@@ -84,8 +94,8 @@ app.use('/api/purchaseOrders', authMiddleware, purchaseOrderRoutes);
 app.use('/api/purchaseReturns', authMiddleware, purchaseReturnRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Restaurant Management API');
+app.get("/", (req, res) => {
+  res.send("Welcome to the Restaurant Management API");
 });
 
 app.listen(port, () => {

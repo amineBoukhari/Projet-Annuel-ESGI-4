@@ -9,7 +9,7 @@ class StockStrategy {
    * @returns {Promise<void>}
    */
   async execute(payload) {
-    throw new Error('StockStrategy.execute() must be implemented by subclass');
+    throw new Error("StockStrategy.execute() must be implemented by subclass");
   }
 }
 
