@@ -8,10 +8,10 @@ const {
 function requireRole(...roles) {
   return (req, res, next) => {
     const role = extractRole(req.token);
-    if (!roles.includes(role.name)) {
+    if (!role || !roles.includes(role.name)) {
       return res.status(403).json({
         message: "Forbidden: insufficient role",
-        actualRole: role.name,
+        actualRole: role ? role.name : null,
         roles: roles,
       });
     }
@@ -25,10 +25,10 @@ function requirePermission(permission) {
     const role = extractRole(req.token);
 
     // Admin bypasses all permission checks
-    if (role === "Admin") return next();
+    if (role && role.name === "Admin") return next();
 
     const permissions = extractPermissions(req.token);
-    if (!permissions.includes(permission)) {
+    if (!permissions || !permissions.includes(permission)) {
       return res.status(403).json({ message: "Forbidden: missing permission" });
     }
     return next();
