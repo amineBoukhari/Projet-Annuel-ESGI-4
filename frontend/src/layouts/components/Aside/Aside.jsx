@@ -9,14 +9,7 @@ import {
   LogOut,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
-
-const menu = [
-  { label: "Dashboard", icon: LayoutDashboard, route: "/", isExact: true },
-  { label: "Tasks", icon: ClipboardList, route: "/tasks" },
-  { label: "Calendar", icon: Calendar, route: "/calendar" },
-  { label: "Analytics", icon: BarChart3, route: "/analytics" },
-  { label: "Team", icon: Users, route: "/users" },
-];
+import { useAuth } from "../../../features/auth/hooks/useAuth";
 
 const general = [
   { label: "Settings", icon: Settings, route: "/settings" },
@@ -31,6 +24,18 @@ const general = [
 ];
 
 export default function Aside() {
+  const { user } = useAuth();
+  const userRole = user?.role?.name;
+  const canManageUsers = ["Admin", "Owner", "Manager"].includes(userRole);
+
+  const menu = [
+    { label: "Dashboard", icon: LayoutDashboard, route: "/", isExact: true },
+    { label: "Tasks", icon: ClipboardList, route: "/tasks" },
+    { label: "Calendar", icon: Calendar, route: "/calendar" },
+    { label: "Analytics", icon: BarChart3, route: "/analytics" },
+    ...(canManageUsers ? [{ label: "Team", icon: Users, route: "/users" }] : []),
+  ];
+
   return (
     <aside className="w-65 h-full bg-[#efefef] rounded-4xl p-6 flex flex-col">
       <div className="w-full flex items-center justify-center mb-8 px-2">
