@@ -10,7 +10,7 @@
 
 This plan covers all missing features needed to reach a functional MVP. It is organized in **4 phases** by business priority. Each phase builds on the previous one.
 
-**MVP Definition:** A restaurant manager can log in, manage employees, manage stock and suppliers, create invoices for customers, view a basic dashboard with key metrics, and manage employee schedules.
+**MVP Definition:** A restaurant manager can log in, manage employees, manage stock and suppliers, create invoices for customers (manually or via quick checkout), scan supplier bills with OCR, view a basic dashboard with key metrics, and manage employee schedules.
 
 ---
 
@@ -72,7 +72,45 @@ This plan covers all missing features needed to reach a functional MVP. It is or
 - `taxAmount` = `totalAmount` × tax rate (default 20% VAT)
 - `getAll` filtered by `restaurantId` for non-Admins
 
-### 1.2 Backend — Payment Integration
+### 1.2 Backend — Quick Invoice (Fast Cashier Flow)
+
+**Goal:** Cashier creates a customer invoice in 10 seconds at the counter.
+
+#### New API Endpoint
+
+| Method | Endpoint | Auth | Role | Description |
+|---|---|---|---|---|
+| POST | `/api/invoices/quickCreate` | JWT | Admin, Owner, Manager | Minimal payload → creates invoice as `validated` + `paid` immediately |
+
+#### Payload
+```json
+{
+  "customerName": "Client comptoir",
+  "totalAmount": 45.50,
+  "paymentMethod": "cash"
+}
+```
+
+#### Behavior
+- Auto-generates invoice number (`INV-2026-XXXX`)
+- Auto-calculates tax (20% VAT)
+- Creates `Invoice` with status `validated`
+- Creates linked `Payment` with status `completed`
+- Returns created invoice
+
+### 1.3 Frontend — Quick Invoice Page
+
+#### New Page: `QuickInvoice.jsx` (`/quick-invoice`)
+- **Simple form:**
+  - Customer name (optional, default: "Client comptoir")
+  - Total amount (only required field)
+  - Payment method: Cash / Card
+- **"Créer et encaisser"** button → creates invoice + records payment in one click
+- **Use case:** Customer pays at the counter, fast checkout
+
+---
+
+### 1.4 Backend — Payment Integration
 
 #### Extend `Payment` Model
 ```
@@ -84,7 +122,11 @@ This plan covers all missing features needed to reach a functional MVP. It is or
 - paidAt: DATE
 - restaurantId: UUID (FK)
 - createdBy: UUID (FK → User)
+- type: ENUM ["purchase_order", "scanned_bill", "manual"]  ← ADD (default: "manual")
+- scannedImageUrl: STRING (nullable)                        ← ADD (URL to uploaded image)
 ```
+
+**Note:** `supplierId` in existing Payment model will become nullable to allow general expenses (gas, electricity) without a supplier.
 
 #### New API Endpoints (`/api/payments`)
 
@@ -116,15 +158,23 @@ This plan covers all missing features needed to reach a functional MVP. It is or
 - Button: "Marquer comme payée" (if validated)
 
 #### New Page: `Payments.jsx` (`/payments`)
-- List of payments received
+- List of all payments (outgoing: supplier bills / incoming: customer payments)
+- Filter by type: All / Scanned / Manual / TPE
 - Filter by date range
-- Link each payment to its invoice
-- Display total collected in period
+- Link each payment to its invoice (if applicable)
+- Display total paid in period
+- Scanned bills show 📎 icon with thumbnail
 
-### 1.4 Frontend — Sidebar & Routing
+#### New Page: `QuickInvoice.jsx` (`/quick-invoice`)
+- Fast checkout form: customer name (optional), total amount, payment method
+- One-click "Créer et encaisser"
+- Designed for counter use — minimal fields, big buttons
+
+### 1.5 Frontend — Sidebar & Routing
 
 - Add "Factures" link to Aside (conditional: Admin/Owner/Manager)
 - Add "Paiements" link to Aside (conditional: Admin/Owner/Manager)
+- Add "Encaissement rapide" link to Aside (conditional: Admin/Owner/Manager)
 - Add routes in `AppRoutes.jsx` with `RoleGuard`
 
 ---
@@ -165,7 +215,67 @@ This plan covers all missing features needed to reach a functional MVP. It is or
 - **Expiry alert:** `expiryDate <= today + 7 days`
 - **Critical expiry:** `expiryDate <= today`
 
-### 2.2 Backend — Supplier Enhancements
+### 2.2 Backend — Bill Scanning & OCR
+
+**Goal:** Manager scans a supplier bill or general expense receipt → app extracts data via OCR → creates a Payment record.
+
+#### OCR Technology: Google Vision API
+- **Why:** Best accuracy for poor-quality photos, handles handwriting, structured data extraction
+- **How:** Backend receives image → sends to Google Vision API → gets raw text + structured fields
+- **Cost:** Free tier: 1000 requests/month. Then ~$1.50 per 1000 requests.
+- **Privacy:** Images are processed by Google. Acceptable for MVP.
+
+#### Image Storage: AWS S3
+- **Why:** Reliable, scalable, cheap
+- **How:** Backend uploads original image to S3 bucket → stores URL in `scannedImageUrl`
+- **Access:** Presigned URLs for viewing, restricted by restaurant
+
+#### New API Endpoints (`/api/payments`)
+
+| Method | Endpoint | Auth | Role | Description |
+|---|---|---|---|---|
+| POST | `/scan` | JWT | Admin, Owner, Manager | Upload image → OCR → return extracted data |
+| POST | `/createFromScan` | JWT | Admin, Owner, Manager | Confirm and create Payment from scan |
+
+#### OCR Extraction Targets
+- Supplier name (fuzzy match against `Supplier` table)
+- Total amount
+- Tax amount (if visible)
+- Date of bill
+- Invoice/bill number (if visible)
+- Line items: description + amount (best effort, not guaranteed)
+
+#### Scan Flow
+```
+1. Manager opens /scan-bill
+2. Takes photo or uploads image
+3. Backend: uploads to S3 → sends to Google Vision API
+4. Backend: parses OCR result → extracts fields
+5. Frontend: shows review modal with pre-filled data
+6. Manager reviews → confirms
+7. Backend: creates Payment record with type="scanned_bill", scannedImageUrl
+8. Payment appears in Payments list
+```
+
+### 2.3 Frontend — Scan Bill Pages
+
+#### New Page: `ScanBill.jsx` (`/scan-bill`)
+- Camera access or file upload
+- Preview of uploaded image
+- "Analyser" button → sends to backend
+- Loading state while OCR processes
+
+#### New Component: `ScanReviewModal.jsx`
+- Shows extracted fields:
+  - Fournisseur: [dropdown, pre-filled + "Autre"]
+  - Montant total: [input, pre-filled]
+  - Date: [input, pre-filled]
+  - Numéro de facture: [input, pre-filled]
+  - Catégorie: [dropdown: "Fournisseur", "Transport", "Électricité", "Autre"]
+- "Confirmer" → creates Payment
+- "Modifier" → manual correction
+
+### 2.4 Backend — Supplier Enhancements
 
 #### Extend `Supplier` Model
 ```
@@ -179,7 +289,7 @@ This plan covers all missing features needed to reach a functional MVP. It is or
 - `GET /api/suppliers/comparePrices?ingredientId=xxx`
 - Returns: supplier name, last price, price history
 
-### 2.3 Frontend — Stock Page (Complete Rewrite)
+### 2.5 Frontend — Stock Page (Complete Rewrite)
 
 Current `/stocks` is a placeholder. Replace with:
 
@@ -358,6 +468,67 @@ Current frontend is desktop-only. Ensure all pages work on mobile:
 
 ---
 
+## Phase 5: TPE Integration (Post-MVP)
+
+**Duration estimate:** 3-5 days (deferred until after MVP)
+**Why deferred:** TPE providers have complex OAuth/API onboarding. Quick Invoice (Phase 1) covers the immediate need.
+
+### 5.1 Architecture
+
+```
+[TPE: SumUp / Square / Ingenico / Zettle]
+     ↓ (webhook or API poll)
+[Backend endpoint: POST /api/payments/tpeWebhook]
+     ↓
+[Backend creates Invoice + Payment automatically]
+     ↓
+[Dashboard updates in real-time]
+```
+
+### 5.2 TPE Webhook Endpoint
+
+| Method | Endpoint | Auth | Description |
+|---|---|---|---|
+| POST | `/api/payments/tpeWebhook` | TPE signature verification | Receives transaction data from TPE |
+
+#### What data comes from TPE:
+- `transactionId` (TPE's unique ID)
+- `amount`
+- `timestamp`
+- `cardType` (Visa, Mastercard)
+- `status` (approved, declined)
+- Optional: `items` array (if smart POS)
+
+#### Backend behavior:
+- Verify TPE signature (prevent spoofing)
+- Create `Invoice` with status `paid`
+- Create `Payment` linked to invoice, source="tpe"
+- If items provided, create `InvoiceItem` records
+- If no items, create single "Paiement par carte" line item
+
+### 5.3 Frontend — TPE Management
+
+#### New Page: `TpeSettings.jsx` (`/settings/tpe`)
+- Select provider: SumUp / Square / Ingenico
+- Enter API key / OAuth credentials
+- "Tester la connexion" button
+- "Synchroniser transactions" button (manual sync)
+
+#### New Page: `TpeTransactions.jsx` (`/tpe-transactions`)
+- List of imported TPE transactions
+- Columns: date, amount, card type, linked invoice
+- Filter: today / this week / this month
+- Reconcile unmatched transactions
+
+### 5.4 Providers to Support (Priority Order)
+
+1. **SumUp** — Popular in France/EU, simple API
+2. **Square** — Popular in US/UK, good webhooks
+3. **Zettle (PayPal)** — Popular in EU
+4. **Ingenico** — Enterprise, complex
+
+---
+
 ## Database Schema Changes Summary
 
 ### New Tables
@@ -370,7 +541,8 @@ Current frontend is desktop-only. Ensure all pages work on mobile:
 1. `Ingredients` — Add `expiryDate`, `category`, `supplierId`
 2. `StockMovements` — Add `type`, `previousQuantity`, `newQuantity`
 3. `Suppliers` — Add `email`, `phone`, `address`, `contactName`
-4. `Payments` — Add `invoiceId` (FK), `status`
+4. `Payments` — Add `invoiceId` (FK), `status`, `type` (ENUM), `scannedImageUrl`
+5. `Users` — Existing (no change, but `restaurantId` filtering already added)
 
 ---
 
@@ -405,19 +577,23 @@ frontend/src/
 │   ├── Invoices.jsx
 │   ├── InvoiceForm.jsx
 │   ├── InvoiceDetail.jsx
+│   ├── QuickInvoice.jsx       ← ADD (fast checkout)
 │   ├── Payments.jsx
+│   ├── ScanBill.jsx           ← ADD (camera upload + OCR)
 │   ├── StockPage.jsx          (replaces placeholder Stocks.jsx)
 │   ├── Suppliers.jsx
 │   ├── Planning.jsx
 │   ├── MyPlanning.jsx
 │   ├── PlanningRequests.jsx
-│   └── Reports.jsx
+│   ├── Reports.jsx
+│   └── TpeTransactions.jsx    ← ADD (post-MVP)
 ├── features/
 │   ├── invoices/
 │   │   ├── components/
 │   │   │   ├── InvoiceTable.jsx
 │   │   │   ├── InvoiceLineItems.jsx
-│   │   │   └── InvoiceStatusBadge.jsx
+│   │   │   ├── InvoiceStatusBadge.jsx
+│   │   │   └── QuickInvoiceForm.jsx    ← ADD
 │   │   └── services/
 │   │       └── invoiceService.js
 │   ├── stock/
@@ -427,6 +603,12 @@ frontend/src/
 │   │   │   └── StockMovementHistory.jsx
 │   │   └── services/
 │   │       └── stockService.js
+│   ├── scanBill/
+│   │   ├── components/
+│   │   │   ├── CameraUpload.jsx        ← ADD
+│   │   │   └── ScanReviewModal.jsx     ← ADD
+│   │   └── services/
+│   │       └── scanBillService.js      ← ADD
 │   ├── suppliers/
 │   │   ├── components/
 │   │   │   ├── SupplierTable.jsx
@@ -449,6 +631,7 @@ frontend/src/
 └── services/
     ├── invoiceService.js
     ├── paymentService.js
+    ├── scanBillService.js    ← ADD
     ├── stockService.js
     ├── supplierService.js
     ├── scheduleService.js
@@ -459,22 +642,30 @@ frontend/src/
 
 ## Implementation Order (Sprints)
 
-### Sprint 1: Invoices Core (Days 1-2)
+### Sprint 1: Invoices Core + Quick Invoice (Days 1-2)
 - [ ] Create `Invoice` and `InvoiceItem` models
 - [ ] Create invoice controller with CRUD + validate + cancel + pay
+- [ ] Create `POST /api/invoices/quickCreate` endpoint
 - [ ] Create invoice routes
 - [ ] Register routes in `server.js`
 - [ ] Test with Postman/curl
 - [ ] Create `invoiceService.js` frontend
 - [ ] Create `Invoices.jsx` page (list)
 - [ ] Create `InvoiceForm.jsx` page (create/edit)
-- [ ] Add to sidebar and routes
+- [ ] Create `QuickInvoice.jsx` page (fast checkout)
+- [ ] Add "Encaissement rapide" to sidebar and routes
 
-### Sprint 2: Payments & Stock (Days 3-4)
-- [ ] Extend `Payment` model with `invoiceId`
+### Sprint 2: Payments, Scan Bill & Stock (Days 3-4)
+- [ ] Extend `Payment` model with `invoiceId`, `type`, `scannedImageUrl`
+- [ ] Make `Payment.supplierId` nullable
 - [ ] Create payment controller + routes
+- [ ] Add `POST /api/payments/scan` endpoint (OCR via Google Vision)
+- [ ] Add `POST /api/payments/createFromScan` endpoint
+- [ ] Set up AWS S3 bucket + upload logic
 - [ ] Test invoice → payment flow
 - [ ] Create `Payments.jsx` page
+- [ ] Create `ScanBill.jsx` page (camera + upload)
+- [ ] Create `ScanReviewModal.jsx` (review OCR results)
 - [ ] Extend `Ingredient` model (expiryDate, category, supplierId)
 - [ ] Add stock alert API endpoint
 - [ ] Create `StockPage.jsx` (full replacement)
@@ -502,11 +693,13 @@ frontend/src/
 - [ ] Mobile responsiveness pass
 - [ ] Bug fixes and testing
 
-### Sprint 6: PDF & Email (Optional, Days 10-12)
+### Sprint 6: PDF, Email & TPE Research (Optional, Days 10-12)
 - [ ] PDF generation for invoices
-- [ ] Email service setup
+- [ ] Email service setup (nodemailer)
 - [ ] Welcome email for new users
 - [ ] Invoice email to customers
+- [ ] Research TPE provider APIs (SumUp, Square, Zettle)
+- [ ] Design TPE webhook architecture
 
 ---
 
@@ -530,12 +723,14 @@ A manager can complete this workflow without errors:
 2. ✅ View Dashboard with today's revenue, stock alerts, unpaid invoices
 3. ✅ Create a new employee via Team page
 4. ✅ Create an invoice with line items, validate it
-5. ✅ Record a payment for that invoice
-6. ✅ View stock levels and see low-stock alerts
-7. ✅ Add a supplier and view supplier list
-8. ✅ Create an employee schedule for next week
-9. ✅ Employee logs in and views their own schedule
-10. ✅ Generate a basic revenue report for last 7 days
+5. ✅ Use "Encaissement rapide" to create a paid invoice in 2 clicks
+6. ✅ Record a payment for an invoice
+7. ✅ Scan a supplier bill with phone → OCR extracts data → review → save as Payment
+8. ✅ View stock levels and see low-stock alerts
+9. ✅ Add a supplier and view supplier list
+10. ✅ Create an employee schedule for next week
+11. ✅ Employee logs in and views their own schedule
+12. ✅ Generate a basic revenue report for last 7 days
 
 ---
 
