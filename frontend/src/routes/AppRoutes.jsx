@@ -71,6 +71,14 @@ export const router = createBrowserRouter([
                 ),
               },
               {
+                path: "/invoices/edit/:id",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <InvoiceForm />
+                  </RoleGuard>
+                ),
+              },
+              {
                 path: "/invoices/:id",
                 element: (
                   <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>

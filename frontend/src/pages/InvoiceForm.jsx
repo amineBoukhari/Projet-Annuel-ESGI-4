@@ -1,17 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Plus, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import invoiceService from "../services/invoiceService";
 
 export default function InvoiceForm() {
   const navigate = useNavigate();
+  const params = useParams();
+  const editId = params.id; // present if URL is /invoices/edit/:id
+  const isEditMode = !!editId;
+
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [items, setItems] = useState([
     { description: "", quantity: 1, unitPrice: "" },
   ]);
+  const [invoiceStatus, setInvoiceStatus] = useState("draft");
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(isEditMode);
+
+  // Load invoice data if in edit mode
+  useEffect(() => {
+    if (!isEditMode) return;
+
+    const loadInvoice = async () => {
+      try {
+        const data = await invoiceService.fetchInvoiceById(editId);
+        setCustomerName(data.customerName || "");
+        setCustomerEmail(data.customerEmail || "");
+        setInvoiceStatus(data.status || "draft");
+
+        if (data.items && data.items.length > 0) {
+          setItems(
+            data.items.map((item) => ({
+              description: item.description || "",
+              quantity: item.quantity || 1,
+              unitPrice: String(item.unitPrice || ""),
+            })),
+          );
+        }
+      } catch {
+        toast.error("Impossible de charger la facture");
+        navigate("/invoices");
+      } finally {
+        setPageLoading(false);
+      }
+    };
+
+    loadInvoice();
+  }, [editId, isEditMode, navigate]);
 
   const addItem = () => {
     setItems([...items, { description: "", quantity: 1, unitPrice: "" }]);
@@ -57,30 +94,84 @@ export default function InvoiceForm() {
 
     setLoading(true);
     try {
-      const result = await invoiceService.createInvoice({
-        customerName,
-        customerEmail,
-        items: validItems,
-      });
+      if (isEditMode) {
+        // Update existing draft
+        if (invoiceStatus !== "draft") {
+          toast.error("Seuls les brouillons peuvent être modifiés");
+          setLoading(false);
+          return;
+        }
 
-      const invoiceId = result.invoice?.id;
+        await invoiceService.updateInvoice(editId, {
+          customerName,
+          customerEmail,
+          items: validItems,
+        });
 
-      if (validateImmediately && invoiceId) {
-        await invoiceService.validateInvoice(invoiceId);
-        toast.success("Facture créée et validée");
+        if (validateImmediately) {
+          await invoiceService.validateInvoice(editId);
+          toast.success("Facture mise à jour et validée");
+        } else {
+          toast.success("Brouillon mis à jour");
+        }
       } else {
-        toast.success("Brouillon enregistré");
+        // Create new invoice
+        const result = await invoiceService.createInvoice({
+          customerName,
+          customerEmail,
+          items: validItems,
+        });
+
+        const invoiceId = result.invoice?.id;
+
+        if (validateImmediately && invoiceId) {
+          await invoiceService.validateInvoice(invoiceId);
+          toast.success("Facture créée et validée");
+        } else {
+          toast.success("Brouillon enregistré");
+        }
       }
 
       navigate("/invoices");
     } catch (err) {
-      toast.error(err.message || "Erreur lors de la création");
+      toast.error(err.message || "Erreur lors de l'enregistrement");
     } finally {
       setLoading(false);
     }
   };
 
   const { subtotal, tax, total } = calculateTotals();
+
+  if (pageLoading) {
+    return (
+      <div className="p-6 flex items-center justify-center h-40 text-gray-400">
+        Chargement...
+      </div>
+    );
+  }
+
+  // If editing a non-draft, show error and redirect
+  if (isEditMode && invoiceStatus !== "draft") {
+    return (
+      <div className="p-6 max-w-3xl mx-auto">
+        <button
+          onClick={() => navigate("/invoices")}
+          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-4"
+        >
+          <ArrowLeft size={16} />
+          Retour aux factures
+        </button>
+        <div className="bg-red-50 border border-red-200 rounded-2xl p-6">
+          <p className="text-red-700 font-medium">
+            Cette facture ne peut pas être modifiée (statut : {invoiceStatus})
+          </p>
+          <p className="text-red-600 text-sm mt-1">
+            Seuls les brouillons sont modifiables.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -92,7 +183,9 @@ export default function InvoiceForm() {
         Retour aux factures
       </button>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nouvelle facture</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        {isEditMode ? "Modifier le brouillon" : "Nouvelle facture"}
+      </h1>
 
       {/* Customer info */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-6 shadow-sm">
@@ -221,14 +314,22 @@ export default function InvoiceForm() {
           disabled={loading}
           className="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
         >
-          {loading ? "Enregistrement..." : "Enregistrer brouillon"}
+          {loading
+            ? "Enregistrement..."
+            : isEditMode
+              ? "Enregistrer modifications"
+              : "Enregistrer brouillon"}
         </button>
         <button
           onClick={() => handleSubmit(true)}
           disabled={loading}
           className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50"
         >
-          {loading ? "Validation..." : "Valider la facture"}
+          {loading
+            ? "Validation..."
+            : isEditMode
+              ? "Valider la facture"
+              : "Valider la facture"}
         </button>
       </div>
     </div>
