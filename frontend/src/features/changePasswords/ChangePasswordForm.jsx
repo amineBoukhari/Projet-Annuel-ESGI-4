@@ -1,17 +1,14 @@
-import { Eye } from "lucide-react";
 import { useRef } from "react";
-import { useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
-
 import InputPassword from "../../components/form/Input/InputPassword";
 import { useAuth } from "../auth/hooks/useAuth";
 import userService from "../../services/userService";
+import Button from "../../components/ui/Button";
 
 export default function ChangePasswordForm() {
   const inputOldPasswordRef = useRef();
   const inputNewPasswordRef = useRef();
-  const [errors, setErrors] = useState([]);
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
 
@@ -27,61 +24,59 @@ export default function ChangePasswordForm() {
 
       if (response.status === "error") {
         toast.error(response.message);
-
         return;
       }
 
       refreshUser();
-
       toast.success(response.message);
-
       navigate("/");
     } catch (error) {
-      console.log(error.message);
+      toast.error("Une erreur est survenue");
     }
   };
 
   return (
-    <>
-      <section className="change-password-form flex justify-center items-center h-screen w-screen">
+    <section className="flex justify-center items-center min-h-screen bg-surface p-6">
+      <div className="w-full max-w-[420px]">
         <form
-          method="post"
-          className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl"
           onSubmit={handleSubmit}
+          className="flex flex-col gap-6 bg-surface-raised rounded-[16px] p-8 shadow-elevated"
         >
-          <div className="w-full flex justify-center">
-            <span className="bg-primary rounded-full font-bold text-white p-8 size-6 flex items-center justify-center text-4xl">
+          <div className="w-full flex flex-col items-center gap-4">
+            <div className="bg-primary rounded-full font-bold text-white w-14 h-14 flex items-center justify-center text-2xl shadow-lifted">
               G
-            </span>
+            </div>
+            <div className="text-center">
+              <h1 className="text-[1.5rem] font-semibold text-ink tracking-tight">
+                Changer mon mot de passe
+              </h1>
+              <p className="text-[0.8125rem] text-ink-muted mt-1">
+                Pour des raisons de sécurité, veuillez modifier votre mot de passe
+              </p>
+            </div>
           </div>
 
-          <h1 className="m-auto text-2xl">Changer mon mot de passe</h1>
-          <p className="text-sm text-center">
-            Pour des raisons de sécurité, veuillez modifier votre mot de passe
-          </p>
-          <InputPassword
-            label="Ancien mot de passe"
-            type="text"
-            identifier="login"
-            errorMessage={errors["email"]}
-            rightIcon={<Eye size={16} />}
-            ref={inputOldPasswordRef}
-          />
-          <InputPassword
-            label="Nouveau mot de passe"
-            type="text"
-            identifier="login"
-            disableLink={true}
-            errorMessage={errors["email"]}
-            rightIcon={<Eye size={16} />}
-            ref={inputNewPasswordRef}
-          />
+          <div className="flex flex-col gap-4">
+            <InputPassword
+              ref={inputOldPasswordRef}
+              label="Ancien mot de passe"
+              disableLink={true}
+            />
+            <InputPassword
+              ref={inputNewPasswordRef}
+              label="Nouveau mot de passe"
+              disableLink={true}
+            />
+          </div>
 
-          <button className="bg-primary rounded-lg py-2 text-white hover:cursor-pointer hover:opacity-90">
-            Changer mon mot de passe
-          </button>
+          <Button
+            text="Changer mon mot de passe"
+            variant="primary"
+            type="submit"
+            className="w-full py-3"
+          />
         </form>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }

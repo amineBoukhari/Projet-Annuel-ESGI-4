@@ -1,7 +1,5 @@
-import { Drum, Eye } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import * as z from "zod";
 import Input from "../../../components/form/Input/Input.jsx";
@@ -15,15 +13,17 @@ export default function LoginForm() {
   const inputLoginRef = useRef();
   const inputPasswordRef = useRef();
   const navigate = useNavigate();
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const loginSchema = z.object({
-    email: z.email("Email invalide").min(1, "Le champs ne doit pas être vide"),
-    password: z.string().min(1, "Le champs ne doit pas être vide"),
+    email: z.email("Email invalide").min(1, "Le champ ne doit pas être vide"),
+    password: z.string().min(1, "Le champ ne doit pas être vide"),
   });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setErrors({});
 
     const result = loginSchema.safeParse({
       email: inputLoginRef.current.value,
@@ -32,16 +32,14 @@ export default function LoginForm() {
 
     if (!result.success) {
       const formErrors = {};
-
       result.error.issues.forEach(({ message, path }) => {
         formErrors[path] = message;
       });
-
       setErrors(formErrors);
-      // toast.error(message);
       return;
     }
 
+    setIsLoading(true);
     try {
       const { user, mustChangePassword } = await authService.login(
         inputLoginRef.current.value,
@@ -49,48 +47,65 @@ export default function LoginForm() {
       );
 
       login(user);
-      toast.success("Successfully logged in", { duration: 4000 });
+      toast.success("Connexion réussie", { duration: 4000 });
 
       if (mustChangePassword) {
-        console.log("redirect vers /change-password");
         navigate("/change-password");
       } else {
         navigate("/");
       }
     } catch (error) {
-      console.log(error.message || "error");
       if (error.message === "Invalid email or password") {
         toast.error("Identifiants invalides");
+      } else {
+        toast.error("Une erreur est survenue");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
+
   return (
     <form
-      method="post"
-      className="flex flex-col gap-4 bg-white rounded-xl w-90 p-4 shadow-xl"
       onSubmit={handleSubmit}
+      className="flex flex-col gap-6 bg-surface-raised rounded-[16px] p-8 shadow-elevated"
     >
-      <div className="w-full flex justify-center">
-        <span className="bg-primary rounded-full font-bold text-white p-8 size-6 flex items-center justify-center text-4xl">
+      {/* Logo */}
+      <div className="w-full flex flex-col items-center gap-4">
+        <div className="bg-primary rounded-full font-bold text-white w-14 h-14 flex items-center justify-center text-2xl shadow-lifted">
           G
-        </span>
+        </div>
+        <div className="text-center">
+          <h1 className="text-[1.5rem] font-semibold text-ink tracking-tight">Connexion</h1>
+          <p className="text-[0.8125rem] text-ink-muted mt-1">Gesto-Resto — Gestion de restaurant</p>
+        </div>
       </div>
 
-      <h1 className="m-auto text-2xl">Connexion</h1>
-      <Input
-        label="Identifiant"
-        type="text"
-        identifier="login"
-        errorMessage={errors["email"]}
-        rightIcon={<Eye size={16} />}
-        ref={inputLoginRef}
+      {/* Fields */}
+      <div className="flex flex-col gap-4">
+        <Input
+          label="Email"
+          type="text"
+          identifier="login"
+          errorMessage={errors["email"]}
+          placeHolder="votre@email.com"
+          ref={inputLoginRef}
+        />
+        <InputPassword
+          ref={inputPasswordRef}
+          label="Mot de passe"
+          errorMessage={errors["password"]}
+        />
+      </div>
+
+      {/* Submit */}
+      <Button
+        text={isLoading ? "Connexion..." : "Se connecter"}
+        variant="primary"
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-3"
       />
-      <InputPassword
-        ref={inputPasswordRef}
-        label="Mot de passe"
-        errorMessage={errors["password"]}
-      />
-      <Button text={"Se connecter"} />
     </form>
   );
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Filter } from "lucide-react";
 import toast from "react-hot-toast";
 import expenseService from "../services/expenseService";
+import Button from "../components/ui/Button";
 
 const CATEGORY_LABELS = {
   utility: "Utilitaires",
@@ -13,12 +14,12 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_COLORS = {
-  utility: "bg-blue-100 text-blue-700",
-  rent: "bg-purple-100 text-purple-700",
-  transport: "bg-orange-100 text-orange-700",
-  supplies: "bg-green-100 text-green-700",
-  maintenance: "bg-yellow-100 text-yellow-700",
-  other: "bg-gray-100 text-gray-700",
+  utility: "bg-blue-50 text-info",
+  rent: "bg-purple-50 text-purple-700",
+  transport: "bg-orange-50 text-orange-700",
+  supplies: "bg-green-50 text-success",
+  maintenance: "bg-secondary-muted text-warning",
+  other: "bg-surface text-ink-secondary",
 };
 
 export default function Expenses() {
@@ -38,11 +39,7 @@ export default function Expenses() {
     setLoading(true);
     try {
       const data = await expenseService.fetchExpenses();
-      if (Array.isArray(data)) {
-        setExpenses(data);
-      } else {
-        setExpenses([]);
-      }
+      setExpenses(Array.isArray(data) ? data : []);
     } catch {
       toast.error("Impossible de charger les dépenses");
       setExpenses([]);
@@ -99,35 +96,35 @@ export default function Expenses() {
   );
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dépenses</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-[1.5rem] font-semibold text-ink tracking-tight">Dépenses</h1>
+          <p className="text-[0.9375rem] text-ink-muted mt-1">
             Gérez les dépenses non-fournisseurs (loyer, électricité, etc.)
           </p>
         </div>
-        <button
+        <Button
+          text="Ajouter"
+          variant="primary"
+          icon={Plus}
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90"
-        >
-          <Plus size={16} />
-          Ajouter
-        </button>
+        />
       </div>
 
       {/* Filters + Total */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex gap-2 flex-wrap items-center">
+          <Filter size={16} className="text-ink-muted" strokeWidth={2} />
           {["all", "utility", "rent", "transport", "supplies", "maintenance", "other"].map(
             (f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize ${
+                className={`px-3.5 py-2 rounded-[10px] text-[0.8125rem] font-medium transition-all duration-150 ${
                   filter === f
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? "bg-ink text-white shadow-ambient"
+                    : "bg-surface-raised text-ink-secondary hover:bg-surface hover:text-ink border border-border"
                 }`}
               >
                 {f === "all" ? "Toutes" : CATEGORY_LABELS[f] || f}
@@ -135,83 +132,98 @@ export default function Expenses() {
             ),
           )}
         </div>
-        <div className="text-sm font-medium text-gray-700">
+        <div className="text-[0.9375rem] font-semibold text-ink">
           Total: {totalAmount.toFixed(2)} €
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
+        <div className="flex items-center justify-center h-40 text-ink-muted text-[0.9375rem]">
           Chargement...
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
-              <tr>
-                <th className="px-4 py-3 text-left">Date</th>
-                <th className="px-4 py-3 text-left">Catégorie</th>
-                <th className="px-4 py-3 text-left">Description</th>
-                <th className="px-4 py-3 text-right">Montant</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredExpenses.map((expense) => (
-                <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-gray-500 text-xs">
-                    {new Date(expense.expenseDate).toLocaleDateString("fr-FR")}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                        CATEGORY_COLORS[expense.category] || CATEGORY_COLORS.other
-                      }`}
-                    >
-                      {CATEGORY_LABELS[expense.category] || expense.category}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-gray-700">{expense.description}</td>
-                  <td className="px-4 py-3 text-right font-medium text-gray-900">
-                    {parseFloat(expense.amount).toFixed(2)} €
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => handleDelete(expense.id)}
-                      className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
-                      title="Supprimer"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filteredExpenses.length === 0 && (
+        <div className="overflow-hidden rounded-[16px] border border-border bg-surface-raised shadow-ambient">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-[0.9375rem]">
+              <thead className="bg-surface">
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400 text-sm">
-                    Aucune dépense trouvée.
-                  </td>
+                  {["Date", "Catégorie", "Description", "Montant", ""].map((header) => (
+                    <th
+                      key={header}
+                      className="px-5 py-3.5 text-left text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider"
+                    >
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filteredExpenses.map((expense) => (
+                  <tr
+                    key={expense.id}
+                    className="hover:bg-surface transition-colors duration-150"
+                  >
+                    <td className="px-5 py-4 text-ink-muted text-[0.8125rem]">
+                      {new Date(expense.expenseDate).toLocaleDateString("fr-FR")}
+                    </td>
+                    <td className="px-5 py-4">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[0.75rem] font-semibold ${
+                        CATEGORY_COLORS[expense.category] || CATEGORY_COLORS.other
+                      }`}>
+                        {CATEGORY_LABELS[expense.category] || expense.category}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-ink-secondary">{expense.description}</td>
+                    <td className="px-5 py-4 text-right font-semibold text-ink">
+                      {parseFloat(expense.amount).toFixed(2)} €
+                    </td>
+                    <td className="px-5 py-4">
+                      <button
+                        onClick={() => handleDelete(expense.id)}
+                        className="text-error hover:text-red-700 p-2 rounded-[8px] hover:bg-red-50 transition-all duration-150"
+                        title="Supprimer"
+                      >
+                        <Trash2 size={16} strokeWidth={2} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {filteredExpenses.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-5 py-12 text-center text-ink-muted text-[0.9375rem]">
+                      Aucune dépense trouvée.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Create Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              Nouvelle dépense
-            </h2>
-            <form onSubmit={handleCreate} className="flex flex-col gap-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[400px] bg-surface-raised rounded-[16px] shadow-elevated p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-[1.125rem] font-semibold text-ink">
+                Nouvelle dépense
+              </h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-ink-muted hover:text-ink p-1.5 rounded-[8px] hover:bg-surface transition-all"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleCreate} className="flex flex-col gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
                   Catégorie
                 </label>
                 <select
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                  className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200"
                   value={form.category}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, category: e.target.value }))
@@ -225,12 +237,12 @@ export default function Expenses() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
                   Description *
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                  className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200 placeholder:text-ink-muted"
                   placeholder="Facture EDF janvier"
                   value={form.description}
                   onChange={(e) =>
@@ -239,14 +251,14 @@ export default function Expenses() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
                   Montant *
                 </label>
                 <input
                   type="number"
                   min="0"
                   step="0.01"
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                  className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200 placeholder:text-ink-muted"
                   placeholder="0.00"
                   value={form.amount}
                   onChange={(e) =>
@@ -255,32 +267,29 @@ export default function Expenses() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">
+                <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
                   Date
                 </label>
                 <input
                   type="date"
-                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                  className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200"
                   value={form.expenseDate}
                   onChange={(e) =>
                     setForm((f) => ({ ...f, expenseDate: e.target.value }))
                   }
                 />
               </div>
-              <div className="flex items-center justify-end gap-2 mt-2">
-                <button
-                  type="button"
+              <div className="flex items-center justify-end gap-3 mt-2 pt-2 border-t border-border">
+                <Button
+                  text="Annuler"
+                  variant="ghost"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100"
-                >
-                  Annuler
-                </button>
-                <button
+                />
+                <Button
+                  text="Ajouter"
+                  variant="primary"
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90"
-                >
-                  Ajouter
-                </button>
+                />
               </div>
             </form>
           </div>

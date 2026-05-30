@@ -1,15 +1,100 @@
 @import "tailwindcss";
 
 @theme {
+  /* Primary — Deep Teal */
   --color-primary: #3ab7bf;
+  --color-primary-hover: #2fa3aa;
+  --color-primary-muted: #e6f7f8;
+
+  /* Secondary — Warm Amber */
   --color-secondary: #ffc851;
+  --color-secondary-hover: #e6b347;
+  --color-secondary-muted: #fff8e6;
+
+  /* Neutral — Ink scale */
+  --color-ink: #1a1a1a;
+  --color-ink-secondary: #4a4a4a;
+  --color-ink-muted: #6b7280;
+
+  /* Neutral — Surface scale */
+  --color-surface: #f0f0f0;
+  --color-surface-raised: #ffffff;
+  --color-border: #e5e5e5;
+  --color-border-strong: #d4d4d4;
+
+  /* Semantic */
+  --color-success: #16a34a;
+  --color-warning: #ca8a04;
+  --color-error: #dc2626;
+  --color-info: #2563eb;
+
+  /* Background shorthand (legacy compat) */
   --color-background: #ffffff;
+
+  /* Rounded scale */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Spacing scale */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Shadows */
+  --shadow-ambient: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-lifted: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Typography */
+  --font-sans: "Jost", system-ui, sans-serif;
 }
 
 :root {
-  font-family: "Jost", sans-serif;
+  font-family: "Jost", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  @apply bg-background h-screen;
+  @apply bg-surface h-screen;
+  color: #1a1a1a;
+}
+
+/* Scrollbar refinement */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}
+
+/* Focus visible global style */
+:focus-visible {
+  outline: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

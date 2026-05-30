@@ -16,12 +16,10 @@ export default function ContentContainer({ x = 1, y = 1, children }) {
   };
 
   return (
-    <>
-      <div
-        className={`bg-white rounded-2xl flex flex-col gap-3 ${boxSizes(x, y)} p-6`}
-      >
-        {children}
-      </div>
-    </>
+    <div
+      className={`bg-surface-raised rounded-[16px] shadow-ambient flex flex-col gap-3 ${boxSizes(x, y)} p-6 hover:shadow-lifted transition-shadow duration-200`}
+    >
+      {children}
+    </div>
   );
 }

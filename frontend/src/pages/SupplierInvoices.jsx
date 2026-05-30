@@ -2,7 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../features/auth/hooks/useAuth';
 import SupplierInvoiceService from '../services/supplierInvoiceService';
-import { FileText, Eye, Plus, CheckCircle, AlertCircle, Clock, XCircle } from 'lucide-react';
+import { FileText, Eye, Plus, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import Button from '../components/ui/Button';
+
+const STATUS_CONFIG = {
+  'draft': { icon: Clock, label: 'Brouillon', badge: 'bg-surface text-ink-muted' },
+  'validated': { icon: CheckCircle, label: 'Validée', badge: 'bg-blue-50 text-info' },
+  'paid': { icon: CheckCircle, label: 'Payée', badge: 'bg-green-50 text-success' },
+  'overdue': { icon: AlertCircle, label: 'En retard', badge: 'bg-red-50 text-error' },
+};
 
 export default function SupplierInvoices() {
   const { user } = useAuth();
@@ -34,70 +42,44 @@ export default function SupplierInvoices() {
     }
   }, [restaurantId]);
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'draft':
-        return <Clock className="w-4 h-4 text-gray-500" />;
-      case 'validated':
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      case 'paid':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'overdue':
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
-    }
-  };
-
-  const getStatusLabel = (status) => {
-    const labels = {
-      'draft': 'Brouillon',
-      'validated': 'Validée',
-      'paid': 'Payée',
-      'overdue': 'En retard',
-    };
-    return labels[status] || status;
-  };
-
   const filteredInvoices = filter === 'all'
     ? invoices
     : invoices.filter(i => i.status === filter);
 
   if (loading) {
     return (
-      <div className="p-8">
+      <div className="space-y-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-surface rounded w-1/3"></div>
+          <div className="h-64 bg-surface rounded-[16px]"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Factures fournisseurs</h1>
-          <p className="text-gray-500 mt-1">Suivi des achats et paiements</p>
+          <h1 className="text-[1.5rem] font-semibold text-ink tracking-tight">Factures fournisseurs</h1>
+          <p className="text-[0.9375rem] text-ink-muted mt-1">Suivi des achats et paiements</p>
         </div>
-        <button
+        <Button
+          text="Nouvelle facture"
+          variant="primary"
+          icon={Plus}
           onClick={() => navigate('/supplier-invoices/new')}
-          className="flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Nouvelle facture
-        </button>
+        />
       </div>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+        <div className="rounded-[10px] bg-red-50 border border-red-100 text-error px-4 py-3 text-[0.9375rem] font-medium">
           {error}
         </div>
       )}
 
       {/* Filters */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 flex-wrap">
         {[
           { key: 'all', label: 'Toutes' },
           { key: 'draft', label: 'Brouillons' },
@@ -108,10 +90,10 @@ export default function SupplierInvoices() {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+            className={`px-3.5 py-2 rounded-[10px] text-[0.8125rem] font-medium transition-all duration-150 ${
               filter === f.key
-                ? 'bg-gray-900 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-ink text-white shadow-ambient'
+                : 'bg-surface-raised text-ink-secondary hover:bg-surface hover:text-ink border border-border'
             }`}
           >
             {f.label}
@@ -120,67 +102,71 @@ export default function SupplierInvoices() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">N°</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">N° facture fournisseur</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Fournisseur</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Date</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Total TTC</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Statut</th>
-              <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filteredInvoices.length === 0 ? (
+      <div className="overflow-hidden rounded-[16px] border border-border bg-surface-raised shadow-ambient">
+        <div className="overflow-x-auto">
+          <table className="w-full text-[0.9375rem]">
+            <thead className="bg-surface">
               <tr>
-                <td colSpan={7} className="text-center py-12 text-gray-400">
-                  Aucune facture fournisseur trouvée
-                </td>
+                {['N°', 'N° fournisseur', 'Fournisseur', 'Date', 'Total TTC', 'Statut', ''].map((header) => (
+                  <th key={header} className="text-left text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider px-5 py-3.5">
+                    {header}
+                  </th>
+                ))}
               </tr>
-            ) : (
-              filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => navigate(`/supplier-invoices/${invoice.id}`)}>
-                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                    #{invoice.id.slice(0, 8)}...
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {invoice.invoiceNumber || '-'}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    Fournisseur #{invoice.supplierId}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString('fr-FR') : '-'}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">
-                    {invoice.total?.toFixed(2)} €
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      {getStatusIcon(invoice.status)}
-                      <span className="text-sm text-gray-700">{getStatusLabel(invoice.status)}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/supplier-invoices/${invoice.id}`);
-                      }}
-                      className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-                      title="Voir détails"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </button>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {filteredInvoices.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-12 text-ink-muted text-[0.9375rem]">
+                    Aucune facture fournisseur trouvée
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredInvoices.map((invoice) => {
+                  const status = STATUS_CONFIG[invoice.status] || STATUS_CONFIG['draft'];
+                  const StatusIcon = status.icon;
+                  return (
+                    <tr key={invoice.id} className="hover:bg-surface transition-colors duration-150 cursor-pointer" onClick={() => navigate(`/supplier-invoices/${invoice.id}`)}>
+                      <td className="px-5 py-4 font-medium text-ink">
+                        #{invoice.id.slice(0, 8)}...
+                      </td>
+                      <td className="px-5 py-4 text-ink-secondary">
+                        {invoice.invoiceNumber || '-'}
+                      </td>
+                      <td className="px-5 py-4 text-ink-secondary">
+                        Fournisseur #{invoice.supplierId}
+                      </td>
+                      <td className="px-5 py-4 text-ink-secondary">
+                        {invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString('fr-FR') : '-'}
+                      </td>
+                      <td className="px-5 py-4 font-semibold text-ink">
+                        {invoice.total?.toFixed(2)} €
+                      </td>
+                      <td className="px-5 py-4">
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.75rem] font-semibold ${status.badge}`}>
+                          <StatusIcon size={12} strokeWidth={2} />
+                          {status.label}
+                        </span>
+                      </td>
+                      <td className="px-5 py-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/supplier-invoices/${invoice.id}`);
+                          }}
+                          className="text-ink-muted hover:text-ink p-2 rounded-[8px] hover:bg-surface transition-all duration-150"
+                          title="Voir détails"
+                        >
+                          <Eye size={16} strokeWidth={2} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

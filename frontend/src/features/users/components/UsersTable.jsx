@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { Trash2, ShieldCheck } from "lucide-react";
+import { Trash2, ShieldCheck, Shield } from "lucide-react";
 
 const ROLES = [
-  { id: 1, name: "Admin" },
-  { id: 2, name: "Owner" },
-  { id: 3, name: "Manager" },
-  { id: 4, name: "Employee" },
+  { id: 1, name: "Admin", color: "bg-purple-50 text-purple-700" },
+  { id: 2, name: "Owner", color: "bg-primary-muted text-primary" },
+  { id: 3, name: "Manager", color: "bg-blue-50 text-info" },
+  { id: 4, name: "Employee", color: "bg-surface text-ink-secondary" },
 ];
 
 export default function UsersTable({ users, onDelete, onUpdateRole }) {
@@ -19,88 +19,107 @@ export default function UsersTable({ users, onDelete, onUpdateRole }) {
     setSelectedRole("");
   };
 
+  const getRoleStyle = (roleName) => {
+    const role = ROLES.find((r) => r.name === roleName);
+    return role?.color || "bg-surface text-ink-secondary";
+  };
+
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
-      <table className="min-w-full text-sm">
-        <thead className="bg-gray-50 text-gray-600 uppercase text-xs font-semibold">
-          <tr>
-            <th className="px-4 py-3 text-left">Nom</th>
-            <th className="px-4 py-3 text-left">Email</th>
-            <th className="px-4 py-3 text-left">Rôle</th>
-            <th className="px-4 py-3 text-right">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100">
-          {users.map((user) => (
-            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-              <td className="px-4 py-3 font-medium text-gray-900">
-                {user.username}
-              </td>
-              <td className="px-4 py-3 text-gray-600">{user.email}</td>
-              <td className="px-4 py-3">
-                {editingRoleId === user.id ? (
-                  <div className="flex items-center gap-2">
-                    <select
-                      className="border rounded-lg px-2 py-1 text-xs"
-                      value={selectedRole}
-                      onChange={(e) => setSelectedRole(e.target.value)}
-                    >
-                      <option value="">Choisir...</option>
-                      {ROLES.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
+    <div className="overflow-hidden rounded-[16px] border border-border bg-surface-raised shadow-ambient">
+      <div className="overflow-x-auto">
+        <table className="min-w-full text-[0.9375rem]">
+          <thead className="bg-surface">
+            <tr>
+              {["Nom", "Email", "Rôle", ""].map((header) => (
+                <th
+                  key={header}
+                  className="px-5 py-3.5 text-left text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {users.map((user) => (
+              <tr
+                key={user.id}
+                className="hover:bg-surface transition-colors duration-150"
+              >
+                <td className="px-5 py-4 font-medium text-ink">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary-muted text-primary flex items-center justify-center text-[0.75rem] font-bold">
+                      {user.username?.charAt(0)?.toUpperCase() || "?"}
+                    </div>
+                    {user.username}
+                  </div>
+                </td>
+                <td className="px-5 py-4 text-ink-secondary">{user.email}</td>
+                <td className="px-5 py-4">
+                  {editingRoleId === user.id ? (
+                    <div className="flex items-center gap-2">
+                      <select
+                        className="border border-border rounded-[10px] px-3 py-1.5 text-[0.8125rem] bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all"
+                        value={selectedRole}
+                        onChange={(e) => setSelectedRole(e.target.value)}
+                      >
+                        <option value="">Choisir...</option>
+                        {ROLES.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => handleRoleChange(user.id)}
+                        className="text-success hover:text-green-700 p-1.5 rounded-[8px] hover:bg-green-50 transition-all"
+                        title="Valider"
+                      >
+                        <ShieldCheck size={16} strokeWidth={2} />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[0.75rem] font-semibold ${getRoleStyle(user.role?.name)}`}>
+                      {user.role?.name || "—"}
+                    </span>
+                  )}
+                </td>
+                <td className="px-5 py-4">
+                  <div className="flex items-center justify-end gap-1">
                     <button
-                      onClick={() => handleRoleChange(user.id)}
-                      className="text-green-600 hover:text-green-700"
-                      title="Valider"
+                      onClick={() => {
+                        setEditingRoleId(user.id);
+                        setSelectedRole(String(user.roleId || ""));
+                      }}
+                      className="text-ink-muted hover:text-ink p-2 rounded-[8px] hover:bg-surface transition-all duration-150"
+                      title="Modifier le rôle"
                     >
-                      <ShieldCheck size={16} />
+                      <Shield size={16} strokeWidth={2} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(user.id)}
+                      className="text-error hover:text-red-700 p-2 rounded-[8px] hover:bg-red-50 transition-all duration-150"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={16} strokeWidth={2} />
                     </button>
                   </div>
-                ) : (
-                  <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800">
-                    {user.role?.name || "—"}
-                  </span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <button
-                    onClick={() => {
-                      setEditingRoleId(user.id);
-                      setSelectedRole(String(user.roleId || ""));
-                    }}
-                    className="text-gray-500 hover:text-gray-700 p-1 rounded hover:bg-gray-100"
-                    title="Modifier le rôle"
-                  >
-                    <ShieldCheck size={16} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(user.id)}
-                    className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
-                    title="Supprimer"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-          {users.length === 0 && (
-            <tr>
-              <td
-                colSpan={4}
-                className="px-4 py-8 text-center text-gray-400 text-sm"
-              >
-                Aucun utilisateur trouvé.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                </td>
+              </tr>
+            ))}
+            {users.length === 0 && (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-5 py-12 text-center text-ink-muted text-[0.9375rem]"
+                >
+                  Aucun utilisateur trouvé.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

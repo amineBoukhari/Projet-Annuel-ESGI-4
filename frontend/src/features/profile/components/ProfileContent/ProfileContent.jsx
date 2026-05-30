@@ -1,16 +1,15 @@
-import ContentContainer from "../../../../components/ui/Content/ContentContainer";
 import ProfileForm from "../ProfileForm";
 import SecurityForm from "../SecurityForm";
 
 export default function ProfileContent() {
   return (
-    <>
-      <ContentContainer x={3}>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 bg-surface-raised rounded-[16px] p-6 shadow-ambient">
         <ProfileForm />
-      </ContentContainer>
-      <ContentContainer x={1}>
+      </div>
+      <div className="bg-surface-raised rounded-[16px] p-6 shadow-ambient">
         <SecurityForm />
-      </ContentContainer>
-    </>
+      </div>
+    </div>
   );
 }

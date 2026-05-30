@@ -1,39 +1,54 @@
-import { Children } from "react";
+import { forwardRef } from "react";
 
-export default function Input({
-  label,
-  identifier,
-  type,
-  errorMessage,
-  placeHolder,
-  children,
-  ref,
-  defaultValue = null,
-}) {
+const Input = forwardRef(function Input(
+  { label, identifier, type = "text", errorMessage, placeHolder, children, defaultValue = null },
+  ref
+) {
   return (
-    <div>
-      <label
-        className="block text-sm font-bold text-slate-700 mb-2"
-        htmlFor={identifier}
-      >
-        {label}
-      </label>
-      {errorMessage && (
-        <p className="text-red-500 text-xs px-2">{errorMessage}</p>
+    <div className="w-full">
+      {label && (
+        <label
+          className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5"
+          htmlFor={identifier}
+        >
+          {label}
+        </label>
       )}
-      <div className="rounded-lg flex items-center">
+      <div className="relative flex items-center">
         <input
-          className={`w-full bg-slate-50 border border-slate-200 text-slate-900 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all font-medium ${
-            errorMessage ? "border-red-500" : ""
-          }`}
+          className={`
+            w-full
+            bg-surface-raised
+            border
+            text-ink
+            px-4 py-3
+            rounded-[10px]
+            text-[0.9375rem]
+            transition-all duration-200
+            placeholder:text-ink-muted
+            focus:outline-none
+            focus:border-primary
+            focus:shadow-lifted
+            ${errorMessage ? "border-error bg-red-50" : "border-border hover:border-border-strong"}
+          `}
           {...(placeHolder !== null && { placeholder: placeHolder })}
           type={type}
           name={identifier}
+          id={identifier}
           ref={ref}
           defaultValue={defaultValue}
         />
-        {children}
+        {children && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
+            {children}
+          </div>
+        )}
       </div>
+      {errorMessage && (
+        <p className="text-error text-[0.75rem] mt-1.5 font-medium">{errorMessage}</p>
+      )}
     </div>
   );
-}
+});
+
+export default Input;
