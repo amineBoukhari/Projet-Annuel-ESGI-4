@@ -510,7 +510,7 @@ async function seedRolesAndPermissions(models) {
     where: { name: "Restaurant Démo" },
     defaults: {
       name: "Restaurant Démo",
-      address: "1 Rue de la Paix, Paris",
+      adress: "1 Rue de la Paix, Paris",
     },
   });
 

@@ -1,6 +1,69 @@
- | 2026-05-30 16:19:27.991 UTC [1] LOG:  database system is ready to accept connections
+db-1  | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+db-1  | creating subdirectories ... ok
+db-1  | selecting dynamic shared memory implementation ... posix
+db-1  | selecting default max_connections ... 100
+db-1  | selecting default shared_buffers ... 128MB
+db-1  | selecting default time zone ... Etc/UTC
+db-1  | creating configuration files ... ok
+adminer-1  | [Sat May 30 16:21:09 2026] PHP 8.4.18 Development Server (http://[::]:8080) started
+db-1       | running bootstrap script ... ok
+db-1       | performing post-bootstrap initialization ... ok
+db-1       | syncing data to disk ... ok
+db-1       | 
+db-1       | 
+db-1       | Success. You can now start the database server using:
+db-1       | 
+db-1       |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+db-1       | 
+db-1       | initdb: warning: enabling "trust" authentication for local connections
+db-1       | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+db-1       | waiting for server to start....2026-05-30 16:21:10.546 UTC [48] LOG:  starting PostgreSQL 15.15 (Debian 15.15-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1       | 2026-05-30 16:21:10.550 UTC [48] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-05-30 16:21:10.559 UTC [51] LOG:  database system was shut down at 2026-05-30 16:21:09 UTC
+db-1       | 2026-05-30 16:21:10.565 UTC [48] LOG:  database system is ready to accept connections
+db-1       |  done
+db-1       | server started
+db-1       | CREATE DATABASE
+db-1       | 
+db-1       | 
+db-1       | /usr/local/bin/docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+db-1       | 
+db-1       | 2026-05-30 16:21:10.730 UTC [48] LOG:  received fast shutdown request
+db-1       | waiting for server to shut down....2026-05-30 16:21:10.731 UTC [48] LOG:  aborting any active transactions
+db-1       | 2026-05-30 16:21:10.733 UTC [48] LOG:  background worker "logical replication launcher" (PID 54) exited with exit code 1
+db-1       | 2026-05-30 16:21:10.733 UTC [49] LOG:  shutting down
+db-1       | 2026-05-30 16:21:10.734 UTC [49] LOG:  checkpoint starting: shutdown immediate
+db-1       | 2026-05-30 16:21:10.951 UTC [49] LOG:  checkpoint complete: wrote 922 buffers (5.6%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.019 s, sync=0.188 s, total=0.219 s; sync files=301, longest=0.003 s, average=0.001 s; distance=4239 kB, estimate=4239 kB
+db-1       | 2026-05-30 16:21:10.959 UTC [48] LOG:  database system is shut down
+db-1       |  done
+db-1       | server stopped
+db-1       | 
+db-1       | PostgreSQL init process complete; ready for start up.
+db-1       | 
+db-1       | 2026-05-30 16:21:11.052 UTC [1] LOG:  starting PostgreSQL 15.15 (Debian 15.15-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+db-1       | 2026-05-30 16:21:11.052 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db-1       | 2026-05-30 16:21:11.052 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db-1       | 2026-05-30 16:21:11.056 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db-1       | 2026-05-30 16:21:11.061 UTC [64] LOG:  database system was shut down at 2026-05-30 16:21:10 UTC
+db-1       | 2026-05-30 16:21:11.066 UTC [1] LOG:  database system is ready to accept connections
+frontend-1  | 
+frontend-1  | up to date, audited 180 packages in 1s
+frontend-1  | 
+frontend-1  | 39 packages are looking for funding
+frontend-1  |   run `npm fund` for details
+frontend-1  | 
+frontend-1  | 5 vulnerabilities (2 moderate, 3 high)
+frontend-1  | 
+frontend-1  | To address all issues, run:
+frontend-1  |   npm audit fix
+frontend-1  | 
+frontend-1  | Run `npm audit` for details.
+frontend-1  | 
+frontend-1  | > frontend@0.0.0 dev
+frontend-1  | > vite --host
+frontend-1  | 
 backend-1   | 
-backend-1   | removed 25 packages, and audited 235 packages in 2s
+backend-1   | removed 25 packages, and audited 235 packages in 1s
 backend-1   | 
 backend-1   | 38 packages are looking for funding
 backend-1   |   run `npm fund` for details
@@ -19,7 +82,13 @@ backend-1   | [nodemon] to restart at any time, enter `rs`
 backend-1   | [nodemon] watching path(s): *.*
 backend-1   | [nodemon] watching extensions: js,mjs,cjs,json
 backend-1   | [nodemon] starting `node server.js`
-backend-1   | [dotenv@17.2.4] injecting env (8) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+frontend-1  | 
+frontend-1  |   VITE v7.3.1  ready in 289 ms
+frontend-1  | 
+frontend-1  |   ➜  Local:   http://localhost:5173/
+frontend-1  |   ➜  Network: http://172.20.0.4:5173/
+frontend-1  |   ➜  Network: http://172.19.0.2:5173/
+backend-1   | [dotenv@17.2.4] injecting env (8) from .env -- tip: ⚙️  enable debug logging with { debug: true }
 backend-1   | Auth middleware loaded
 backend-1   | Setting up associations for model: User
 backend-1   | Associating model: User
@@ -58,95 +127,92 @@ backend-1   | Setting up associations for model: Expense
 backend-1   | Associating model: Expense
 backend-1   | Example app listening on port: http://localhost:3000
 backend-1   | Connection has been established successfully.
-db-1        | 2026-05-30 16:19:29.219 UTC [69] ERROR:  foreign key constraint "InvoiceItems_recipeId_fkey" cannot be implemented
-db-1        | 2026-05-30 16:19:29.219 UTC [69] DETAIL:  Key columns "recipeId" and "id" are of incompatible types: uuid and integer.
-db-1        | 2026-05-30 16:19:29.219 UTC [69] STATEMENT:  CREATE TABLE IF NOT EXISTS "InvoiceItems" ("id" UUID , "invoiceId" UUID NOT NULL REFERENCES "Invoices" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "description" VARCHAR(255) NOT NULL, "quantity" INTEGER NOT NULL DEFAULT 1, "unitPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "totalPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "recipeId" UUID REFERENCES "Recipes" ("id") ON DELETE SET NULL ON UPDATE CASCADE, PRIMARY KEY ("id"));
-backend-1   | Error starting server: Error
-backend-1   |     at Query.run (/app/node_modules/sequelize/lib/dialects/postgres/query.js:50:25)
-backend-1   |     at /app/node_modules/sequelize/lib/sequelize.js:315:28
+backend-1   | All models and associations were synchronized successfully.
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (description) passed to defaults option of findOrCreate
+backend-1   | (sequelize) Warning: Unknown attributes (address) passed to defaults option of findOrCreate
+backend-1   | Error starting server: ValidationError [SequelizeValidationError]: notNull Violation: Restaurant.adress cannot be null
+backend-1   |     at InstanceValidator._validate (/app/node_modules/sequelize/lib/instance-validator.js:50:13)
 backend-1   |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
-backend-1   |     at async PostgresQueryInterface.createTable (/app/node_modules/sequelize/lib/dialects/abstract/query-interface.js:98:12)
-backend-1   |     at async InvoiceItem.sync (/app/node_modules/sequelize/lib/model.js:942:7)
-backend-1   |     at async Sequelize.sync (/app/node_modules/sequelize/lib/sequelize.js:377:9)
-backend-1   |     at async startServer (/app/server.js:74:7) {
-backend-1   |   name: 'SequelizeDatabaseError',
-backend-1   |   parent: error: foreign key constraint "InvoiceItems_recipeId_fkey" cannot be implemented
-backend-1   |       at parseErrorMessage (/app/node_modules/pg-protocol/dist/parser.js:305:11)
-backend-1   |       at Parser.handlePacket (/app/node_modules/pg-protocol/dist/parser.js:143:27)
-backend-1   |       at Parser.parse (/app/node_modules/pg-protocol/dist/parser.js:37:38)
-backend-1   |       at Socket.<anonymous> (/app/node_modules/pg-protocol/dist/index.js:11:42)
-backend-1   |       at Socket.emit (node:events:509:28)
-backend-1   |       at addChunk (node:internal/streams/readable:563:12)
-backend-1   |       at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)
-backend-1   |       at Readable.push (node:internal/streams/readable:394:5)
-backend-1   |       at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
-backend-1   |     length: 225,
-backend-1   |     severity: 'ERROR',
-backend-1   |     code: '42804',
-backend-1   |     detail: 'Key columns "recipeId" and "id" are of incompatible types: uuid and integer.',
-backend-1   |     hint: undefined,
-backend-1   |     position: undefined,
-backend-1   |     internalPosition: undefined,
-backend-1   |     internalQuery: undefined,
-backend-1   |     where: undefined,
-backend-1   |     schema: undefined,
-backend-1   |     table: undefined,
-backend-1   |     column: undefined,
-backend-1   |     dataType: undefined,
-backend-1   |     constraint: undefined,
-backend-1   |     file: 'tablecmds.c',
-backend-1   |     line: '9489',
-backend-1   |     routine: 'ATAddForeignKeyConstraint',
-backend-1   |     sql: 'CREATE TABLE IF NOT EXISTS "InvoiceItems" ("id" UUID , "invoiceId" UUID NOT NULL REFERENCES "Invoices" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "description" VARCHAR(255) NOT NULL, "quantity" INTEGER NOT NULL DEFAULT 1, "unitPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "totalPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "recipeId" UUID REFERENCES "Recipes" ("id") ON DELETE SET NULL ON UPDATE CASCADE, PRIMARY KEY ("id"));',
-backend-1   |     parameters: undefined
-backend-1   |   },
-backend-1   |   original: error: foreign key constraint "InvoiceItems_recipeId_fkey" cannot be implemented
-backend-1   |       at parseErrorMessage (/app/node_modules/pg-protocol/dist/parser.js:305:11)
-backend-1   |       at Parser.handlePacket (/app/node_modules/pg-protocol/dist/parser.js:143:27)
-backend-1   |       at Parser.parse (/app/node_modules/pg-protocol/dist/parser.js:37:38)
-backend-1   |       at Socket.<anonymous> (/app/node_modules/pg-protocol/dist/index.js:11:42)
-backend-1   |       at Socket.emit (node:events:509:28)
-backend-1   |       at addChunk (node:internal/streams/readable:563:12)
-backend-1   |       at readableAddChunkPushByteMode (node:internal/streams/readable:514:3)
-backend-1   |       at Readable.push (node:internal/streams/readable:394:5)
-backend-1   |       at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
-backend-1   |     length: 225,
-backend-1   |     severity: 'ERROR',
-backend-1   |     code: '42804',
-backend-1   |     detail: 'Key columns "recipeId" and "id" are of incompatible types: uuid and integer.',
-backend-1   |     hint: undefined,
-backend-1   |     position: undefined,
-backend-1   |     internalPosition: undefined,
-backend-1   |     internalQuery: undefined,
-backend-1   |     where: undefined,
-backend-1   |     schema: undefined,
-backend-1   |     table: undefined,
-backend-1   |     column: undefined,
-backend-1   |     dataType: undefined,
-backend-1   |     constraint: undefined,
-backend-1   |     file: 'tablecmds.c',
-backend-1   |     line: '9489',
-backend-1   |     routine: 'ATAddForeignKeyConstraint',
-backend-1   |     sql: 'CREATE TABLE IF NOT EXISTS "InvoiceItems" ("id" UUID , "invoiceId" UUID NOT NULL REFERENCES "Invoices" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "description" VARCHAR(255) NOT NULL, "quantity" INTEGER NOT NULL DEFAULT 1, "unitPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "totalPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "recipeId" UUID REFERENCES "Recipes" ("id") ON DELETE SET NULL ON UPDATE CASCADE, PRIMARY KEY ("id"));',
-backend-1   |     parameters: undefined
-backend-1   |   },
-backend-1   |   sql: 'CREATE TABLE IF NOT EXISTS "InvoiceItems" ("id" UUID , "invoiceId" UUID NOT NULL REFERENCES "Invoices" ("id") ON DELETE CASCADE ON UPDATE CASCADE, "description" VARCHAR(255) NOT NULL, "quantity" INTEGER NOT NULL DEFAULT 1, "unitPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "totalPrice" DECIMAL(10,2) NOT NULL DEFAULT 0, "recipeId" UUID REFERENCES "Recipes" ("id") ON DELETE SET NULL ON UPDATE CASCADE, PRIMARY KEY ("id"));',
-backend-1   |   parameters: {}
+backend-1   |     at async InstanceValidator._validateAndRunHooks (/app/node_modules/sequelize/lib/instance-validator.js:60:7)
+backend-1   |     at async InstanceValidator.validate (/app/node_modules/sequelize/lib/instance-validator.js:54:12)
+backend-1   |     at async model.save (/app/node_modules/sequelize/lib/model.js:2426:7)
+backend-1   |     at async Restaurant.create (/app/node_modules/sequelize/lib/model.js:1362:12)
+backend-1   |     at async Restaurant.findOrCreate (/app/node_modules/sequelize/lib/model.js:1422:25)
+backend-1   |     at async seedRolesAndPermissions (/app/src/seed/rolesAndPermissions.seed.js:509:31)
+backend-1   |     at async startServer (/app/server.js:80:7) {
+backend-1   |   errors: [
+backend-1   |     ValidationErrorItem {
+backend-1   |       message: 'Restaurant.adress cannot be null',
+backend-1   |       type: 'notNull Violation',
+backend-1   |       path: 'adress',
+backend-1   |       value: null,
+backend-1   |       origin: 'CORE',
+backend-1   |       instance: [Restaurant],
+backend-1   |       validatorKey: 'is_null',
+backend-1   |       validatorName: null,
+backend-1   |       validatorArgs: []
+backend-1   |     }
+backend-1   |   ]
 backend-1   | }
 backend-1   | JWT_SECRET défini ? true
 backend-1   | JWT_SECRET défini ? true
 backend-1   | JWT_SECRET défini ? true
 backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-backend-1   | JWT_SECRET défini ? true
-
