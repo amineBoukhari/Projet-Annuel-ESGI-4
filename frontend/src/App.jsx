@@ -1,32 +1,15 @@
-import { BrowserRouter, Route, Routes } from "react-router";
-import Dashboard from "./Pages/Dashboard";
-import Layout from "./Components/Layouts/Layout";
-import Stocks from "./Pages/Stocks";
-import Login from "./Pages/Login";
-import ProtectedRoute from "./Context/ProtectedRoute";
-import { AuthProvider } from "./Context/authContext";
-import { Toaster } from "react-hot-toast";
-import ChangePassword from "./Pages/ChangePassword";
+import { AppProvider } from "./providers/AppProvider";
+import { AuthProvider } from "./features/auth/providers/AuthProvider";
+import { RouterProvider } from "react-router/dom";
+import { router } from "./routes/AppRoutes";
 
 function App() {
   return (
-    <>
-      <Toaster duration={4000} />
+    <AppProvider>
       <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route element={<ProtectedRoute />}>
-              <Route path="/change-password" element={<ChangePassword />} />
-              <Route element={<Layout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="/stocks" element={<Stocks />} />
-              </Route>
-            </Route>
-          </Routes>
-        </BrowserRouter>
+        <RouterProvider router={router} />
       </AuthProvider>
-    </>
+    </AppProvider>
   );
 }
 

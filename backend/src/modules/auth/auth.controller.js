@@ -2,6 +2,7 @@ const User = require("../user/user.model");
 const Role = require("../role/role.model");
 const Permission = require("../permission/permission.model");
 const authService = require("../auth/auth.service");
+const cookieManager = require("../../utils/cookieManager");
 
 async function login(req, res) {
   const email = req.body.email;
@@ -29,19 +30,24 @@ async function login(req, res) {
 
     const isPasswordValid = await authService.comparePasswords(
       password,
-      user.password
+      user.password,
     );
     if (!isPasswordValid) {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
     const token = await authService.generateToken(user);
+    cookieManager.generateCookie(res, token);
 
-    // token must be stored in the client side (localStorage or cookies) and sent in the Authorization header for protected routes
-    return res.json({
-      token,
-      user: user,
+    const cleanUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
       mustChangePassword: user.mustChangePassword,
+    };
+
+    return res.json({
+      user: cleanUser,
     });
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -60,7 +66,7 @@ async function changePassword(req, res) {
 
     const isOldPasswordValid = await authService.comparePasswords(
       oldPassword,
-      user.password
+      user.password,
     );
     if (!isOldPasswordValid) {
       return res.status(400).json({ error: "Invalid old password" });
@@ -83,4 +89,15 @@ async function changePassword(req, res) {
   }
 }
 
-module.exports = { login, changePassword };
+async function logout(req, res) {
+  try {
+    cookieManager.clearCookie(res);
+
+    return res.status(200).json({ message: "Déconnexion réussie" });
+  } catch (error) {
+    console.error("Error during logout:", error);
+    return res.status(500).json({ error: "Failed to logout" });
+  }
+}
+
+module.exports = { login, changePassword, logout };

@@ -514,6 +514,17 @@ async function seedRolesAndPermissions(models) {
       roleId: 1, // Assuming the Admin role has ID 1
     },
   });
+
+  models.User.findOrCreate({
+    where: { email: "johndoe@gmail.com" },
+    defaults: {
+      username: "John Doe",
+      email: "johndoe@gmail.com",
+      mustChangePassword: true,
+      password: await authService.hashPassword("xxx"),
+      roleId: 4, // Assuming the Admin role has ID 1
+    },
+  });
 }
 
 module.exports = { seedRolesAndPermissions };

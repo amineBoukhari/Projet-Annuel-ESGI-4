@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-export default function Avatar({ attributes, seed = "Sacha carton" }) {
+export default function Avatar({ attributes, seed }) {
   const avatar = useMemo(() => {
     const url = new URL("https://api.dicebear.com/9.x/dylan/svg");
     url.searchParams.set("seed", seed);

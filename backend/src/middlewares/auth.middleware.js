@@ -1,41 +1,26 @@
-const jwt = require('jsonwebtoken');
-console.log('Auth middleware loaded');
+const jwt = require("jsonwebtoken");
+console.log("Auth middleware loaded");
 
-async function checkAuth (req,res,next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ error: 'Access denied. No token provided.' });
-    }
-    const token  = authHeader.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({error : "Access denied"});
-    }
+async function checkAuth(req, res, next) {
+  const token = req.cookies.token;
 
-    // decodedToken will contain 
-    // { id : user.id, email : user.email, iat : timestamp, exp : timestamp }
-    console.log(token.trim);
-    try {
+  if (!token) {
+    return res.status(401).json({ error: "Access denied. Token not found" });
+  }
+
+  try {
+    console.log("JWT_SECRET défini ?", !!process.env.JWT_SECRET);
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    
-    if (!decodedToken){
-        return res.status(403).json({error :decodedToken});
-    }
     req.user = decodedToken;
     req.token = token;
-    }catch (error) {
-        if (error.name === 'TokenExpiredError') {
-            return res.status(403).json({error : "Token expired"});
-        }
-
-        return res.status(403).json({error : error.decodedToken});
-    }
-    
-
-    
-    
     next();
-
+  } catch (error) {
+    console.error("Auth error:", error.name, error.message);
+    if (error.name === "TokenExpiredError") {
+      return res.status(403).json({ error: "Token expired" });
+    }
+    return res.status(403).json({ error: error.message });
+  }
 }
 
-
-module.exports = checkAuth ;
+module.exports = checkAuth;

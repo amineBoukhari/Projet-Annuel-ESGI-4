@@ -1,5 +1,8 @@
 const User = require("../user/user.model");
 const authService = require("../auth/auth.service");
+const Role = require("../role/role.model");
+const jwt = require("jsonwebtoken");
+const cookieManager = require("../../utils/cookieManager");
 
 const ROUTE_ROLE_MAP = {
   "/createUser": 3, // default role is employee
@@ -54,14 +57,22 @@ async function createUser(req, res) {
 async function getUSerWithId(req, res) {
   const userId = req.params.id;
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findOne({
+      where: { id: userId },
+      include: "role",
+      attributes: {
+        exclude: ["password", "roleId"],
+      },
+    });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
     res.status(200).json(user);
   } catch (error) {
     console.error("Error fetching user:", error);
-    res.status(500).json({ error: "Error While fetching user" });
+    res
+      .status(500)
+      .json({ error: "Error While fetching user" + error.message });
   }
 }
 
@@ -71,6 +82,26 @@ async function getAllUsers(req, res) {
     res.status(200).json({ message: "no user was found" });
   }
   res.status(200).json(users);
+}
+
+async function getMyProfile(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const user = await User.findOne({
+      where: { id: userId },
+      include: "role",
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (error) {
+    console.error("Error fetching current user profile:", error);
+    return res.status(500).json({ error: "Error while fetching profile" });
+  }
 }
 
 async function deleteUser(req, res) {
@@ -90,19 +121,22 @@ async function deleteUser(req, res) {
 
 async function updateUser(req, res) {
   const userId = req.user.id;
-  const keyToUpdate = req.body.key;
-  const newValue = req.body.value;
+  const { username, email } = req.body;
+
   try {
     const user = await User.findByPk(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    user[keyToUpdate] = newValue;
+
+    await user.update({ username, email });
+
     await user.save();
-    res.status(200).json(user);
+
+    return res.status(200).json(user);
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ error: "Failed to update user" });
+    return res.status(500).json({ error: "Failed to update user" });
   }
 }
 
@@ -118,13 +152,13 @@ async function updateRole(req, res) {
   } else if (
     typeof newRole === "string" &&
     Object.values(AVAILABLE_ROLES).some(
-      (v) => v.toLowerCase() === newRole.toLowerCase()
+      (v) => v.toLowerCase() === newRole.toLowerCase(),
     )
   ) {
     newRole = parseInt(
       Object.keys(AVAILABLE_ROLES).find(
-        (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase()
-      )
+        (key) => AVAILABLE_ROLES[key].toLowerCase() === newRole.toLowerCase(),
+      ),
     );
   } else {
     return res.status(400).json({ error: "Invalid role value" });
@@ -137,12 +171,9 @@ async function updateRole(req, res) {
     }
     user.roleId = newRole;
     await user.save();
-    return res
-      .status(200)
-      .json({
-        message:
-          "User role updated successfully to " + AVAILABLE_ROLES[newRole],
-      });
+    return res.status(200).json({
+      message: "User role updated successfully to " + AVAILABLE_ROLES[newRole],
+    });
   } catch (err) {
     console.log(err.message);
     return res
@@ -158,4 +189,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateRole,
+  getMyProfile,
 };

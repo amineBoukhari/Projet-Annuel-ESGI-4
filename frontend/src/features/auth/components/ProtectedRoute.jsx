@@ -1,21 +1,18 @@
 import { Navigate, Outlet, useLocation } from "react-router";
-import { useAuth } from "./authContext";
-
+import { useAuth } from "../hooks/useAuth";
 const ProtectedRoute = () => {
-  const { token } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
 
-  if (!token) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  const { mustChangePassword } = JSON.parse(atob(token.split(".")[1]));
-
-  if (location.pathname !== "/change-password" && mustChangePassword) {
+  if (location.pathname !== "/change-password" && user.mustChangePassword) {
     return <Navigate to="/change-password" replace />;
   }
 
-  if (location.pathname === "/change-password" && !mustChangePassword) {
+  if (location.pathname === "/change-password" && !user.mustChangePassword) {
     return <Navigate to="/" replace />;
   }
 
