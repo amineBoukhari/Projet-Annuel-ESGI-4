@@ -44,6 +44,7 @@ async function login(req, res) {
       username: user.username,
       email: user.email,
       mustChangePassword: user.mustChangePassword,
+      restaurantId: user.restaurantId,
       role: user.role ? { name: user.role.name } : null,
     };
 

@@ -5,7 +5,11 @@ const { requireRole } = require("../../middlewares/role.middlewares");
 const userController = require("./user.controller");
 const checkAuth = require("../../middlewares/auth.middleware");
 
-router.post("/createUser", userController.createUser);
+router.post(
+  "/createUser",
+  requireRole("Admin", "Owner", "Manager"),
+  userController.createUser,
+);
 router.post(
   "/createOwner",
   requireRole("Admin", "Owner"),

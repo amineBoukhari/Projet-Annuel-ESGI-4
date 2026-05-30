@@ -57,7 +57,70 @@ const updateProfile = async (id, newEmail, newUsername) => {
   }
 };
 
+const fetchUsers = async () => {
+  const response = await fetch(`${backDomain}/api/users/getAll`, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const err = new Error(`HTTP Error: ${response.status}`);
+    err.status = response.status;
+    throw err;
+  }
+  return await response.json();
+};
+
+const createUser = async (userData) => {
+  const response = await fetch(`${backDomain}/api/users/${userData.endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      username: userData.username,
+      email: userData.email,
+      password: userData.password,
+      mustChangePassword: userData.mustChangePassword,
+    }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Erreur lors de la création de l'utilisateur");
+  }
+  return data;
+};
+
+const deleteUser = async (id) => {
+  const response = await fetch(`${backDomain}/api/users/delete/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Erreur lors de la suppression");
+  }
+  return data;
+};
+
+const updateUserRole = async (id, newRole) => {
+  const response = await fetch(`${backDomain}/api/users/updateRole/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ newRole }),
+  });
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.error || "Erreur lors de la mise à jour du rôle");
+  }
+  return data;
+};
+
 export default {
   updatePassword,
   updateProfile,
+  fetchUsers,
+  createUser,
+  deleteUser,
+  updateUserRole,
 };
