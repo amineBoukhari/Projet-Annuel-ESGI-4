@@ -7,6 +7,7 @@ import Invoices from "../pages/Invoices";
 import InvoiceForm from "../pages/InvoiceForm";
 import InvoiceDetail from "../pages/InvoiceDetail";
 import QuickInvoice from "../pages/QuickInvoice";
+import Expenses from "../pages/Expenses";
 import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import RoleGuard from "../features/auth/components/RoleGuard";
@@ -91,6 +92,14 @@ export const router = createBrowserRouter([
                 element: (
                   <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
                     <QuickInvoice />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "/expenses",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <Expenses />
                   </RoleGuard>
                 ),
               },

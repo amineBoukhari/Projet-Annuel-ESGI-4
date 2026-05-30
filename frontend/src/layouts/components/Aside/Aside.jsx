@@ -9,6 +9,7 @@ import {
   LogOut,
   Receipt,
   Zap,
+  Wallet,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
@@ -38,6 +39,7 @@ export default function Aside() {
     ...(canManageUsers ? [{ label: "Team", icon: Users, route: "/users" }] : []),
     ...(canManageUsers ? [{ label: "Factures", icon: Receipt, route: "/invoices" }] : []),
     ...(canManageUsers ? [{ label: "Encaissement", icon: Zap, route: "/quick-invoice" }] : []),
+    ...(canManageUsers ? [{ label: "Dépenses", icon: Wallet, route: "/expenses" }] : []),
   ];
 
   return (

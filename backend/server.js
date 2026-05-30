@@ -17,6 +17,7 @@ const purchaseOrderRoutes = require('./src/modules/purchaseOrder/purchaseOrder.r
 const purchaseReturnRoutes = require('./src/modules/purchaseReturn/purchaseReturn.routes');
 const paymentRoutes = require('./src/modules/payment/payment.routes');
 const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
+const expenseRoutes = require('./src/modules/expense/expense.routes');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -36,9 +37,10 @@ const PurchaseReturnItem = require('./src/modules/purchaseReturn/purchaseReturnI
 const Payment = require('./src/modules/payment/payment.model');
 const Invoice = require('./src/modules/invoice/invoice.model');
 const InvoiceItem = require('./src/modules/invoice/invoiceItem.model');
+const Expense = require('./src/modules/expense/expense.model');
 
 // Collect models
-const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment, Invoice, InvoiceItem };
+const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment, Invoice, InvoiceItem, Expense };
 
 // Setup associations
 Object.values(models).forEach((model) => {
@@ -97,6 +99,7 @@ app.use('/api/purchaseOrders', authMiddleware, purchaseOrderRoutes);
 app.use('/api/purchaseReturns', authMiddleware, purchaseReturnRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
 app.use('/api/invoices', authMiddleware, invoiceRoutes);
+app.use('/api/expenses', authMiddleware, expenseRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");
