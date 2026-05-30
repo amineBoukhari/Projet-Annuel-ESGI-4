@@ -505,24 +505,44 @@ async function seedRolesAndPermissions(models) {
     }
   }
 
-  models.User.findOrCreate({
+  await models.User.findOrCreate({
     where: { email: "admin@gmail.com" },
     defaults: {
-      username: " Super Admin",
+      username: "Super Admin",
       email: "admin@gmail.com",
       password: await authService.hashPassword("admin123"),
-      roleId: 1, // Assuming the Admin role has ID 1
+      roleId: 1, // Admin
     },
   });
 
-  models.User.findOrCreate({
+  await models.User.findOrCreate({
+    where: { email: "owner@gmail.com" },
+    defaults: {
+      username: "Restaurant Owner",
+      email: "owner@gmail.com",
+      password: await authService.hashPassword("owner123"),
+      roleId: 2, // Owner
+    },
+  });
+
+  await models.User.findOrCreate({
+    where: { email: "manager@gmail.com" },
+    defaults: {
+      username: "Floor Manager",
+      email: "manager@gmail.com",
+      password: await authService.hashPassword("manager123"),
+      roleId: 3, // Manager
+    },
+  });
+
+  await models.User.findOrCreate({
     where: { email: "johndoe@gmail.com" },
     defaults: {
       username: "John Doe",
       email: "johndoe@gmail.com",
       mustChangePassword: true,
       password: await authService.hashPassword("xxx"),
-      roleId: 4, // Assuming the Admin role has ID 1
+      roleId: 4, // Employee
     },
   });
 }
