@@ -29,7 +29,7 @@ async function createUser(req, res) {
     req.body.mustChangePassword !== undefined
       ? req.body.mustChangePassword
       : true;
-  const restaurantId = req.body.restaurantId || null;
+  const restaurantId = req.body.restaurantId || req.user.restaurantId || null;
   const existingUser = await User.findOne({ where: { email: email } });
   if (existingUser) {
     return res
