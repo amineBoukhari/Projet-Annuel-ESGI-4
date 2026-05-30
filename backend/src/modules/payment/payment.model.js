@@ -9,7 +9,7 @@ const Payment = sequelize.define('Payment', {
   },
   supplierId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   purchaseOrderId: {
     type: DataTypes.INTEGER,

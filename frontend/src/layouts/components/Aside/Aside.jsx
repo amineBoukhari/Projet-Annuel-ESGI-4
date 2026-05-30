@@ -7,6 +7,8 @@ import {
   Settings,
   CircleHelp,
   LogOut,
+  Receipt,
+  Zap,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
@@ -34,6 +36,8 @@ export default function Aside() {
     { label: "Calendar", icon: Calendar, route: "/calendar" },
     { label: "Analytics", icon: BarChart3, route: "/analytics" },
     ...(canManageUsers ? [{ label: "Team", icon: Users, route: "/users" }] : []),
+    ...(canManageUsers ? [{ label: "Factures", icon: Receipt, route: "/invoices" }] : []),
+    ...(canManageUsers ? [{ label: "Encaissement", icon: Zap, route: "/quick-invoice" }] : []),
   ];
 
   return (
