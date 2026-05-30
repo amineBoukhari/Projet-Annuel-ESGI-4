@@ -44,6 +44,7 @@ async function generateToken(user) {
     id: user.id,
     email: user.email,
     mustChangePassword: user.mustChangePassword,
+    restaurantId: user.restaurantId,
     role,
     permissions,
   };

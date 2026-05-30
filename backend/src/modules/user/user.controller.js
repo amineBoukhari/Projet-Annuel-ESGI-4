@@ -77,7 +77,14 @@ async function getUSerWithId(req, res) {
 }
 
 async function getAllUsers(req, res) {
+  const where = {};
+  // Only Admins can see all users; Owner/Manager see only their restaurant
+  if (req.user.role?.name !== "Admin") {
+    where.restaurantId = req.user.restaurantId || null;
+  }
+
   const users = await User.findAll({
+    where,
     attributes: { exclude: ["password"] },
     include: "role",
   });
