@@ -48,6 +48,18 @@ Ingredient.associate = (models) => {
     foreignKey: "ingredientId",
     as: "recipe",
   });
+  Ingredient.hasMany(models.GoodsReceiptItem, {
+    foreignKey: "ingredientId",
+    as: "goodsReceiptItems",
+    onDelete: "RESTRICT",
+    onUpdate: "CASCADE",
+  });
+  Ingredient.hasMany(models.SupplierInvoiceItem, {
+    foreignKey: "ingredientId",
+    as: "supplierInvoiceItems",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
 };
 
 module.exports = Ingredient;

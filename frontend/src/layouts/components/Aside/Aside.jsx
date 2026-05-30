@@ -10,6 +10,8 @@ import {
   Receipt,
   Zap,
   Wallet,
+  Truck,
+  FileText,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
@@ -37,6 +39,9 @@ export default function Aside() {
     { label: "Calendar", icon: Calendar, route: "/calendar" },
     { label: "Analytics", icon: BarChart3, route: "/analytics" },
     ...(canManageUsers ? [{ label: "Team", icon: Users, route: "/users" }] : []),
+    ...(canManageUsers ? [{ label: "Commandes", icon: ClipboardList, route: "/purchase-orders" }] : []),
+    ...(canManageUsers ? [{ label: "Réceptions", icon: Truck, route: "/goods-receipts" }] : []),
+    ...(canManageUsers ? [{ label: "Achats", icon: FileText, route: "/supplier-invoices" }] : []),
     ...(canManageUsers ? [{ label: "Factures", icon: Receipt, route: "/invoices" }] : []),
     ...(canManageUsers ? [{ label: "Encaissement", icon: Zap, route: "/quick-invoice" }] : []),
     ...(canManageUsers ? [{ label: "Dépenses", icon: Wallet, route: "/expenses" }] : []),

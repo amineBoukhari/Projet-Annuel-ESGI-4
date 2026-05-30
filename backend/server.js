@@ -18,6 +18,8 @@ const purchaseReturnRoutes = require('./src/modules/purchaseReturn/purchaseRetur
 const paymentRoutes = require('./src/modules/payment/payment.routes');
 const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
 const expenseRoutes = require('./src/modules/expense/expense.routes');
+const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
+const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -38,9 +40,13 @@ const Payment = require('./src/modules/payment/payment.model');
 const Invoice = require('./src/modules/invoice/invoice.model');
 const InvoiceItem = require('./src/modules/invoice/invoiceItem.model');
 const Expense = require('./src/modules/expense/expense.model');
+const GoodsReceipt = require('./src/modules/goodsReceipt/goodsReceipt.model');
+const GoodsReceiptItem = require('./src/modules/goodsReceipt/goodsReceiptItem.model');
+const SupplierInvoice = require('./src/modules/supplierInvoice/supplierInvoice.model');
+const SupplierInvoiceItem = require('./src/modules/supplierInvoice/supplierInvoiceItem.model');
 
 // Collect models
-const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment, Invoice, InvoiceItem, Expense };
+const models = { User, Restaurant, Role, Ingredient, StockMovement, Recipe, RecipeIngredient, RolePermission, Permission, Supplier, PurchaseOrder, PurchaseOrderItem, PurchaseReturn, PurchaseReturnItem, Payment, Invoice, InvoiceItem, Expense, GoodsReceipt, GoodsReceiptItem, SupplierInvoice, SupplierInvoiceItem };
 
 // Setup associations
 Object.values(models).forEach((model) => {
@@ -100,6 +106,8 @@ app.use('/api/purchaseReturns', authMiddleware, purchaseReturnRoutes);
 app.use('/api/payments', authMiddleware, paymentRoutes);
 app.use('/api/invoices', authMiddleware, invoiceRoutes);
 app.use('/api/expenses', authMiddleware, expenseRoutes);
+app.use('/api/goodsReceipts', authMiddleware, goodsReceiptRoutes);
+app.use('/api/supplierInvoices', authMiddleware, supplierInvoiceRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");

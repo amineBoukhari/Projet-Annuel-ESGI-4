@@ -54,6 +54,18 @@ User.associate = (models) => {
     onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
+  User.hasMany(models.GoodsReceipt, {
+    foreignKey: "createdBy",
+    as: "goodsReceipts",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(models.SupplierInvoice, {
+    foreignKey: "createdBy",
+    as: "supplierInvoices",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
 };
 
 module.exports = User;
