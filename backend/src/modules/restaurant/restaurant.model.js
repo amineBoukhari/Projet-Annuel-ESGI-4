@@ -30,6 +30,18 @@ Restaurant.associate = (models) => {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  Restaurant.hasMany(models.GoodsReceipt, {
+    foreignKey: "restaurantId",
+    as: "goodsReceipts",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Restaurant.hasMany(models.SupplierInvoice, {
+    foreignKey: "restaurantId",
+    as: "supplierInvoices",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
 };
 
 module.exports = Restaurant;

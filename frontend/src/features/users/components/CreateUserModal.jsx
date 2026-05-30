@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { X, Copy, Check } from "lucide-react";
+import { X, Copy, Check, UserPlus } from "lucide-react";
+import Button from "../../../components/ui/Button";
 
 const ROLES = [
   { id: 1, name: "Admin", endpoint: "createOwner" },
@@ -27,7 +28,7 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
     const newErrors = {};
     if (!form.username.trim()) newErrors.username = "Le nom est requis";
     if (!form.email.trim()) newErrors.email = "L'email est requis";
-    else if (!/^[^\s@]+@[^\s@\.]+\.[^\s@]+$/.test(form.email))
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       newErrors.email = "Email invalide";
     if (!form.password) newErrors.password = "Le mot de passe est requis";
     else if (form.password.length < 4)
@@ -79,122 +80,135 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
 
   if (createdUser) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+        <div className="w-full bg-surface-raised rounded-[16px] shadow-elevated p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-green-700">
-              Utilisateur créé !
-            </h2>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-green-50 text-success flex items-center justify-center">
+                <Check size={18} strokeWidth={2} />
+              </div>
+              <h2 className="text-[1.125rem] font-semibold text-success">
+                Utilisateur créé
+              </h2>
+            </div>
             <button
               onClick={handleClose}
-              className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100"
+              className="text-ink-muted hover:text-ink p-1.5 rounded-[8px] hover:bg-surface transition-all"
             >
-              <X size={20} />
+              <X size={18} strokeWidth={2} />
             </button>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-4 mb-4">
-            <p className="text-sm text-gray-600 mb-2">
-              Envoyez ces identifiants à <strong>{createdUser.username}</strong> :
+          <div className="bg-surface rounded-[12px] p-4 mb-4 border border-border">
+            <p className="text-[0.8125rem] text-ink-secondary mb-3">
+              Envoyez ces identifiants à <strong className="text-ink">{createdUser.username}</strong> :
             </p>
-            <div className="text-sm font-mono bg-white rounded-lg p-3 border border-gray-200">
-              <p>Email : {createdUser.email}</p>
-              <p>Mot de passe : {createdUser.password}</p>
-              <p>Rôle : {createdUser.role}</p>
+            <div className="text-[0.8125rem] font-mono bg-surface-raised rounded-[10px] p-3 border border-border">
+              <p className="text-ink-secondary">Email : <span className="text-ink font-medium">{createdUser.email}</span></p>
+              <p className="text-ink-secondary mt-1">Mot de passe : <span className="text-ink font-medium">{createdUser.password}</span></p>
+              <p className="text-ink-secondary mt-1">Rôle : <span className="text-ink font-medium">{createdUser.role}</span></p>
             </div>
           </div>
 
-          <button
+          <Button
+            text={copied ? "Copié !" : "Copier les identifiants"}
+            variant="primary"
+            icon={copied ? Check : Copy}
             onClick={copyCredentials}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90"
-          >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            {copied ? "Copié !" : "Copier les identifiants"}
-          </button>
+            className="w-full py-3"
+          />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">
-            Nouvel utilisateur
-          </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
+      <div className="w-full max-w-[400px] bg-surface-raised rounded-[16px] shadow-elevated p-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-primary-muted text-primary flex items-center justify-center">
+              <UserPlus size={16} strokeWidth={2} />
+            </div>
+            <h2 className="text-[1.125rem] font-semibold text-ink">
+              Nouvel utilisateur
+            </h2>
+          </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100"
+            className="text-ink-muted hover:text-ink p-1.5 rounded-[8px] hover:bg-surface transition-all"
           >
-            <X size={20} />
+            <X size={18} strokeWidth={2} />
           </button>
         </div>
 
         {errors.global && (
-          <div className="mb-4 rounded-lg bg-red-50 text-red-600 text-sm px-3 py-2">
+          <div className="mb-4 rounded-[10px] bg-red-50 text-error text-[0.8125rem] font-medium px-4 py-3">
             {errors.global}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
               Nom d'utilisateur
             </label>
             <input
               type="text"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200 placeholder:text-ink-muted"
+              placeholder="Jean Dupont"
               value={form.username}
               onChange={(e) =>
                 setForm((f) => ({ ...f, username: e.target.value }))
               }
             />
             {errors.username && (
-              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+              <p className="text-error text-[0.75rem] font-medium mt-1.5">{errors.username}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
               Email
             </label>
             <input
               type="email"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200 placeholder:text-ink-muted"
+              placeholder="jean@restaurant.com"
               value={form.email}
               onChange={(e) =>
                 setForm((f) => ({ ...f, email: e.target.value }))
               }
             />
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              <p className="text-error text-[0.75rem] font-medium mt-1.5">{errors.email}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
               Mot de passe
             </label>
             <input
               type="password"
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200 placeholder:text-ink-muted"
+              placeholder="••••••••"
               value={form.password}
               onChange={(e) =>
                 setForm((f) => ({ ...f, password: e.target.value }))
               }
             />
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              <p className="text-error text-[0.75rem] font-medium mt-1.5">{errors.password}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-1.5">
               Rôle
             </label>
             <select
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full border border-border rounded-[10px] px-4 py-2.5 text-[0.9375rem] text-ink bg-surface-raised focus:outline-none focus:border-primary focus:shadow-lifted transition-all duration-200"
               value={form.roleId}
               onChange={(e) =>
                 setForm((f) => ({ ...f, roleId: parseInt(e.target.value) }))
@@ -208,10 +222,10 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
             </select>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-gray-700 mt-1">
+          <label className="flex items-center gap-3 text-[0.9375rem] text-ink-secondary cursor-pointer select-none">
             <input
               type="checkbox"
-              className="rounded border-gray-300"
+              className="w-4 h-4 rounded-[6px] border-border text-primary focus:ring-primary focus:ring-offset-0"
               checked={form.mustChangePassword}
               onChange={(e) =>
                 setForm((f) => ({ ...f, mustChangePassword: e.target.checked }))
@@ -220,21 +234,18 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
             Forcer le changement de mot de passe à la connexion
           </label>
 
-          <div className="flex items-center justify-end gap-2 mt-2">
-            <button
-              type="button"
+          <div className="flex items-center justify-end gap-3 mt-2 pt-2 border-t border-border">
+            <Button
+              text="Annuler"
+              variant="ghost"
               onClick={handleClose}
-              className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100"
-            >
-              Annuler
-            </button>
-            <button
+            />
+            <Button
+              text={loading ? "Création..." : "Créer l'utilisateur"}
+              variant="primary"
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50"
-            >
-              {loading ? "Création..." : "Créer"}
-            </button>
+            />
           </div>
         </form>
       </div>

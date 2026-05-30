@@ -17,21 +17,27 @@ export default function InputPassword({
   };
 
   return (
-    <div>
+    <div className="w-full">
       <Input
         type={inputType}
         label={label}
         ref={ref}
         errorMessage={errorMessage}
       >
-        <div className="px-1" onClick={handleShowPassword}>
-          {showPassword && <Eye size={16} />}
-          {!showPassword && <EyeOff size={16} />}
-        </div>
+        <button
+          type="button"
+          onClick={handleShowPassword}
+          className="text-ink-muted hover:text-ink transition-colors duration-150 p-1"
+          tabIndex={-1}
+        >
+          {showPassword ? <Eye size={16} strokeWidth={2} /> : <EyeOff size={16} strokeWidth={2} />}
+        </button>
       </Input>
       {!disableLink && (
-        <div className="mt-1 text-right text-primary text-sm hover:cursor-pointer hover:opacity-90">
-          Mot de passe oublié ?
+        <div className="mt-2 text-right">
+          <span className="text-primary text-[0.8125rem] font-medium hover:cursor-pointer hover:text-primary-hover transition-colors duration-150">
+            Mot de passe oublié ?
+          </span>
         </div>
       )}
     </div>

@@ -57,6 +57,18 @@ Supplier.associate = (models) => {
     onDelete: 'RESTRICT',
     onUpdate: 'CASCADE',
   });
+  Supplier.hasMany(models.GoodsReceipt, {
+    foreignKey: 'supplierId',
+    as: 'goodsReceipts',
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  });
+  Supplier.hasMany(models.SupplierInvoice, {
+    foreignKey: 'supplierId',
+    as: 'supplierInvoices',
+    onDelete: 'RESTRICT',
+    onUpdate: 'CASCADE',
+  });
 };
 
 module.exports = Supplier;

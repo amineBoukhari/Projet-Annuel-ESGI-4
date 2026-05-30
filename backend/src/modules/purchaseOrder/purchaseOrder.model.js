@@ -16,7 +16,7 @@ const PurchaseOrder = sequelize.define('PurchaseOrder', {
     allowNull: false,
   },
   status: {
-    type: DataTypes.ENUM('Draft', 'Sent', 'Confirmed', 'Delivered', 'Cancelled' ,"Received"),
+    type: DataTypes.ENUM('Draft', 'Sent', 'Confirmed', 'Delivered', 'Cancelled', 'Received', 'Partially Received', 'Rejected'),
     allowNull: false,
     defaultValue: 'Draft',
   },
@@ -79,6 +79,18 @@ PurchaseOrder.associate = (models) => {
     foreignKey: 'purchaseOrderId',
     as: 'items',
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  });
+  PurchaseOrder.hasMany(models.GoodsReceipt, {
+    foreignKey: 'purchaseOrderId',
+    as: 'goodsReceipts',
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  });
+  PurchaseOrder.hasOne(models.SupplierInvoice, {
+    foreignKey: 'purchaseOrderId',
+    as: 'supplierInvoice',
+    onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   });
 };

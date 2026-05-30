@@ -73,7 +73,10 @@ async function getSupplierById(req, res) {
 
 async function getAllSuppliers(req, res) {
     try {
-        const restaurantId = req.query.restaurantId;
+        const restaurantId = req.query.restaurantId || req.user.restaurantId;
+        if (!restaurantId) {
+            return res.status(400).json({ error: 'restaurantId is required' });
+        }
         const suppliers = await Supplier.findAll({where: { restaurantId }});
         res.json(suppliers);
     } catch (error) {

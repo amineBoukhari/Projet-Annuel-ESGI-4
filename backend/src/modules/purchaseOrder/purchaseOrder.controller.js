@@ -85,7 +85,10 @@ async function getPurchaseOrderById(req, res) {
 
 async function getAllPurchaseOrders(req, res) {
   try {
-    const restaurantId = req.query.restaurantId;
+    const restaurantId = req.query.restaurantId || req.user.restaurantId;
+    if (!restaurantId) {
+      return res.status(400).json({ error: 'restaurantId is required' });
+    }
     const purchaseOrders = await PurchaseOrder.findAll({
       where: { restaurantId },
       include: [

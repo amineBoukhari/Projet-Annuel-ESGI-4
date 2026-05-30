@@ -29,7 +29,10 @@ async function createUser(req, res) {
     req.body.mustChangePassword !== undefined
       ? req.body.mustChangePassword
       : true;
-  const restaurantId = req.body.restaurantId || req.user.restaurantId || null;
+  const restaurantId = req.body.restaurantId || req.user.restaurantId;
+  if (!restaurantId) {
+    return res.status(400).json({ error: "restaurantId is required" });
+  }
   const existingUser = await User.findOne({ where: { email: email } });
   if (existingUser) {
     return res

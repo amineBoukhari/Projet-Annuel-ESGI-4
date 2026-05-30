@@ -1,4 +1,4 @@
-import { NavLink } from "react-router"; // ou "react-router"
+import { NavLink } from "react-router";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
 import toast from "react-hot-toast";
 
@@ -17,16 +17,16 @@ export default function AsideItem({
       <button
         onClick={() => {
           logout();
-          toast.success("successfully disconnected");
+          toast.success("Déconnecté avec succès");
         }}
-        className={`
-          flex items-center gap-4 px-4 py-3 rounded-2xl transition-all w-full text-left
-          text-gray-400 hover:bg-white hover:cursor-pointer
-          ${danger ? "hover:text-red-600" : "hover:text-black"}
-        `}
+        className="
+          flex items-center gap-4 px-4 py-3 rounded-[10px] transition-all duration-150 w-full text-left
+          text-ink-muted hover:bg-surface-raised hover:text-ink hover:cursor-pointer
+          hover:shadow-ambient
+        "
       >
-        <Icon size={22} />
-        <span className="font-medium">{label}</span>
+        <Icon size={20} strokeWidth={2} />
+        <span className="font-medium text-[0.8125rem]">{label}</span>
       </button>
     );
   }
@@ -35,18 +35,17 @@ export default function AsideItem({
     <NavLink
       to={navigateTo}
       end={isExact}
-      // Ici, la fonction est acceptée car c'est un composant NavLink
       className={({ isActive }) => `
-        flex items-center gap-4 px-4 py-3 rounded-2xl transition-all w-full text-left
+        flex items-center gap-4 px-4 py-3 rounded-[10px] transition-all duration-150 w-full text-left
         ${
           isActive
-            ? "bg-white text-black shadow-sm"
-            : `text-gray-400 hover:bg-white ${danger ? "hover:text-red-600" : "hover:text-black"}`
+            ? "bg-surface-raised text-ink shadow-ambient font-medium"
+            : "text-ink-muted hover:bg-surface-raised hover:text-ink hover:shadow-ambient"
         }
       `}
     >
-      <Icon size={22} />
-      <span className="font-medium">{label}</span>
+      <Icon size={20} strokeWidth={2} className={danger ? "text-error" : ""} />
+      <span className="font-medium text-[0.8125rem]">{label}</span>
     </NavLink>
   );
 }
