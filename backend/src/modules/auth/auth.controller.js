@@ -44,6 +44,7 @@ async function login(req, res) {
       username: user.username,
       email: user.email,
       mustChangePassword: user.mustChangePassword,
+      role: user.role?.name,
     };
 
     return res.json({

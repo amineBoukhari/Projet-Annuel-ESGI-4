@@ -120,11 +120,21 @@ async function deleteUser(req, res) {
 }
 
 async function updateUser(req, res) {
-  const userId = req.user.id;
+  const requestedId = req.params.id;
+  const authId = req.user.id;
   const { username, email } = req.body;
 
   try {
-    const user = await User.findByPk(userId);
+    const targetUserId = requestedId || authId;
+    if (requestedId && requestedId !== authId) {
+      const tokenRole = authService.extractRole(req.token);
+      const roleName = tokenRole?.name || tokenRole;
+      if (!["Admin", "Owner", "Manager"].includes(roleName)) {
+        return res.status(403).json({ error: "Forbidden: insufficient role" });
+      }
+    }
+
+    const user = await User.findByPk(targetUserId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }

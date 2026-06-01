@@ -24,11 +24,7 @@ router.post(
 
 router.get("/get/:id", userController.getUSerWithId);
 router.get("/getMe", checkAuth, userController.getMyProfile); // Verifier que c'est bien le bon user
-router.get(
-  "/getAll",
-  requireRole("Admin", "Owner", "Manager"),
-  userController.getAllUsers,
-);
+router.get("/getAll", requireRole("Admin", "Owner", "Manager"), userController.getAllUsers);
 router.delete(
   "/delete/:id",
   requireRole("Admin", "Owner", "Manager"),

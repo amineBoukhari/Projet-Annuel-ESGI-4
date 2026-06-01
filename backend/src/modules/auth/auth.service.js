@@ -14,6 +14,13 @@ async function generateToken(user) {
     id: user.id,
     email: user.email,
     mustChangePassword: user.mustChangePassword,
+    role: user.role
+      ? {
+          id: user.role.id,
+          name: user.role.name,
+        }
+      : null,
+    permissions: user.role?.permissions?.map((permission) => permission.name) || [],
   };
   return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" });
 }
