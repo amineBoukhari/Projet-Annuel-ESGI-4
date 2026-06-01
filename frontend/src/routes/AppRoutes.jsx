@@ -27,6 +27,7 @@ import SupplierInvoiceForm from "../pages/SupplierInvoiceForm";
 import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import RoleGuard from "../features/auth/components/RoleGuard";
+import Permissions from "../pages/Permissions";
 import Layout from "../layouts/Layout";
 import Restaurants from "../pages/Restaurants";
 import Profile from "../pages/Profile";
@@ -57,6 +58,14 @@ export const router = createBrowserRouter([
               {
                 path: "/",
                 element: <Dashboard />,
+              },
+              {
+                path: "/permissions",
+                element: (
+                  <RoleGuard allowedRoles={["Admin"]}>
+                    <Permissions />
+                  </RoleGuard>
+                ),
               },
               {
                 path : "subscription",
