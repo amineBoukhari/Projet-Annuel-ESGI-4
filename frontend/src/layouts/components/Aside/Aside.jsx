@@ -11,6 +11,7 @@ import {
   FileText,
   ShoppingCart,
   Package,
+  ShieldCheck, 
   BarChart3,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
@@ -35,6 +36,7 @@ export default function Aside() {
 
   const menu = [
     { label: "Dashboard", icon: LayoutDashboard, route: "/", isExact: true },
+    ...(canManageUsers ? [{ route: "/permissions", label: "Permissions", icon: ShieldCheck, roles: ["Admin"] }] : []),
     ...(canManageUsers ? [{ label: "Factures", icon: Receipt, route: "/invoices" }] : []),
     ...(canManageUsers ? [{ label: "Encaissement", icon: Zap, route: "/quick-invoice" }] : []),
     ...(canManageUsers ? [{ label: "Commandes", icon: ShoppingCart, route: "/purchase-orders" }] : []),
