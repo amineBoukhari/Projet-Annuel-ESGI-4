@@ -1,64 +1,112 @@
 const Restaurant = require("./restaurant.model");
-const { createUser } = require("../user/user.controller");
-const { Op } = require("sequelize");
-const authService = require("../auth/auth.service");
 const User = require("../user/user.model");
 const Role = require("../role/role.model");
+const authService = require("../auth/auth.service");
+const { Op } = require("sequelize");
+
+async function getAllRestaurants(req, res) {
+  try {
+    const restaurants = await Restaurant.findAll({
+      include: [
+        {
+          model: User,
+          as: "users",
+          attributes: { exclude: ["password"] },
+          include: [{ model: Role, as: "role" }],
+        },
+      ],
+      order: [["name", "ASC"]],
+    });
+    res.json(restaurants);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch restaurants" });
+  }
+}
+
+async function getRestaurantById(req, res) {
+  try {
+    const restaurant = await Restaurant.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: "users",
+          attributes: { exclude: ["password"] },
+          include: [{ model: Role, as: "role" }],
+        },
+      ],
+    });
+    if (!restaurant) return res.status(404).json({ error: "Restaurant not found" });
+    res.json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch restaurant" });
+  }
+}
 
 async function createRestaurant(req, res) {
-  console.log("Creating restaurant with data:", req.body);
   const { name, adress, adminName, adminEmail, adminPassword } = req.body;
 
   if (!name || !adress || !adminName || !adminEmail || !adminPassword) {
-    res.status(500).json({ message: "internals server error" });
-  }
-  const restaurant = await Restaurant.findOne({
-    where: {
-      [Op.or]: [{ name: name }, { adress: adress }],
-    },
-  });
-
-  const admin = await User.findOne({ where: { email: adminEmail } });
-
-  if (admin) {
-    console.log("Admin with email already exists:", adminEmail);
-    return res
-      .status(400)
-      .json({ message: "admin with this email already exist" });
-  }
-
-  if (restaurant) {
-    console.log(
-      "Restaurant with name or address already exists:",
-      name,
-      adress,
-    );
-    return res.status(400).json({ message: "restaurant already exist" });
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   try {
-    const hashedPassword = await authService.hashPassword(adminPassword);
-    const newRestaurant = await Restaurant.create({
-      name: name,
-      adress: adress,
+    const existing = await Restaurant.findOne({
+      where: { [Op.or]: [{ name }, { adress }] },
     });
-    const adminRole = await Role.findOne({ where: { name: "Admin" } });
-    const newAdmin = await User.create({
+    if (existing) return res.status(400).json({ message: "restaurant already exist" });
+
+    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+    if (existingAdmin) return res.status(400).json({ message: "admin with this email already exist" });
+
+    const hashedPassword = await authService.hashPassword(adminPassword);
+    const newRestaurant = await Restaurant.create({ name, adress });
+
+    const ownerRole = await Role.findOne({ where: { name: "Owner" } });
+    await User.create({
       username: adminName,
       email: adminEmail,
       password: hashedPassword,
-      roleId: adminRole.id,
+      roleId: ownerRole.id,
       restaurantId: newRestaurant.id,
+      mustChangePassword: true,
     });
-    res
-      .status(201)
-      .json({ message: "restaurant and admin created successfully" });
+
+    res.status(201).json({ message: "restaurant and admin created successfully" });
   } catch (error) {
-    console.error("Error creating restaurant:", error);
     res.status(500).json({ error: "Failed to create restaurant" });
   }
 }
 
+async function updateRestaurant(req, res) {
+  try {
+    const restaurant = await Restaurant.findByPk(req.params.id);
+    if (!restaurant) return res.status(404).json({ error: "Restaurant not found" });
+
+    const { name, adress } = req.body;
+    if (!name || !adress) return res.status(400).json({ error: "name and adress are required" });
+
+    await restaurant.update({ name, adress });
+    res.json(restaurant);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update restaurant" });
+  }
+}
+
+async function deleteRestaurant(req, res) {
+  try {
+    const restaurant = await Restaurant.findByPk(req.params.id);
+    if (!restaurant) return res.status(404).json({ error: "Restaurant not found" });
+    await restaurant.destroy();
+    res.json({ message: "Restaurant deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to delete restaurant" });
+  }
+}
+
 module.exports = {
+  getAllRestaurants,
+  getRestaurantById,
   createRestaurant,
+  updateRestaurant,
+  deleteRestaurant,
 };

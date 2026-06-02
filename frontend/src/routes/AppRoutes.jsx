@@ -18,6 +18,7 @@ import ChangePassword from "../pages/ChangePassword";
 import ProtectedRoute from "../features/auth/components/ProtectedRoute";
 import RoleGuard from "../features/auth/components/RoleGuard";
 import Layout from "../layouts/Layout";
+import Restaurants from "../pages/Restaurants";
 import Profile from "../pages/Profile";
 import GlobalError from "../pages/errors/GlobalError";
 
@@ -44,6 +45,14 @@ export const router = createBrowserRouter([
               {
                 path: "/",
                 element: <Dashboard />,
+              },
+              {
+                path: "/restaurants",
+                element: (
+                  <RoleGuard allowedRoles={["Admin"]}>
+                    <Restaurants />
+                  </RoleGuard>
+                ),
               },
               {
                 path: "/stocks",
