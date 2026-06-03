@@ -20,7 +20,6 @@ const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
 const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
-const restaurantRoutes = require("./src/modules/restaurant/restaurant.routes");
 
 // Import models
 const User = require('./src/modules/user/user.model');
