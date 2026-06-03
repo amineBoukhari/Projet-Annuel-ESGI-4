@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Package,
   BarChart3,
+  UtensilsCrossed,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
@@ -35,6 +36,7 @@ export default function Aside() {
 
   const menu = [
     { label: "Dashboard", icon: LayoutDashboard, route: "/", isExact: true },
+    ...(canManageUsers ? [{ route: "/restaurants", label: "Restaurants", icon: UtensilsCrossed}] : []),
     ...(canManageUsers ? [{ label: "Factures", icon: Receipt, route: "/invoices" }] : []),
     ...(canManageUsers ? [{ label: "Encaissement", icon: Zap, route: "/quick-invoice" }] : []),
     ...(canManageUsers ? [{ label: "Commandes", icon: ShoppingCart, route: "/purchase-orders" }] : []),

@@ -108,6 +108,7 @@ app.use('/api/invoices', authMiddleware, invoiceRoutes);
 app.use('/api/expenses', authMiddleware, expenseRoutes);
 app.use('/api/goodsReceipts', authMiddleware, goodsReceiptRoutes);
 app.use('/api/supplierInvoices', authMiddleware, supplierInvoiceRoutes);
+app.use("/api/restaurants", restaurantRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");

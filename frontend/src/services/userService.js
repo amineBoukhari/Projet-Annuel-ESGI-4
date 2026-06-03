@@ -4,17 +4,10 @@ const updatePassword = async (id, oldPassword, newPassword) => {
   try {
     const response = await fetch(`${backDomain}/api/auth/changePassword`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({
-        id: id,
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      }),
+      body: JSON.stringify({ id, oldPassword, newPassword }),
     });
-
     if (!response.ok) {
       return {
         status: "error",
@@ -22,7 +15,6 @@ const updatePassword = async (id, oldPassword, newPassword) => {
           "Une erreur est survenue lors de la mise à jour du mot de passe",
       };
     }
-
     return await response.json();
   } catch (error) {
     console.log("test: " + error);
@@ -33,24 +25,16 @@ const updateProfile = async (id, newEmail, newUsername) => {
   try {
     const response = await fetch(`${backDomain}/api/users/update/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({
-        id: id,
-        email: newEmail,
-        username: newUsername,
-      }),
+      body: JSON.stringify({ id, email: newEmail, username: newUsername }),
     });
-
     if (!response.ok) {
       return {
         status: "error",
         message: "Une erreur est survenue lors de la mise à jour du profil",
       };
     }
-
     return await response.json();
   } catch (error) {
     return { status: "error", message: error.message };
@@ -80,12 +64,14 @@ const createUser = async (userData) => {
       email: userData.email,
       password: userData.password,
       mustChangePassword: userData.mustChangePassword,
+      restaurantId: userData.restaurantId,
     }),
   });
   const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.error || "Erreur lors de la création de l'utilisateur");
-  }
+  if (!response.ok)
+    throw new Error(
+      data.error || "Erreur lors de la création de l'utilisateur"
+    );
   return data;
 };
 
@@ -96,9 +82,8 @@ const deleteUser = async (id) => {
     credentials: "include",
   });
   const data = await response.json();
-  if (!response.ok) {
+  if (!response.ok)
     throw new Error(data.error || "Erreur lors de la suppression");
-  }
   return data;
 };
 
@@ -110,9 +95,39 @@ const updateUserRole = async (id, newRole) => {
     body: JSON.stringify({ newRole }),
   });
   const data = await response.json();
-  if (!response.ok) {
+  if (!response.ok)
     throw new Error(data.error || "Erreur lors de la mise à jour du rôle");
-  }
+  return data;
+};
+
+const assignRestaurant = async (userId, restaurantId) => {
+  const response = await fetch(
+    `${backDomain}/api/users/assignRestaurant/${userId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ restaurantId }),
+    }
+  );
+  const data = await response.json();
+  if (!response.ok)
+    throw new Error(data.error || "Erreur lors de l'affectation");
+  return data;
+};
+
+const removeFromRestaurant = async (userId) => {
+  const response = await fetch(
+    `${backDomain}/api/users/assignRestaurant/${userId}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ restaurantId: null }),
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Erreur lors du retrait");
   return data;
 };
 
@@ -123,4 +138,6 @@ export default {
   createUser,
   deleteUser,
   updateUserRole,
+  assignRestaurant,
+  removeFromRestaurant,
 };
