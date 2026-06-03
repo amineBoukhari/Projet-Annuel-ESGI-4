@@ -44,6 +44,7 @@ export default function Aside() {
     ...(canManageUsers ? [{ label: "Achats", icon: FileText, route: "/supplier-invoices" }] : []),
     ...(canManageUsers ? [{ label: "Dépenses", icon: Wallet, route: "/expenses" }] : []),
     { label: "Stocks", icon: Package, route: "/stocks" },
+    ...(canManageUsers ? [{ label: "Recettes", icon: BarChart3, route: "/recipes" }] : []),
     ...(canManageUsers ? [{ label: "Équipe", icon: Users, route: "/users" }] : []),
   ];
 

@@ -2,6 +2,15 @@ import { createBrowserRouter } from "react-router";
 import Login from "../pages/Login";
 import Dashboard from "../pages/Dashboard";
 import Stocks from "../pages/Stocks";
+import Ingredients from "../pages/Ingredients";
+import IngredientForm from "../pages/IngredientForm";
+import IngredientDetail from "../pages/IngredientDetail";
+import IngredientMovements from "../pages/IngredientMovements";
+import LowStockIngredients from "../pages/LowStockIngredients";
+import Recipes from "../pages/Recipes";
+import RecipeForm from "../pages/RecipeForm";
+import RecipeDetail from "../pages/RecipeDetail";
+import RecipeCook from "../pages/RecipeCook";
 import Users from "../pages/Users";
 import Invoices from "../pages/Invoices";
 import InvoiceForm from "../pages/InvoiceForm";
@@ -57,6 +66,70 @@ export const router = createBrowserRouter([
               {
                 path: "/stocks",
                 element: <Stocks />,
+              },
+              {
+                path: "/stocks/ingredients",
+                element: <Ingredients />,
+              },
+              {
+                path: "/stocks/ingredients/new",
+                element: <IngredientForm />,
+              },
+              {
+                path: "/stocks/ingredients/:id",
+                element: <IngredientDetail />,
+              },
+              {
+                path: "/stocks/ingredients/:id/edit",
+                element: <IngredientForm />,
+              },
+              {
+                path: "/stocks/ingredients/:id/movements",
+                element: <IngredientMovements />,
+              },
+              {
+                path: "/stocks/low-stock",
+                element: <LowStockIngredients />,
+              },
+              {
+                path: "/recipes",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <Recipes />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "/recipes/new",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <RecipeForm />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "/recipes/:id",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <RecipeDetail />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "/recipes/:id/edit",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <RecipeForm />
+                  </RoleGuard>
+                ),
+              },
+              {
+                path: "/recipes/:id/cook",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager", "Employee"]}>
+                    <RecipeCook />
+                  </RoleGuard>
+                ),
               },
               {
                 path: "/my-profile",
