@@ -65,6 +65,10 @@ app.use(
   }),
 );
 
+// Webhook must be registered before express.json() - to check why 
+const subscriptionController = require('./src/modules/subscription/subscription.controller');
+app.post('/api/subscription/webhook', express.raw({ type: 'application/json' }), subscriptionController.handleWebhook);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -109,6 +113,7 @@ app.use('/api/invoices', authMiddleware, invoiceRoutes);
 app.use('/api/expenses', authMiddleware, expenseRoutes);
 app.use('/api/goodsReceipts', authMiddleware, goodsReceiptRoutes);
 app.use('/api/supplierInvoices', authMiddleware, supplierInvoiceRoutes);
+app.use('/api/subscription', authMiddleware, require('./src/modules/subscription/subscription.routes'));
 app.use("/api/restaurants", restaurantRoutes);
 app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 
