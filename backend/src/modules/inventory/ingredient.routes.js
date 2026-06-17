@@ -11,6 +11,9 @@ router.post(
 router.get("/get/:id", ingredientController.getIngredientById);
 router.get("/getAll", ingredientController.getAllIngredients);
 router.get("/lowStock", ingredientController.getLowStock);
+router.get("/expirationDate", ingredientController.getIngredientByExpiration);
+router.get("/expiring-soon", ingredientController.getLowExpirationIngredients);
+router.get("/expired", ingredientController.getExpiredIngredients);
 router.put(
   "/update/:id",
   requireRole("Admin", "Owner", "Manager"),

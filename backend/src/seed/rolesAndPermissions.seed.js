@@ -8,6 +8,7 @@ const INGREDIENTS = [
     stockQuantity: 100,
     minStockLevel: 20,
     imageUrl: "https://example.com/images/flour.jpg",
+    expirationDate: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
   },
   {
     name: "Sugar",
@@ -15,6 +16,7 @@ const INGREDIENTS = [
     stockQuantity: 50,
     minStockLevel: 10,
     imageUrl: "https://example.com/images/sugar.jpg",
+    expirationDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
   },
   {
     name: "Eggs",
@@ -22,6 +24,7 @@ const INGREDIENTS = [
     stockQuantity: 200,
     minStockLevel: 50,
     imageUrl: "https://example.com/images/eggs.jpg",
+    expirationDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now (expiring soon)
   },
   {
     name: "Butter",
@@ -29,6 +32,7 @@ const INGREDIENTS = [
     stockQuantity: 30,
     minStockLevel: 5,
     imageUrl: "https://example.com/images/butter.jpg",
+    expirationDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago (expired)
   },
   {
     name: "Milk",
@@ -36,6 +40,7 @@ const INGREDIENTS = [
     stockQuantity: 100,
     minStockLevel: 20,
     imageUrl: "https://example.com/images/milk.jpg",
+    expirationDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now (expiring soon)
   },
 ];
 

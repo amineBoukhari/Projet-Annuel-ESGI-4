@@ -55,4 +55,42 @@ async function getLowStockIngredients() {
   return ingredients.filter((i) => i.stockQuantity <= i.minStockLevel);
 }
 
-module.exports = { addStockMovement, isLowStock, getLowStockIngredients };
+/**
+ * Check if an ingredient is below it's maximum expiration date.
+ * @param {number} ingredientId
+ * @returns {Promise<Boolean>}
+ */
+
+
+/**
+ * Get all ingredients that expire within the next 7 days or are already expired.
+ * @returns {Promise<Ingredient[]>}
+ */
+async function getLowExpirationDate() {
+  const ingredients = await Ingredient.findAll();
+  const today = new Date();
+  const in7Days = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+  return ingredients.filter((i) => {
+    if (!i.expirationDate) return false;
+    const expDate = new Date(i.expirationDate);
+    return expDate <= in7Days && expDate >= today;
+  });
+}
+
+/**
+ * Get all expired ingredients.
+ * @returns {Promise<Ingredient[]>}
+ */
+async function getExpiredIngredients() {
+  const ingredients = await Ingredient.findAll();
+  const today = new Date();
+  
+  return ingredients.filter((i) => {
+    if (!i.expirationDate) return false;
+    const expDate = new Date(i.expirationDate);
+    return expDate < today;
+  });
+}
+
+module.exports = { addStockMovement, isLowStock, getLowStockIngredients, getLowExpirationDate, getExpiredIngredients };
