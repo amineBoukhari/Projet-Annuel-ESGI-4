@@ -7,6 +7,7 @@ import IngredientForm from "../pages/IngredientForm";
 import IngredientDetail from "../pages/IngredientDetail";
 import IngredientMovements from "../pages/IngredientMovements";
 import LowStockIngredients from "../pages/LowStockIngredients";
+import ExpiringIngredients from "../pages/ExpiringIngredients";
 import Recipes from "../pages/Recipes";
 import RecipeForm from "../pages/RecipeForm";
 import RecipeDetail from "../pages/RecipeDetail";
@@ -90,6 +91,10 @@ export const router = createBrowserRouter([
               {
                 path: "/stocks/low-stock",
                 element: <LowStockIngredients />,
+              },
+              {
+                path: "/stocks/expiring-ingredients",
+                element: <ExpiringIngredients />,
               },
               {
                 path: "/recipes",
