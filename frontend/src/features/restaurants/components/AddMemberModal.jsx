@@ -53,7 +53,6 @@ export default function AddMemberModal({ isOpen, onClose, restaurantId, restaura
         password: form.password,
         role: role.name,
       });
-      onCreated();
     } catch (err) {
       setErrors({ global: err.message });
     } finally {
@@ -61,7 +60,7 @@ export default function AddMemberModal({ isOpen, onClose, restaurantId, restaura
     }
   };
 
-  const handleClose = () => {
+  const resetForm = () => {
     setForm({
       username: "",
       email: "",
@@ -72,6 +71,16 @@ export default function AddMemberModal({ isOpen, onClose, restaurantId, restaura
     setErrors({});
     setCreatedUser(null);
     setCopied(false);
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  const handleSuccessDone = () => {
+    resetForm();
+    onCreated();
     onClose();
   };
 
@@ -96,7 +105,7 @@ export default function AddMemberModal({ isOpen, onClose, restaurantId, restaura
               </h2>
             </div>
             <button
-              onClick={handleClose}
+              onClick={handleSuccessDone}
               className="text-ink-muted hover:text-ink p-1.5 rounded-[8px] hover:bg-surface transition-all"
             >
               <X size={18} strokeWidth={2} />
@@ -115,13 +124,21 @@ export default function AddMemberModal({ isOpen, onClose, restaurantId, restaura
             </div>
           </div>
 
-          <Button
-            text={copied ? "Copié !" : "Copier les identifiants"}
-            variant="primary"
-            icon={copied ? Check : Copy}
-            onClick={copyCredentials}
-            className="w-full py-3"
-          />
+          <div className="flex flex-col gap-2">
+            <Button
+              text={copied ? "Copié !" : "Copier les identifiants"}
+              variant="primary"
+              icon={copied ? Check : Copy}
+              onClick={copyCredentials}
+              className="w-full py-3"
+            />
+            <Button
+              text="Terminer"
+              variant="ghost"
+              onClick={handleSuccessDone}
+              className="w-full py-3"
+            />
+          </div>
         </div>
       </div>
     );

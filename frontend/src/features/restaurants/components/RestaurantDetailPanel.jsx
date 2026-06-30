@@ -128,9 +128,10 @@ export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin, on
         restaurantId={restaurant.id}
         restaurantName={restaurant.name}
         onCreated={() => {
-          setShowAddMember(false);
-          if (onMemberAdded) onMemberAdded();
-        }}
+          if (onMemberAdded) {
+            onMemberAdded();
+          }
+        }
       />
     </div>
   );
