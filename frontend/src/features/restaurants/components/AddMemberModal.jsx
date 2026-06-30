@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { X, Copy, Check, UserPlus } from "lucide-react";
 import Button from "../../../components/ui/Button";
+import userService from "../../../services/userService";
 
 const ROLES = [
-  { id: 2, name: "Owner", endpoint: "createOwner" },
   { id: 3, name: "Manager", endpoint: "createManager" },
   { id: 4, name: "Employee", endpoint: "createEmployee" },
 ];
 
-export default function CreateUserModal({ isOpen, onClose, onCreate }) {
+export default function AddMemberModal({ isOpen, onClose, restaurantId, restaurantName, onCreated }) {
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -42,13 +42,18 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
     setLoading(true);
     try {
       const role = ROLES.find((r) => r.id === parseInt(form.roleId));
-      await onCreate({ ...form, endpoint: role.endpoint });
+      await userService.createUser({
+        ...form,
+        endpoint: role.endpoint,
+        restaurantId,
+      });
       setCreatedUser({
         username: form.username,
         email: form.email,
         password: form.password,
         role: role.name,
       });
+      onCreated();
     } catch (err) {
       setErrors({ global: err.message });
     } finally {
@@ -87,7 +92,7 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
                 <Check size={18} strokeWidth={2} />
               </div>
               <h2 className="text-[1.125rem] font-semibold text-success">
-                Utilisateur créé
+                Membre ajouté
               </h2>
             </div>
             <button
@@ -106,6 +111,7 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
               <p className="text-ink-secondary">Email : <span className="text-ink font-medium">{createdUser.email}</span></p>
               <p className="text-ink-secondary mt-1">Mot de passe : <span className="text-ink font-medium">{createdUser.password}</span></p>
               <p className="text-ink-secondary mt-1">Rôle : <span className="text-ink font-medium">{createdUser.role}</span></p>
+              <p className="text-ink-secondary mt-1">Restaurant : <span className="text-ink font-medium">{restaurantName}</span></p>
             </div>
           </div>
 
@@ -130,7 +136,7 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
               <UserPlus size={16} strokeWidth={2} />
             </div>
             <h2 className="text-[1.125rem] font-semibold text-ink">
-              Nouvel utilisateur
+              Ajouter un membre
             </h2>
           </div>
           <button
@@ -140,6 +146,12 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
             <X size={18} strokeWidth={2} />
           </button>
         </div>
+
+        {restaurantName && (
+          <div className="mb-4 rounded-[10px] bg-surface px-4 py-2.5 text-[0.8125rem] text-ink-secondary border border-border">
+            Restaurant : <span className="font-medium text-ink">{restaurantName}</span>
+          </div>
+        )}
 
         {errors.global && (
           <div className="mb-4 rounded-[10px] bg-red-50 text-error text-[0.8125rem] font-medium px-4 py-3">
@@ -240,7 +252,7 @@ export default function CreateUserModal({ isOpen, onClose, onCreate }) {
               onClick={handleClose}
             />
             <Button
-              text={loading ? "Création..." : "Créer l'utilisateur"}
+              text={loading ? "Ajout..." : "Ajouter le membre"}
               variant="primary"
               type="submit"
               disabled={loading}
