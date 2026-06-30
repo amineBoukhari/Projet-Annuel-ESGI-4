@@ -1,4 +1,6 @@
-import { X, MapPin, Users, Calendar } from "lucide-react";
+import { useState } from "react";
+import { X, MapPin, Users, Calendar, Plus } from "lucide-react";
+import AddMemberModal from "./AddMemberModal";
 
 const ROLE_STYLES = {
   Admin:    "bg-purple-50 text-purple-700",
@@ -7,7 +9,9 @@ const ROLE_STYLES = {
   Employee: "bg-surface text-ink-secondary",
 };
 
-export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin }) {
+export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin, onMemberAdded }) {
+  const [showAddMember, setShowAddMember] = useState(false);
+
   if (!restaurant) return null;
 
   const users = restaurant.users || [];
@@ -80,9 +84,18 @@ export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin }) 
         )}
 
         <div>
-          <p className="text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider mb-3">
-            Membres ({users.length})
-          </p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider">
+              Membres ({users.length})
+            </p>
+            <button
+              onClick={() => setShowAddMember(true)}
+              className="flex items-center gap-1 text-[0.8125rem] font-medium text-primary hover:text-primary-dark transition-colors"
+            >
+              <Plus size={14} strokeWidth={2} />
+              Ajouter
+            </button>
+          </div>
           {users.length === 0 ? (
             <p className="text-[0.8125rem] text-ink-muted text-center py-4">Aucun membre</p>
           ) : (
@@ -108,6 +121,16 @@ export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin }) 
           )}
         </div>
       </div>
+
+      <AddMemberModal
+        isOpen={showAddMember}
+        onClose={() => setShowAddMember(false)}
+        restaurantId={restaurant.id}
+        restaurantName={restaurant.name}
+        onCreated={() => {
+          onMemberAdded();
+        }}
+      />
     </div>
   );
 }
