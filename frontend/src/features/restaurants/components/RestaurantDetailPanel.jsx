@@ -128,10 +128,8 @@ export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin, on
         restaurantId={restaurant.id}
         restaurantName={restaurant.name}
         onCreated={() => {
-          if (onMemberAdded) {
-            onMemberAdded();
-          }
-        }
+          onMemberAdded();
+        }}
       />
     </div>
   );
