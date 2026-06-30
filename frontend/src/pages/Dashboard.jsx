@@ -171,13 +171,6 @@ export default function Dashboard() {
               <TrendingUp size={18} strokeWidth={2} />
               Encaissement rapide
             </a>
-            <a
-              href="/purchase-orders/new"
-              className="flex items-center gap-3 px-4 py-3 rounded-[10px] border border-border bg-surface-raised text-ink-secondary text-[0.9375rem] font-medium hover:border-primary hover:text-primary hover:shadow-ambient transition-all duration-200"
-            >
-              <Package size={18} strokeWidth={2} />
-              Nouvelle commande
-            </a>
           </div>
         </div>
       </div>
