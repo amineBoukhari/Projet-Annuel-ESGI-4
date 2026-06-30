@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+const sequelize = require('../../db/index');
 const Invoice = require('./invoice.model');
 const InvoiceItem = require('./invoiceItem.model');
 const Payment = require('../payment/payment.model');
@@ -12,7 +14,7 @@ async function generateInvoiceNumber() {
   const lastInvoice = await Invoice.findOne({
     where: {
       invoiceNumber: {
-        [require('sequelize').Op.like]: `${prefix}%`,
+        [Op.like]: `${prefix}%`,
       },
     },
     order: [['invoiceNumber', 'DESC']],
@@ -48,8 +50,8 @@ function calculateTotals(items) {
   const total = subtotal + tax;
 
   return {
-    totalAmount: total.toFixed(2),
-    taxAmount: tax.toFixed(2),
+    totalAmount: Math.round(total * 100) / 100,
+    taxAmount: Math.round(tax * 100) / 100,
   };
 }
 
@@ -62,8 +64,8 @@ function buildLineItems(items, invoiceId) {
       invoiceId: invoiceId,
       description: item.description || 'Item',
       quantity: qty,
-      unitPrice: price.toFixed(2),
-      totalPrice: (qty * price).toFixed(2),
+      unitPrice: Math.round(price * 100) / 100,
+      totalPrice: Math.round(qty * price * 100) / 100,
       recipeId: item.recipeId || null,
     };
   });
@@ -80,32 +82,37 @@ async function createInvoice(req, res) {
       return res.status(400).json({ error: 'Customer name is required' });
     }
 
+    if (!restaurantId) {
+      return res.status(400).json({ error: 'User is not associated with a restaurant' });
+    }
+
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'At least one line item is required' });
     }
 
     const invoiceNumber = await generateInvoiceNumber();
 
-
     const { totalAmount, taxAmount } = calculateTotals(items);
 
+    const result = await sequelize.transaction(async (t) => {
+      const invoice = await Invoice.create({
+        invoiceNumber,
+        restaurantId,
+        customerName,
+        customerEmail: customerEmail || null,
+        totalAmount,
+        taxAmount,
+        status: 'draft',
+        createdBy: userId,
+      }, { transaction: t });
 
-    const invoice = await Invoice.create({
-      invoiceNumber,
-      restaurantId,
-      customerName,
-      customerEmail: customerEmail || null,
-      totalAmount,
-      taxAmount,
-      status: 'draft',
-      createdBy: userId,
+      const lineItems = buildLineItems(items, invoice.id);
+      await InvoiceItem.bulkCreate(lineItems, { transaction: t });
+
+      return invoice;
     });
 
-    const lineItems = buildLineItems(items, invoice.id);
-    await InvoiceItem.bulkCreate(lineItems);
-
-
-    const createdInvoice = await Invoice.findByPk(invoice.id, {
+    const createdInvoice = await Invoice.findByPk(result.id, {
       include: [{ model: InvoiceItem, as: 'items' }],
     });
 
@@ -243,6 +250,10 @@ async function payInvoice(req, res) {
     const userId = req.user.id;
     const restaurantId = req.user.restaurantId;
 
+    if (!restaurantId) {
+      return res.status(400).json({ error: 'User is not associated with a restaurant' });
+    }
+
     const invoice = await Invoice.findByPk(invoiceId);
 
     if (!invoice) {
@@ -264,7 +275,7 @@ async function payInvoice(req, res) {
     const paymentMethod = method || 'Cash';
     await Payment.create({
       restaurantId,
-      amount: invoice.totalAmount,
+      amount: parseFloat(invoice.totalAmount),
       method: paymentMethod,
       status: 'Paid',
       reference: `Payment for ${invoice.invoiceNumber}`,
@@ -358,46 +369,53 @@ async function quickCreateInvoice(req, res) {
       return res.status(400).json({ error: 'Total amount is required and must be greater than 0' });
     }
 
+    if (!restaurantId) {
+      return res.status(400).json({ error: 'User is not associated with a restaurant' });
+    }
+
     const amount = parseFloat(totalAmount);
-    const tax = amount * APP_CONFIG.VAT_RATE;
-    const subtotal = amount - tax;
+    const tax = Math.round(amount * APP_CONFIG.VAT_RATE * 100) / 100;
+    const subtotal = Math.round((amount - tax) * 100) / 100;
 
 
     const invoiceNumber = await generateInvoiceNumber();
 
+    const result = await sequelize.transaction(async (t) => {
+      const invoice = await Invoice.create({
+        invoiceNumber,
+        restaurantId,
+        customerName: customerName || APP_CONFIG.QUICK_INVOICE_CUSTOMER_NAME,
+        customerEmail: null,
+        totalAmount: amount,
+        taxAmount: tax,
+        status: 'paid',
+        createdBy: userId,
+        validatedAt: new Date(),
+        paidAt: new Date(),
+      }, { transaction: t });
 
-    const invoice = await Invoice.create({
-      invoiceNumber,
-      restaurantId,
-      customerName: customerName || APP_CONFIG.QUICK_INVOICE_CUSTOMER_NAME,
-      customerEmail: null,
-      totalAmount: amount.toFixed(2),
-      taxAmount: tax.toFixed(2),
-      status: 'paid',
-      createdBy: userId,
-      validatedAt: new Date(),
-      paidAt: new Date(),
+      await InvoiceItem.create({
+        invoiceId: invoice.id,
+        description: 'Paiement comptoir',
+        quantity: 1,
+        unitPrice: subtotal,
+        totalPrice: subtotal,
+        recipeId: null,
+      }, { transaction: t });
+
+      const method = paymentMethod || 'Cash';
+      await Payment.create({
+        restaurantId,
+        amount: amount,
+        method: method,
+        status: 'Paid',
+        reference: `Quick payment for ${invoice.invoiceNumber}`,
+      }, { transaction: t });
+
+      return invoice;
     });
 
-    await InvoiceItem.create({
-      invoiceId: invoice.id,
-      description: 'Paiement comptoir',
-      quantity: 1,
-      unitPrice: subtotal.toFixed(2),
-      totalPrice: subtotal.toFixed(2),
-      recipeId: null,
-    });
-
-    const method = paymentMethod || 'Cash';
-    await Payment.create({
-      restaurantId,
-      amount: amount.toFixed(2),
-      method: method,
-      status: 'Paid',
-      reference: `Quick payment for ${invoice.invoiceNumber}`,
-    });
-
-    const createdInvoice = await Invoice.findByPk(invoice.id, {
+    const createdInvoice = await Invoice.findByPk(result.id, {
       include: [{ model: InvoiceItem, as: 'items' }],
     });
 

@@ -20,6 +20,7 @@ const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
 const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
+const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -109,6 +110,7 @@ app.use('/api/expenses', authMiddleware, expenseRoutes);
 app.use('/api/goodsReceipts', authMiddleware, goodsReceiptRoutes);
 app.use('/api/supplierInvoices', authMiddleware, supplierInvoiceRoutes);
 app.use("/api/restaurants", restaurantRoutes);
+app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");
