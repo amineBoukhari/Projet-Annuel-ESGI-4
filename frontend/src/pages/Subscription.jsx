@@ -9,7 +9,7 @@ const PLANS = [
     name: "Basic",
     price: "29€",
     period: "/ mois",
-    priceId: import.meta.env.STRIPE_PRICE_BASIC,
+    priceId: import.meta.env.VITE_STRIPE_PRICE_BASIC,
     features: [
       "1 restaurant",
       "Gestion des stocks",
@@ -22,7 +22,7 @@ const PLANS = [
     name: "Pro ( Comming Soon )",
     price: "79€",
     period: "/ mois",
-    priceId: import.meta.env.STRIPE_PRICE_PRO,
+    priceId: import.meta.env.VITE_STRIPE_PRICE_PRO,
     features: [
       "Restaurants illimités",
       "Gestion des stocks avancée",

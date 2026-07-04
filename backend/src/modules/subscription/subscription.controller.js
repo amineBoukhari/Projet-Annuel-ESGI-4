@@ -85,6 +85,18 @@ const getSubscriptionStatus = async (req, res) => {
   }
 };
 
+async function syncSubscriptionFields(restaurant, subscription) {
+  const price = subscription.items.data[0]?.price;
+  await restaurant.update({
+    stripeSubscriptionId: subscription.id,
+    subscriptionStatus: subscription.status,
+    subscriptionPlan: price?.nickname || price?.id || null,
+    // Convertir les timestamps Stripe en objets Date ( stripe utilise des timestamps en secondes)
+    trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+    currentPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+  });
+}
+
 const handleWebhook = async (req, res) => {
   const sig = req.headers['stripe-signature'];
 
@@ -103,15 +115,7 @@ const handleWebhook = async (req, res) => {
         const subscription = await stripe.subscriptions.retrieve(session.subscription);
         const restaurant = await Restaurant.findOne({ where: { stripeCustomerId: session.customer } });
         if (restaurant) {
-          const price = subscription.items.data[0]?.price;
-          await restaurant.update({
-            stripeSubscriptionId: subscription.id,
-            subscriptionStatus: subscription.status,
-            subscriptionPlan: price?.nickname || price?.id || null,
-            // Convertir les timestamps Stripe en objets Date ( stripe utilise des timestamps en secondes)
-            trialEndsAt: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
-            currentPeriodEnd: subscription.current_period_end? new Date(subscription.current_period_end * 1000): null,
-          });
+          await syncSubscriptionFields(restaurant, subscription);
         }
         break;
       }
@@ -128,17 +132,29 @@ const handleWebhook = async (req, res) => {
       }
 
       case 'invoice.payment_failed': {
-
+        const invoice = event.data.object;
+        const restaurant = await Restaurant.findOne({ where: { stripeCustomerId: invoice.customer } });
+        if (restaurant) {
+          await restaurant.update({ subscriptionStatus: 'past_due' });
+        }
         break;
       }
 
       case 'customer.subscription.deleted': {
- 
+        const subscription = event.data.object;
+        const restaurant = await Restaurant.findOne({ where: { stripeCustomerId: subscription.customer } });
+        if (restaurant) {
+          await restaurant.update({ subscriptionStatus: 'canceled' });
+        }
         break;
       }
 
       case 'customer.subscription.updated': {
-
+        const subscription = event.data.object;
+        const restaurant = await Restaurant.findOne({ where: { stripeCustomerId: subscription.customer } });
+        if (restaurant) {
+          await syncSubscriptionFields(restaurant, subscription);
+        }
         break;
       }
 

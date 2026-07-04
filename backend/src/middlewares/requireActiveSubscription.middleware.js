@@ -7,15 +7,24 @@ async function requireActiveSubscription(req, res, next) {
     return res.status(403).json({ error: 'No restaurant is found' });
   }
 
-  const restaurant = await Restaurant.findByPk(restaurantId, {
-    attributes: ['subscriptionStatus'],
-  });
+  try {
+    const restaurant = await Restaurant.findByPk(restaurantId, {
+      attributes: ['subscriptionStatus'],
+    });
 
-  if (restaurant.subscriptionStatus !== 'active' && restaurant.subscriptionStatus !== 'trialing') {
-    return res.status(402).json({ error: 'Active subscription required' });
+    if (!restaurant) {
+      return res.status(404).json({ error: 'Restaurant not found' });
+    }
+
+    if (restaurant.subscriptionStatus !== 'active' && restaurant.subscriptionStatus !== 'trialing') {
+      return res.status(402).json({ error: 'Active subscription required' });
+    }
+
+    next();
+  } catch (error) {
+    console.error('requireActiveSubscription error:', error);
+    return res.status(500).json({ error: error.message });
   }
-
-  next();
 }
 
 module.exports = requireActiveSubscription;
