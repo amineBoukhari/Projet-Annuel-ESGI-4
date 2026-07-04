@@ -59,11 +59,7 @@ export const router = createBrowserRouter([
               },
               {
                 path : "subscription",
-                element: (
-                  <RoleGuard allowedRoles={["Admin", "Owner"]}>
-                    <Subscription />
-                  </RoleGuard>
-                ),
+                element: <Subscription />,
               },
               {
                 path: "/subscription/success",

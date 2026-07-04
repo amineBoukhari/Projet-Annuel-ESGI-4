@@ -1,9 +1,16 @@
+import { useEffect } from "react";
 import { CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import Button from "../components/ui/Button";
+import { useAuth } from "../features/auth/hooks/useAuth";
 
 export default function SubscriptionSuccess() {
   const navigate = useNavigate();
+  const { refreshSubscription } = useAuth();
+
+  useEffect(() => {
+    refreshSubscription();
+  }, [refreshSubscription]);
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
