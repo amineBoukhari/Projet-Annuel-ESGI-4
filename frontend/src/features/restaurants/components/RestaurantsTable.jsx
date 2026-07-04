@@ -1,6 +1,6 @@
 import { MapPin, Pencil, Trash2, ChevronRight } from "lucide-react";
 
-export default function RestaurantsTable({ restaurants, onEdit, onDelete, onView, isAdmin }) {
+export default function RestaurantsTable({ restaurants, onEdit, onDelete, onView, isAdmin, canEdit = isAdmin }) {
   return (
     <div className="overflow-hidden rounded-[16px] border border-border bg-surface-raised shadow-ambient">
       <div className="overflow-x-auto">
@@ -51,23 +51,23 @@ export default function RestaurantsTable({ restaurants, onEdit, onDelete, onView
                     >
                       <ChevronRight size={16} strokeWidth={2} />
                     </button>
+                    {canEdit && (
+                      <button
+                        onClick={() => onEdit(r)}
+                        className="text-ink-muted hover:text-ink p-2 rounded-[8px] hover:bg-surface transition-all"
+                        title="Modifier"
+                      >
+                        <Pencil size={15} strokeWidth={2} />
+                      </button>
+                    )}
                     {isAdmin && (
-                      <>
-                        <button
-                          onClick={() => onEdit(r)}
-                          className="text-ink-muted hover:text-ink p-2 rounded-[8px] hover:bg-surface transition-all"
-                          title="Modifier"
-                        >
-                          <Pencil size={15} strokeWidth={2} />
-                        </button>
-                        <button
-                          onClick={() => onDelete(r.id)}
-                          className="text-error hover:text-red-700 p-2 rounded-[8px] hover:bg-red-50 transition-all"
-                          title="Supprimer"
-                        >
-                          <Trash2 size={15} strokeWidth={2} />
-                        </button>
-                      </>
+                      <button
+                        onClick={() => onDelete(r.id)}
+                        className="text-error hover:text-red-700 p-2 rounded-[8px] hover:bg-red-50 transition-all"
+                        title="Supprimer"
+                      >
+                        <Trash2 size={15} strokeWidth={2} />
+                      </button>
                     )}
                   </div>
                 </td>

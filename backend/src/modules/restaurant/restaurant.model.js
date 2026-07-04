@@ -19,6 +19,10 @@ const Restaurant = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    whatsappNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     stripeCustomerId: {
       type: DataTypes.STRING,
       allowNull: true,

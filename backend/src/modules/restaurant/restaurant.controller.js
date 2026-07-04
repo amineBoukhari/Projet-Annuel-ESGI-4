@@ -82,10 +82,20 @@ async function updateRestaurant(req, res) {
     const restaurant = await Restaurant.findByPk(req.params.id);
     if (!restaurant) return res.status(404).json({ error: "Restaurant not found" });
 
-    const { name, adress } = req.body;
+    const isAdmin = req.user.role?.name === "Admin";
+    if (!isAdmin) {
+      if (req.user.restaurantId !== restaurant.id) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      // Owner/Manager may only update their own restaurant's WhatsApp number
+      await restaurant.update({ whatsappNumber: req.body.whatsappNumber });
+      return res.json(restaurant);
+    }
+
+    const { name, adress, whatsappNumber } = req.body;
     if (!name || !adress) return res.status(400).json({ error: "name and adress are required" });
 
-    await restaurant.update({ name, adress });
+    await restaurant.update({ name, adress, whatsappNumber });
     res.json(restaurant);
   } catch (error) {
     res.status(500).json({ error: "Failed to update restaurant" });
