@@ -12,6 +12,7 @@ import { useAuth } from "../features/auth/hooks/useAuth";
 export default function Restaurants() {
   const { user } = useAuth();
   const isAdmin = user?.role?.name === "Admin";
+  const canEditOwn = ["Owner", "Manager"].includes(user?.role?.name);
 
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,9 @@ export default function Restaurants() {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await restaurantService.fetchAllRestaurants();
+      const data = isAdmin
+        ? await restaurantService.fetchAllRestaurants()
+        : [await restaurantService.fetchRestaurantById(user.restaurantId)];
       setRestaurants(Array.isArray(data) ? data : []);
     } catch {
       toast.error("Impossible de charger les restaurants");
@@ -132,6 +135,7 @@ export default function Restaurants() {
             onDelete={handleDelete}
             onView={handleView}
             isAdmin={isAdmin}
+            canEdit={isAdmin || canEditOwn}
           />
           {selectedRestaurant && (
             <RestaurantDetailPanel
@@ -153,6 +157,7 @@ export default function Restaurants() {
         restaurant={editingRestaurant}
         onClose={() => setEditingRestaurant(null)}
         onSaved={handleSaved}
+        isAdmin={isAdmin}
       />
     </div>
   );

@@ -68,7 +68,7 @@ export const router = createBrowserRouter([
               {
                 path: "/restaurants",
                 element: (
-                  <RoleGuard allowedRoles={["Admin"]}>
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
                     <Restaurants />
                   </RoleGuard>
                 ),

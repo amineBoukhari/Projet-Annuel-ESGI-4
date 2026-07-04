@@ -1,4 +1,4 @@
-import { X, MapPin, Users, Calendar } from "lucide-react";
+import { X, MapPin, Users, Calendar, MessageCircle } from "lucide-react";
 
 const ROLE_STYLES = {
   Admin:    "bg-purple-50 text-purple-700",
@@ -78,6 +78,20 @@ export default function RestaurantDetailPanel({ restaurant, onClose, isAdmin }) 
             </div>
           </div>
         )}
+
+        <div>
+          <p className="text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider mb-3">
+            Résumé quotidien
+          </p>
+          <div className="bg-surface rounded-[12px] p-4 border border-border">
+            <div className="flex items-center justify-between text-[0.8125rem]">
+              <span className="text-ink-muted flex items-center gap-1.5">
+                <MessageCircle size={12} strokeWidth={2} /> Numéro WhatsApp
+              </span>
+              <span className="text-ink">{restaurant.whatsappNumber || "Non configuré"}</span>
+            </div>
+          </div>
+        </div>
 
         <div>
           <p className="text-[0.75rem] font-semibold text-ink-secondary uppercase tracking-wider mb-3">
