@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const sequelize = require('../../db/index');
 const Invoice = require('../invoice/invoice.model');
+const openai = require('../../config/openai');
 
 function getTodayRange() {
   const now = new Date();
@@ -45,4 +46,26 @@ async function getDailyStats(restaurantId) {
   };
 }
 
-module.exports = { getDailyStats };
+async function generateSummaryText(stats, restaurantName) {
+  const prompt = `Restaurant : ${restaurantName}
+  Date : ${stats.date.toLocaleDateString('fr-FR')}
+  Factures créées aujourd'hui : ${stats.invoiceCount}
+  Factures payées aujourd'hui : ${stats.paidCount}
+  Chiffre d'affaires encaissé aujourd'hui : ${stats.revenue.toFixed(2)} €`;
+
+  const completion = await openai.chat.completions.create({
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    messages: [
+      {
+        role: 'system',
+        content:
+          "Tu rédiges un court message WhatsApp (2 à 4 phrases, ton professionnel) qui résume la journée d'un restaurant à son gérant, à partir des chiffres fournis.",
+      },
+      { role: 'user', content: prompt },
+    ],
+  });
+
+  return completion.choices[0]?.message?.content?.trim() || '';
+}
+
+module.exports = { getDailyStats, generateSummaryText };
