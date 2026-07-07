@@ -22,6 +22,7 @@ const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
 const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
+const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -91,6 +92,8 @@ async function startServer() {
       // Seed roles and permissions
       await seedRolesAndPermissions(models);
     }
+
+    scheduleDailySummaryJob();
   } catch (error) {
     console.error("Error starting server:", error);
   }
