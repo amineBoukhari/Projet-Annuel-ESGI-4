@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            cd ~/myapp
+            cd ~/Projet-Annuel-ESGI-4
             git pull origin main
             docker compose pull
             docker compose up -d --build
