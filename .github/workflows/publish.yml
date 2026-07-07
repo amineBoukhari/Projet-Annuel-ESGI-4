@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Deploy
     steps:
       - name: Deploy to VPS over SSH
         uses: appleboy/ssh-action@v1.2.0
