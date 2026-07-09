@@ -22,7 +22,7 @@ const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
 const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
-const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
+//const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -62,7 +62,7 @@ Object.values(models).forEach((model) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://164.132.103.93:5173"],
     credentials: true,
   }),
 );
@@ -93,7 +93,7 @@ async function startServer() {
       await seedRolesAndPermissions(models);
     }
 
-    scheduleDailySummaryJob();
+    //scheduleDailySummaryJob();
   } catch (error) {
     console.error("Error starting server:", error);
   }
