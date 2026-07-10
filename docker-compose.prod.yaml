@@ -1,0 +1,57 @@
+services:
+  db : 
+    image : postgres:15
+    environment :
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports :
+      - "${POSTGRES_PORT}:5432"
+    
+    volumes :
+      - pgdata:/var/lib/postgresql/data
+
+    networks:
+      - back-tier
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:8080"
+    networks:
+      - front-tier
+      - back-tier
+
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "${BACKEND_PORT}:3000"
+
+    depends_on:
+      - db
+
+    networks:
+      - back-tier
+      
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"   # map to host port you want
+    networks:
+      - back-tier
+
+networks:
+  # The presence of these objects is sufficient to define them
+  front-tier: {}
+  back-tier: {}
+
+# This defines the named volume
+volumes:
+  node_modules:
+  pgdata:
+  pgadmin_data:
