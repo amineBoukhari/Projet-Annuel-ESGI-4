@@ -1,0 +1,10 @@
+title = "gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Non-secret config values that trip generic-api-key"
+paths = [
+  '''sonar-project\.properties''',
+]
