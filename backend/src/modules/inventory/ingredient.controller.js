@@ -5,13 +5,14 @@ const StockMovement = require("./stockMovement.model");
 
 async function addIngredient(req, res) {
   try {
-    const { name, unit, stockQuantity, minStockLevel, imageUrl } = req.body;
+    const { name, unit, stockQuantity, minStockLevel, imageUrl, expirationDate } = req.body;
     const ingredient = await ingredientModel.create({
       name,
       unit,
       stockQuantity,
       minStockLevel,
       imageUrl,
+      expirationDate,
     });
     res.status(201).json(ingredient);
   } catch (error) {
@@ -33,6 +34,19 @@ async function getIngredientById(req, res) {
   }
 }
 
+async function getIngredientByExpiration(req, res) {
+  try {
+    const ingredient = await ingredientModel.findAll({
+      order: [
+        ['expirationDate', 'DESC']
+      ]
+    })
+  } catch (error) {
+    console.log("Error fetching ingredient:", error);
+    res.status(500).json({ message: "Internal server error"});
+  }
+}
+
 async function getAllIngredients(req, res) {
   try {
     const ingredients = await Ingredient.findAll();
@@ -49,13 +63,14 @@ async function updateIngredient(req, res) {
     if (!updatedIngredient) {
       return res.status(404).json({ message: "Ingredient not found" });
     }
-    const { name, unit, stockQuantity, minStockLevel, imageUrl } = req.body;
+    const { name, unit, stockQuantity, minStockLevel, imageUrl, expirationDate } = req.body;
     await updatedIngredient.update({
       name,
       unit,
       stockQuantity,
       minStockLevel,
       imageUrl,
+      expirationDate,
     });
     res.json(updatedIngredient);
   } catch (error) {
@@ -123,6 +138,26 @@ async function getLowStock(req, res) {
   }
 }
 
+async function getLowExpirationIngredients(req, res) {
+  try {
+    const ingredients = await ingredientService.getLowExpirationDate();
+    res.json(ingredients);
+  } catch (error) {
+    console.error("Error fetching low expiration ingredients:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function getExpiredIngredients(req, res) {
+  try {
+    const ingredients = await ingredientService.getExpiredIngredients();
+    res.json(ingredients);
+  } catch (error) {
+    console.error("Error fetching expired ingredients:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 module.exports = {
   addIngredient,
   getIngredientById,
@@ -132,4 +167,7 @@ module.exports = {
   addStockMovementHandler,
   getStockMovements,
   getLowStock,
+  getIngredientByExpiration,
+  getLowExpirationIngredients,
+  getExpiredIngredients,
 };
