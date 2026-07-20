@@ -38,6 +38,7 @@ async function createGoodsReceipt(req, res) {
         receivedQuantity: item.receivedQuantity,
         unitPrice: item.unitPrice || 0,
         notes: item.notes || null,
+        expirationDate: item.expirationDate || null,
       }));
       await GoodsReceiptItem.bulkCreate(receiptItems);
     }

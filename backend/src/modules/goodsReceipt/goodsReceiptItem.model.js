@@ -32,6 +32,11 @@ const GoodsReceiptItem = sequelize.define('GoodsReceiptItem', {
     type: DataTypes.TEXT,
     allowNull: true,
   },
+  expirationDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Date de péremption du produit reçu',
+  },
 }, {
   timestamps: true,
 });

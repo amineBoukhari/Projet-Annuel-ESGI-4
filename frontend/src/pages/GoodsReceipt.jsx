@@ -44,6 +44,7 @@ export default function GoodsReceipt() {
               receivedQuantity: item.quantity, // default to expected
               unitPrice: item.unitPrice || 0,
               notes: '',
+              expirationDate: '',
             }))
           );
         }
@@ -67,6 +68,12 @@ export default function GoodsReceipt() {
   const updateItemNotes = (index, value) => {
     const newItems = [...items];
     newItems[index].notes = value;
+    setItems(newItems);
+  };
+
+  const updateItemExpirationDate = (index, value) => {
+    const newItems = [...items];
+    newItems[index].expirationDate = value;
     setItems(newItems);
   };
 
@@ -95,6 +102,7 @@ export default function GoodsReceipt() {
           receivedQuantity: item.receivedQuantity,
           unitPrice: item.unitPrice,
           notes: item.notes,
+          expirationDate: item.expirationDate || null,
         })),
       };
 
@@ -191,6 +199,7 @@ export default function GoodsReceipt() {
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Attendu</th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Reçu</th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Prix unit.</th>
+                <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Péremption</th>
                 <th className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider px-6 py-3">Notes</th>
               </tr>
             </thead>
@@ -225,6 +234,14 @@ export default function GoodsReceipt() {
                   </td>
                   <td className="px-6 py-3">
                     <span className="text-sm text-gray-500">{item.unitPrice.toFixed(2)} €</span>
+                  </td>
+                  <td className="px-6 py-3">
+                    <input
+                      type="date"
+                      value={item.expirationDate}
+                      onChange={(e) => updateItemExpirationDate(index, e.target.value)}
+                      className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    />
                   </td>
                   <td className="px-6 py-3">
                     <input

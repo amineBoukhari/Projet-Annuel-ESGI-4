@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Package, AlertTriangle, TrendingUp, Box, List, PlusCircle } from "lucide-react";
+import { Package, AlertTriangle, TrendingUp, Box, List, PlusCircle, Clock } from "lucide-react";
 import IngredientService from "../services/ingredientService";
 import Button from "../components/ui/Button";
 
@@ -58,6 +58,12 @@ export default function Stocks() {
             variant="ghost"
             icon={AlertTriangle}
             onClick={() => navigate("/stocks/low-stock")}
+          />
+          <Button
+            text="Péremption"
+            variant="ghost"
+            icon={Clock}
+            onClick={() => navigate("/stocks/expiring-ingredients")}
           />
         </div>
       </div>
