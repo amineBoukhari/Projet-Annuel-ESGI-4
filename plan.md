@@ -1,31 +1,39 @@
-# Feature Plan — Lighthouse CI
+# Feature Plan — SonarCloud
 
-> **Branch:** `add-lighthouse-ci`
-> **Goal:** Add a Lighthouse audit (performance/accessibility/best-practices/SEO) as a CI report on the frontend, per `ci cd.md`'s "mesure" column.
+> **Branch:** `add-sonarcloud`
+> **Goal:** Static code analysis (bugs, code smells, vulnerabilities, duplication, coverage) via SonarCloud, free tier (this repo is public).
 
 ---
 
 ## Context
 
-Previous CI/CD phase (Jest, `test-on-dev.yml`, auto-PR to `main`, Swagger, Gitleaks) is done — merged into `dev` and `main`. This is a separate, smaller follow-up.
-
-Of the three "mesure" tools listed in `ci cd.md` (PostHog / Lighthouse / Prometheus + Grafana), Lighthouse is the easiest: a GitHub Action step, no new infrastructure, no signup. PostHog and Prometheus+Grafana remain deferred.
+SonarCloud is SonarSource's hosted SaaS — free/unlimited for public repos, no infrastructure to run. It needs a one-time account/repo link that only you can do (GitHub login), which I can't perform for you.
 
 ## Steps
 
-### 1. Workflow — `lighthouse.yml`
-- Trigger: on push/PR touching `frontend/`, or reuse `test-on-dev.yml`'s trigger (`push: branches: [dev]`) — decide which fits better once scoped
-- Build the frontend (`npm run build` in `frontend/`)
-- Run `treosh/lighthouse-ci-action` against the built output (static `dist/` via its built-in server, since there's no live deployed URL to hit in CI)
-- Report scores as a CI check / PR comment (action supports both)
+### 0. Manual setup (you do this, then hand me the two values it gives you)
+- Go to sonarcloud.io → "Sign up with GitHub" → import `amineBoukhari/Projet-Annuel-ESGI-4`
+- This gives you an **Organization key** and a **Project key** (usually `amineboukhari` / `amineBoukhari_Projet-Annuel-ESGI-4` by default, but confirm the exact values shown)
+- Generate a token: My Account → Security → Generate token
+- Add it as a repo secret named `SONAR_TOKEN`: Settings → Secrets and variables → Actions → New repository secret
+
+### 1. `sonar-project.properties` (repo root)
+- `sonar.organization`, `sonar.projectKey` (from step 0)
+- `sonar.sources` scoped to `backend/src` and `frontend/src` (exclude `node_modules`, `dist`, `**/__tests__/**` from source but keep as test paths)
+- `sonar.tests` pointing at the `__tests__` dirs already created for Jest
+
+### 2. Workflow — `sonarcloud.yml`
+- Trigger: `push` (no `pull_request` — same lesson learned from Gitleaks: the bot-authored `dev → main` PR hits GitHub's workflow-approval gate on `pull_request` events, so push-only avoids that friction)
+- `SonarSource/sonarqube-scan-action` with `SONAR_TOKEN` + `GITHUB_TOKEN`
+- Runs independently, not wired into `auto-pr-to-main`'s `needs:` (same tier as Lighthouse — advisory, not a merge gate, at least initially)
 
 ## Verification
-- Push to the branch, confirm the workflow runs and produces a Lighthouse report with real scores (not a hard failure from missing config)
+- Push to a branch, confirm the SonarCloud analysis appears on sonarcloud.io with real findings (not a connection/auth error)
 
 ## Implementation Order
-- [x] Step 1 — `lighthouse.yml` workflow
-
-Working step by step with a check-in after each one.
+- [x] Step 0 — you: SonarCloud account + repo link + `SONAR_TOKEN` secret (in `Deploy` environment, not a plain repo secret)
+- [x] Step 1 — `sonar-project.properties`
+- [x] Step 2 — `sonarcloud.yml` workflow
 
 ---
 
@@ -33,3 +41,4 @@ Working step by step with a check-in after each one.
 - Restricting `main` to only accept PRs whose head is `dev`
 - Playwright e2e suite
 - PostHog / Prometheus + Grafana
+- Making SonarCloud a required merge gate (revisit once it's been running clean for a while)
