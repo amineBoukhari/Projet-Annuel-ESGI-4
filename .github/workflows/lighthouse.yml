@@ -22,6 +22,6 @@ jobs:
         working-directory: frontend
       - uses: treosh/lighthouse-ci-action@v11
         with:
-          staticDistDir: frontend/dist
+          configPath: ./.lighthouserc.json
           uploadArtifacts: true
           temporaryPublicStorage: true
