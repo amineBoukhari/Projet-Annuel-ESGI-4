@@ -7,6 +7,7 @@ const sequelize = require("./src/db/index");
 const userRoutes = require('./src/modules/user/user.routes');
 const authRoutes = require('./src/modules/auth/auth.routes');
 const authMiddleware = require('./src/middlewares/auth.middleware');
+const requireActiveSubscription = require('./src/middlewares/requireActiveSubscription.middleware');
 const restaurantRoutes = require('./src/modules/restaurant/restaurant.routes');
 const ingredientRoutes = require('./src/modules/inventory/ingredient.routes');
 const { seedRolesAndPermissions } = require('./src/seed/rolesAndPermissions.seed');
@@ -20,6 +21,8 @@ const invoiceRoutes = require('./src/modules/invoice/invoice.routes');
 const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
+const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
+//const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
 
 // Import models
 const User = require('./src/modules/user/user.model');
@@ -59,10 +62,14 @@ Object.values(models).forEach((model) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173", "http://164.132.103.93:5173", "http://164.132.103.93"],
     credentials: true,
   }),
 );
+
+// Webhook must be registered before express.json() - to check why 
+const subscriptionController = require('./src/modules/subscription/subscription.controller');
+app.post('/api/subscription/webhook', express.raw({ type: 'application/json' }), subscriptionController.handleWebhook);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -85,6 +92,8 @@ async function startServer() {
       // Seed roles and permissions
       await seedRolesAndPermissions(models);
     }
+
+    //scheduleDailySummaryJob();
   } catch (error) {
     console.error("Error starting server:", error);
   }
@@ -96,19 +105,21 @@ startServer();
 // Routes
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/restaurants', authMiddleware, restaurantRoutes);
-app.use('/api/ingredients', authMiddleware, ingredientRoutes);
-app.use('/api/recipes', authMiddleware, recipeRoutes);
+app.use('/api/restaurants', authMiddleware, requireActiveSubscription, restaurantRoutes);
+app.use('/api/ingredients', authMiddleware, requireActiveSubscription, ingredientRoutes);
+app.use('/api/recipes', authMiddleware, requireActiveSubscription, recipeRoutes);
 app.use('/api/permissions', authMiddleware, permissionRoutes);
-app.use('/api/suppliers', authMiddleware, supplierRoutes);
-app.use('/api/purchaseOrders', authMiddleware, purchaseOrderRoutes);
-app.use('/api/purchaseReturns', authMiddleware, purchaseReturnRoutes);
-app.use('/api/payments', authMiddleware, paymentRoutes);
-app.use('/api/invoices', authMiddleware, invoiceRoutes);
-app.use('/api/expenses', authMiddleware, expenseRoutes);
-app.use('/api/goodsReceipts', authMiddleware, goodsReceiptRoutes);
-app.use('/api/supplierInvoices', authMiddleware, supplierInvoiceRoutes);
+app.use('/api/suppliers', authMiddleware, requireActiveSubscription, supplierRoutes);
+app.use('/api/purchaseOrders', authMiddleware, requireActiveSubscription, purchaseOrderRoutes);
+app.use('/api/purchaseReturns', authMiddleware, requireActiveSubscription, purchaseReturnRoutes);
+app.use('/api/payments', authMiddleware, requireActiveSubscription, paymentRoutes);
+app.use('/api/invoices', authMiddleware, requireActiveSubscription, invoiceRoutes);
+app.use('/api/expenses', authMiddleware, requireActiveSubscription, expenseRoutes);
+app.use('/api/goodsReceipts', authMiddleware, requireActiveSubscription, goodsReceiptRoutes);
+app.use('/api/supplierInvoices', authMiddleware, requireActiveSubscription, supplierInvoiceRoutes);
+app.use('/api/subscription', authMiddleware, require('./src/modules/subscription/subscription.routes'));
 app.use("/api/restaurants", restaurantRoutes);
+app.use('/api/dashboard', authMiddleware, dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");

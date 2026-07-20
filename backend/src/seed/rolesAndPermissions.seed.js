@@ -511,13 +511,21 @@ async function seedRolesAndPermissions(models) {
   }
 
   // Create a default restaurant for seeded users
+  const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   const [defaultRestaurant] = await models.Restaurant.findOrCreate({
     where: { name: "Restaurant Démo" },
     defaults: {
       name: "Restaurant Démo",
       adress: "1 Rue de la Paix, Paris",
+      subscriptionStatus: "trialing",
+      trialEndsAt,
     },
   });
+
+  // Keep the demo restaurant usable in dev even if it already existed without an active/trialing status
+  if (!["active", "trialing"].includes(defaultRestaurant.subscriptionStatus)) {
+    await defaultRestaurant.update({ subscriptionStatus: "trialing", trialEndsAt });
+  }
 
   const defaultRestaurantId = defaultRestaurant.id;
 

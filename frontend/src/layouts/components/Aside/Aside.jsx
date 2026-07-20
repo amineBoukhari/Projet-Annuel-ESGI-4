@@ -13,6 +13,7 @@ import {
   Package,
   BarChart3,
   UtensilsCrossed,
+  CirclePoundSterling,
 } from "lucide-react";
 import AsideItem from "./AsideItem";
 import { useAuth } from "../../../features/auth/hooks/useAuth";
@@ -46,6 +47,8 @@ export default function Aside() {
     { label: "Stocks", icon: Package, route: "/stocks" },
     ...(canManageUsers ? [{ label: "Recettes", icon: BarChart3, route: "/recipes" }] : []),
     ...(canManageUsers ? [{ label: "Équipe", icon: Users, route: "/users" }] : []),
+    ...(canManageUsers ? [{ label: "Abonnements", icon: CirclePoundSterling, route: "/subscription" }] : []),
+
   ];
 
   return (

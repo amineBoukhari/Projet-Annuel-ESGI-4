@@ -31,6 +31,8 @@ import Layout from "../layouts/Layout";
 import Restaurants from "../pages/Restaurants";
 import Profile from "../pages/Profile";
 import GlobalError from "../pages/errors/GlobalError";
+import Subscription from "../pages/Subscription";
+import SubscriptionSuccess from "../pages/SubscriptionSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -57,9 +59,17 @@ export const router = createBrowserRouter([
                 element: <Dashboard />,
               },
               {
+                path : "subscription",
+                element: <Subscription />,
+              },
+              {
+                path: "/subscription/success",
+                element: <SubscriptionSuccess />,
+              },
+              {
                 path: "/restaurants",
                 element: (
-                  <RoleGuard allowedRoles={["Admin"]}>
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
                     <Restaurants />
                   </RoleGuard>
                 ),

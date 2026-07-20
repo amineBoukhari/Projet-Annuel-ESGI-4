@@ -19,6 +19,34 @@ const Restaurant = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    whatsappNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripeCustomerId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stripeSubscriptionId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    subscriptionStatus: {
+      type: DataTypes.ENUM('active', 'trialing', 'past_due', 'canceled', 'unpaid', 'inactive'),
+      defaultValue: 'inactive',
+    },
+    subscriptionPlan: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    trialEndsAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    currentPeriodEnd: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   },
   { timestams: true },
 );
