@@ -1,0 +1,8 @@
+{
+  "ci": {
+    "collect": {
+      "staticDistDir": "./frontend/dist",
+      "numberOfRuns": 1
+    }
+  }
+}
