@@ -1,0 +1,2 @@
+	Amine Boukahri	React JS / Express JS	npm	"PostHog / Lighthouse  /
+ Prometheus + Grafana "	Swagger	Jest (unit) + Playwright	Gitleaks +  Trivy + CodeQL + npm audit + Dependabot	Dist	SSH ( gitHub Action )	VPS 	Branche Dev et Prod 																
