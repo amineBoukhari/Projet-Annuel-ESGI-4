@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "docker:dev": "docker build -f Dockerfile.dev -t backend . && docker run -it -p 3000:3000 -v $(pwd):/app -v /app/node_modules backend",
     "docker:prod": "docker build -f Dockerfile.prod -t backend . && docker run -p 3000:3000 backend"
   },
@@ -25,6 +25,11 @@
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "stripe": "^22.2.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "twilio": "^6.0.2"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2"
   }
 }

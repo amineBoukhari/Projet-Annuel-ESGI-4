@@ -2,6 +2,8 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const app = express();
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./src/config/swagger");
 const sequelize = require("./src/db/index");
 
 const userRoutes = require('./src/modules/user/user.routes');
@@ -73,6 +75,8 @@ app.post('/api/subscription/webhook', express.raw({ type: 'application/json' }),
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const port = process.env.PORT || 3000;
 
