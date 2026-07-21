@@ -76,7 +76,18 @@ app.post('/api/subscription/webhook', express.raw({ type: 'application/json' }),
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      requestInterceptor: (req) => {
+        req.credentials = "include";
+        return req;
+      },
+    },
+  }),
+);
 
 const port = process.env.PORT || 3000;
 
