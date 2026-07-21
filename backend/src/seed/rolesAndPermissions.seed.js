@@ -533,7 +533,7 @@ async function seedRolesAndPermissions(models) {
     where: { email: "admin@gmail.com" },
     defaults: {
       username: "Super Admin",
-      email: "admin@gmail.com",
+      email: "  ",
       password: await authService.hashPassword("admin123"),
       roleId: 1, // Admin
       restaurantId: defaultRestaurantId,
