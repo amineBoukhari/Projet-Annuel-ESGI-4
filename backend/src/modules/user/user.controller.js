@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const cookieManager = require("../../utils/cookieManager");
 
 const ROUTE_ROLE_MAP = {
-  "/createUser": 4, // default role is employee
-  "/createOwner": 1,
-  "/createManager": 2,
-  "/createEmployee": 4,
+  "/createUser": 4, // Employee (default)
+  "/createOwner": 2, // Owner
+  "/createManager": 3, // Manager
+  "/createEmployee": 4, // Employee
 };
 
 const AVAILABLE_ROLES = {

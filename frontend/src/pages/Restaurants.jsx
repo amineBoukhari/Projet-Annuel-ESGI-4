@@ -142,6 +142,7 @@ export default function Restaurants() {
               restaurant={selectedRestaurant}
               onClose={() => setSelectedRestaurant(null)}
               isAdmin={isAdmin}
+              onMemberAdded={load}
             />
           )}
         </div>
