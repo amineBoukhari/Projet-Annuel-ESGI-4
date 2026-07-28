@@ -16,6 +16,11 @@ dist
 dist-ssr
 *.local
 
+.lighthouseci
+coverage
+test-report
+.scannerwork
+
 
 # Editor directories and files
 .vscode/*

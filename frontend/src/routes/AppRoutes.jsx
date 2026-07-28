@@ -7,6 +7,7 @@ import IngredientForm from "../pages/IngredientForm";
 import IngredientDetail from "../pages/IngredientDetail";
 import IngredientMovements from "../pages/IngredientMovements";
 import LowStockIngredients from "../pages/LowStockIngredients";
+import ExpiringIngredients from "../pages/ExpiringIngredients";
 import Recipes from "../pages/Recipes";
 import RecipeForm from "../pages/RecipeForm";
 import RecipeDetail from "../pages/RecipeDetail";
@@ -30,6 +31,8 @@ import Layout from "../layouts/Layout";
 import Restaurants from "../pages/Restaurants";
 import Profile from "../pages/Profile";
 import GlobalError from "../pages/errors/GlobalError";
+import Subscription from "../pages/Subscription";
+import SubscriptionSuccess from "../pages/SubscriptionSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -56,9 +59,17 @@ export const router = createBrowserRouter([
                 element: <Dashboard />,
               },
               {
+                path : "subscription",
+                element: <Subscription />,
+              },
+              {
+                path: "/subscription/success",
+                element: <SubscriptionSuccess />,
+              },
+              {
                 path: "/restaurants",
                 element: (
-                  <RoleGuard allowedRoles={["Admin"]}>
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
                     <Restaurants />
                   </RoleGuard>
                 ),
@@ -90,6 +101,10 @@ export const router = createBrowserRouter([
               {
                 path: "/stocks/low-stock",
                 element: <LowStockIngredients />,
+              },
+              {
+                path: "/stocks/expiring-ingredients",
+                element: <ExpiringIngredients />,
               },
               {
                 path: "/recipes",

@@ -29,6 +29,11 @@ const Ingredient = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    expirationDate: {
+      type: DataTypes.DATE,
+      allowNull: true,
+      comment: 'Date de péremption de l\'ingrédient'
+    },
   },
   {
     timestamps: false,

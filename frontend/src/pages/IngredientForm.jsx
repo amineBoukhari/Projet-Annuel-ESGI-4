@@ -17,6 +17,7 @@ export default function IngredientForm() {
     stockQuantity: "",
     minStockLevel: "",
     imageUrl: "",
+    expirationDate: "",
   });
 
   useEffect(() => {
@@ -32,6 +33,7 @@ export default function IngredientForm() {
           stockQuantity: ingredient.stockQuantity ?? "",
           minStockLevel: ingredient.minStockLevel ?? "",
           imageUrl: ingredient.imageUrl || "",
+          expirationDate: ingredient.expirationDate ? ingredient.expirationDate.split('T')[0] : "",
         });
       } catch (error) {
         console.error(error);
@@ -59,6 +61,7 @@ export default function IngredientForm() {
         stockQuantity: Number(form.stockQuantity) || 0,
         minStockLevel: Number(form.minStockLevel) || 0,
         imageUrl: form.imageUrl.trim() || null,
+        expirationDate: form.expirationDate || null,
       };
 
       if (isEdit) {
@@ -134,6 +137,17 @@ export default function IngredientForm() {
                 onChange={(e) => setForm((prev) => ({ ...prev, unit: e.target.value }))}
                 className="w-full border border-border rounded-[12px] px-4 py-3 text-ink text-[0.9375rem] bg-surface-raised focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
                 placeholder="kg, L, pcs"
+              />
+            </div>
+            <div>
+              <label className="block text-[0.8125rem] font-medium text-ink-secondary mb-2">
+                Date de péremption
+              </label>
+              <input
+                type="date"
+                value={form.expirationDate}
+                onChange={(e) => setForm((prev) => ({ ...prev, expirationDate: e.target.value }))}
+                className="w-full border border-border rounded-[12px] px-4 py-3 text-ink text-[0.9375rem] bg-surface-raised focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>

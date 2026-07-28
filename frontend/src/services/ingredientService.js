@@ -80,15 +80,34 @@ const getStockMovements = async (ingredientId) => {
   return handleResponse(response);
 };
 
+const getExpiringIngredients = async () => {
+  const response = await fetch(`${backDomain}/api/ingredients/expiring-soon`, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  return handleResponse(response);
+};
+
+const getExpiredIngredients = async () => {
+  const response = await fetch(`${backDomain}/api/ingredients/expired`, {
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+  });
+  return handleResponse(response);
+};
+
 const IngredientService = {
   getAll,
   getById,
   create,
   update,
+  delete: remove,
   remove,
   getLowStock,
   addStockMovement,
   getStockMovements,
+  getExpiringIngredients,
+  getExpiredIngredients,
 };
 
 export default IngredientService;
