@@ -3,6 +3,7 @@ import { X, Plus, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router";
 import invoiceService from "../services/invoiceService";
+import recipeService from "../services/recipeService";
 
 export default function InvoiceForm() {
   const navigate = useNavigate();
@@ -13,11 +14,40 @@ export default function InvoiceForm() {
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [items, setItems] = useState([
-    { description: "", quantity: 1, unitPrice: "" },
+    { description: "", quantity: 1, unitPrice: "", recipeId: null },
   ]);
   const [invoiceStatus, setInvoiceStatus] = useState("draft");
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(isEditMode);
+  const [recipes, setRecipes] = useState([]);
+
+  useEffect(() => {
+    recipeService.getAll().then((data) => {
+      if (Array.isArray(data)) {
+        setRecipes(data);
+      }
+    }).catch(() => {});
+  }, []);
+
+  const availableRecipes = recipes.filter((r) =>
+    r.ingredients?.every((ing) => ing.stockQuantity > 0)
+  );
+
+  const getStockWarning = (item) => {
+    if (!item.recipeId) return null;
+    const recipe = recipes.find((r) => r.id === item.recipeId);
+    if (!recipe || !recipe.ingredients) return null;
+    const qty = parseInt(item.quantity, 10) || 1;
+    const missing = recipe.ingredients.filter(
+      (ing) => ing.stockQuantity < ing.RecipeIngredient.quantity * qty
+    );
+    if (missing.length === 0) return null;
+    const details = missing.map(
+      (ing) =>
+        `${ing.name}: dispo ${ing.stockQuantity} ${ing.unit}, besoin ${ing.RecipeIngredient.quantity * qty} ${ing.unit}`
+    );
+    return details;
+  };
 
   // Load invoice data if in edit mode
   useEffect(() => {
@@ -36,6 +66,7 @@ export default function InvoiceForm() {
               description: item.description || "",
               quantity: item.quantity || 1,
               unitPrice: String(item.unitPrice || ""),
+              recipeId: item.recipeId || null,
             })),
           );
         }
@@ -51,7 +82,7 @@ export default function InvoiceForm() {
   }, [editId, isEditMode, navigate]);
 
   const addItem = () => {
-    setItems([...items, { description: "", quantity: 1, unitPrice: "" }]);
+    setItems([...items, { description: "", quantity: 1, unitPrice: "", recipeId: null }]);
   };
 
   const removeItem = (index) => {
@@ -62,6 +93,14 @@ export default function InvoiceForm() {
   const updateItem = (index, field, value) => {
     const newItems = [...items];
     newItems[index][field] = value;
+    setItems(newItems);
+  };
+
+  const selectRecipe = (index, recipeId) => {
+    const recipe = recipes.find((r) => r.id === recipeId);
+    const newItems = [...items];
+    newItems[index].recipeId = recipeId || null;
+    newItems[index].description = recipe ? recipe.name : "";
     setItems(newItems);
   };
 
@@ -83,9 +122,11 @@ export default function InvoiceForm() {
       return;
     }
 
-    const validItems = items.filter(
-      (item) => item.description.trim() && parseFloat(item.unitPrice) > 0,
-    );
+    const validItems = items
+      .filter((item) => item.description.trim() && parseFloat(item.unitPrice) > 0)
+      .map(({ description, quantity, unitPrice, recipeId }) => ({
+        description, quantity, unitPrice, recipeId,
+      }));
 
     if (validItems.length === 0) {
       toast.error("Au moins un article valide est requis");
@@ -226,55 +267,73 @@ export default function InvoiceForm() {
           Articles
         </h2>
 
-        {items.map((item, index) => (
-          <div key={index} className="flex gap-2 mb-3 items-end">
-            <div className="flex-1">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Description
-              </label>
-              <input
-                type="text"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="Steak frites"
-                value={item.description}
-                onChange={(e) => updateItem(index, "description", e.target.value)}
-              />
+        {items.map((item, index) => {
+          const stockWarning = getStockWarning(item);
+          return (
+          <div key={index} className="relative mb-6">
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Article
+                </label>
+                <select
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 bg-white"
+                  value={item.recipeId || ""}
+                  onChange={(e) => selectRecipe(index, Number(e.target.value))}
+                >
+                  <option value="">-- Choisir une recette --</option>
+                  {availableRecipes.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="w-24">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Qté
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  value={item.quantity}
+                  onChange={(e) => updateItem(index, "quantity", e.target.value)}
+                />
+              </div>
+              <div className="w-32">
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Prix unit.
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  placeholder="0.00"
+                  value={item.unitPrice}
+                  onChange={(e) => updateItem(index, "unitPrice", e.target.value)}
+                />
+              </div>
+              <button
+                onClick={() => removeItem(index)}
+                className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
+                title="Supprimer"
+              >
+                <X size={18} />
+              </button>
             </div>
-            <div className="w-24">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Qté
-              </label>
-              <input
-                type="number"
-                min="1"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                value={item.quantity}
-                onChange={(e) => updateItem(index, "quantity", e.target.value)}
-              />
-            </div>
-            <div className="w-32">
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Prix unit.
-              </label>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                placeholder="0.00"
-                value={item.unitPrice}
-                onChange={(e) => updateItem(index, "unitPrice", e.target.value)}
-              />
-            </div>
-            <button
-              onClick={() => removeItem(index)}
-              className="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
-              title="Supprimer"
-            >
-              <X size={18} />
-            </button>
+            {stockWarning && (
+              <div className="mt-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-xs text-red-700">
+                <p className="font-medium mb-1">Stock insuffisant</p>
+                {stockWarning.map((w, i) => (
+                  <p key={i}>{w}</p>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
+          );
+        })}
 
         <button
           onClick={addItem}

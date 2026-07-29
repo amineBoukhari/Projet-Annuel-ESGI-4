@@ -3,6 +3,7 @@ const sequelize = require('../../db/index');
 const Invoice = require('./invoice.model');
 const InvoiceItem = require('./invoiceItem.model');
 const Payment = require('../payment/payment.model');
+const RecipeStockStrategy = require('../inventory/strategies/recipeStockStrategy');
 const APP_CONFIG = require('../../config/app.config');
 
 
@@ -187,7 +188,9 @@ async function updateInvoice(req, res) {
 async function validateInvoice(req, res) {
   try {
     const invoiceId = req.params.id;
-    const invoice = await Invoice.findByPk(invoiceId);
+    const invoice = await Invoice.findByPk(invoiceId, {
+      include: [{ model: InvoiceItem, as: 'items' }],
+    });
 
     if (!invoice) {
       return res.status(404).json({ error: 'Invoice not found' });
@@ -197,6 +200,13 @@ async function validateInvoice(req, res) {
       return res.status(400).json({
         error: `Cannot validate invoice with status: ${invoice.status}`,
       });
+    }
+
+    const strategy = new RecipeStockStrategy();
+    for (const item of invoice.items) {
+      if (item.recipeId) {
+        await strategy.execute({ recipeId: item.recipeId, portions: item.quantity });
+      }
     }
 
     invoice.status = 'validated';
@@ -209,7 +219,8 @@ async function validateInvoice(req, res) {
     });
   } catch (error) {
     console.error('Error validating invoice:', error);
-    return res.status(500).json({ error: 'Failed to validate invoice' });
+    const message = error.message || 'Failed to validate invoice';
+    return res.status(500).json({ error: message });
   }
 }
 
