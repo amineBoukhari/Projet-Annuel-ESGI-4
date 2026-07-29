@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { Package, AlertTriangle, TrendingUp, Box, List, PlusCircle, Clock } from "lucide-react";
+import { Package, AlertTriangle, TrendingUp, Box, List, PlusCircle, Clock, Trash2 } from "lucide-react";
 import IngredientService from "../services/ingredientService";
 import Button from "../components/ui/Button";
 
@@ -65,6 +65,12 @@ export default function Stocks() {
             icon={Clock}
             onClick={() => navigate("/stocks/expiring-ingredients")}
           />
+          <Button
+            text="Pertes"
+            variant="ghost"
+            icon={Trash2}
+            onClick={() => navigate("/stocks/waste")}
+          />
         </div>
       </div>
 
@@ -121,6 +127,12 @@ export default function Stocks() {
               variant="secondary"
               icon={List}
               onClick={() => navigate("/stocks/ingredients")}
+            />
+            <Button
+              text="Déclarer une perte"
+              variant="secondary"
+              icon={Trash2}
+              onClick={() => navigate("/stocks/waste")}
             />
             <Button
               text="Ajouter un ingrédient"

@@ -8,6 +8,7 @@ import IngredientDetail from "../pages/IngredientDetail";
 import IngredientMovements from "../pages/IngredientMovements";
 import LowStockIngredients from "../pages/LowStockIngredients";
 import ExpiringIngredients from "../pages/ExpiringIngredients";
+import Waste from "../pages/Waste";
 import Recipes from "../pages/Recipes";
 import RecipeForm from "../pages/RecipeForm";
 import RecipeDetail from "../pages/RecipeDetail";
@@ -99,6 +100,14 @@ export const router = createBrowserRouter([
               {
                 path: "/stocks/expiring-ingredients",
                 element: <ExpiringIngredients />,
+              },
+              {
+                path: "/stocks/waste",
+                element: (
+                  <RoleGuard allowedRoles={["Admin", "Owner", "Manager"]}>
+                    <Waste />
+                  </RoleGuard>
+                ),
               },
               {
                 path: "/recipes",
