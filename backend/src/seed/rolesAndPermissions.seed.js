@@ -573,6 +573,49 @@ async function seedRolesAndPermissions(models) {
       restaurantId: defaultRestaurantId,
     },
   });
+
+  // Create a restaurant with an expired subscription
+  const [expiredRestaurant] = await models.Restaurant.findOrCreate({
+    where: { name: "Restaurant Expiré" },
+    defaults: {
+      name: "Restaurant Expiré",
+      adress: "42 Rue du Faubourg, Lyon",
+      subscriptionStatus: "expired",
+      trialEndsAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+    },
+  });
+
+  // Ensure the restaurant keeps its expired status on subsequent runs
+  if (!["expired", "canceled", "inactive"].includes(expiredRestaurant.subscriptionStatus)) {
+    await expiredRestaurant.update({
+      subscriptionStatus: "expired",
+      trialEndsAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+    });
+  }
+
+  const expiredRestaurantId = expiredRestaurant.id;
+
+  await models.User.findOrCreate({
+    where: { email: "expired-owner@gmail.com" },
+    defaults: {
+      username: "Expired Owner",
+      email: "expired-owner@gmail.com",
+      password: await authService.hashPassword("expired123"),
+      roleId: 2, // Owner
+      restaurantId: expiredRestaurantId,
+    },
+  });
+
+  await models.User.findOrCreate({
+    where: { email: "expired-manager@gmail.com" },
+    defaults: {
+      username: "Expired Manager",
+      email: "expired-manager@gmail.com",
+      password: await authService.hashPassword("expired123"),
+      roleId: 3, // Manager
+      restaurantId: expiredRestaurantId,
+    },
+  });
 }
 
 module.exports = { seedRolesAndPermissions };
