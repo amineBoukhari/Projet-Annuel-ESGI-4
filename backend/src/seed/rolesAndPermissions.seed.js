@@ -443,40 +443,33 @@ const ROLE_PERMISSIONS = [
   },
 ];
 
+async function upsert(model, where, defaults) {
+  const [instance, created] = await model.findOrCreate({ where, defaults });
+  if (!created) {
+    await instance.update(defaults);
+  }
+  return instance;
+}
+
 async function seedRolesAndPermissions(models) {
   for (const ingredient of INGREDIENTS) {
-    await models.Ingredient.findOrCreate({
-      where: { name: ingredient.name },
-      defaults: ingredient,
-    });
+    await upsert(models.Ingredient, { name: ingredient.name }, ingredient);
   }
 
   for (const stockM of STOCK_MOVEMENTS) {
-    await models.StockMovement.findOrCreate({
-      where: { reason: stockM.reason },
-      defaults: stockM,
-    });
+    await upsert(models.StockMovement, { reason: stockM.reason }, stockM);
   }
 
   for (const recipe of RECIPES) {
-    await models.Recipe.findOrCreate({
-      where: { name: recipe.name },
-      defaults: recipe,
-    });
+    await upsert(models.Recipe, { name: recipe.name }, recipe);
   }
 
   for (const perm of PERMISSIONS) {
-    await models.Permission.findOrCreate({
-      where: { name: perm.name },
-      defaults: perm,
-    });
+    await upsert(models.Permission, { name: perm.name }, perm);
   }
 
   for (const role of ROLES) {
-    await models.Role.findOrCreate({
-      where: { name: role.name },
-      defaults: role,
-    });
+    await upsert(models.Role, { name: role.name }, role);
   }
 
   for (const rp of ROLE_PERMISSIONS) {
@@ -497,96 +490,102 @@ async function seedRolesAndPermissions(models) {
         where: { name: ing.name },
       });
 
-      await models.RecipeIngredient.findOrCreate({
-        where: {
-          recipeId: recipe.id,
-          ingredientId: ingredient.id,
-        },
-        defaults: {
-          quantity: ing.quantity,
-          unit: ing.unit,
-        },
-      });
+      await upsert(
+        models.RecipeIngredient,
+        { recipeId: recipe.id, ingredientId: ingredient.id },
+        { quantity: ing.quantity, unit: ing.unit },
+      );
     }
   }
 
-  // Create a default restaurant for seeded users
   const trialEndsAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-  const [defaultRestaurant] = await models.Restaurant.findOrCreate({
-    where: { name: "Restaurant Démo" },
-    defaults: {
+  const defaultRestaurant = await upsert(
+    models.Restaurant,
+    { name: "Restaurant Démo" },
+    {
       name: "Restaurant Démo",
       adress: "1 Rue de la Paix, Paris",
       subscriptionStatus: "trialing",
       trialEndsAt,
     },
-  });
+  );
 
   // Keep the demo restaurant usable in dev even if it already existed without an active/trialing status
   if (!["active", "trialing"].includes(defaultRestaurant.subscriptionStatus)) {
-    await defaultRestaurant.update({ subscriptionStatus: "trialing", trialEndsAt });
+    await defaultRestaurant.update({
+      subscriptionStatus: "trialing",
+      trialEndsAt,
+    });
   }
 
   const defaultRestaurantId = defaultRestaurant.id;
 
-  await models.User.findOrCreate({
-    where: { email: "admin@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "admin@gmail.com" },
+    {
       username: "Super Admin",
-      email: "  ",
+      email: "admin@gmail.com",
       password: await authService.hashPassword("admin123"),
-      roleId: 1, // Admin
+      roleId: 1,
       restaurantId: defaultRestaurantId,
     },
-  });
+  );
 
-  await models.User.findOrCreate({
-    where: { email: "owner@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "owner@gmail.com" },
+    {
       username: "Restaurant Owner",
       email: "owner@gmail.com",
       password: await authService.hashPassword("owner123"),
-      roleId: 2, // Owner
+      roleId: 2,
       restaurantId: defaultRestaurantId,
     },
-  });
+  );
 
-  await models.User.findOrCreate({
-    where: { email: "manager@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "manager@gmail.com" },
+    {
       username: "Floor Manager",
       email: "manager@gmail.com",
       password: await authService.hashPassword("manager123"),
-      roleId: 3, // Manager
+      roleId: 3,
       restaurantId: defaultRestaurantId,
     },
-  });
+  );
 
-  await models.User.findOrCreate({
-    where: { email: "johndoe@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "johndoe@gmail.com" },
+    {
       username: "John Doe",
       email: "johndoe@gmail.com",
       mustChangePassword: true,
       password: await authService.hashPassword("xxx"),
-      roleId: 4, // Employee
+      roleId: 4,
       restaurantId: defaultRestaurantId,
     },
-  });
+  );
 
-  // Create a restaurant with an expired subscription
-  const [expiredRestaurant] = await models.Restaurant.findOrCreate({
-    where: { name: "Restaurant Expiré" },
-    defaults: {
+  const expiredRestaurant = await upsert(
+    models.Restaurant,
+    { name: "Restaurant Expiré" },
+    {
       name: "Restaurant Expiré",
       adress: "42 Rue du Faubourg, Lyon",
       subscriptionStatus: "expired",
-      trialEndsAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30 days ago
+      trialEndsAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
     },
-  });
+  );
 
   // Ensure the restaurant keeps its expired status on subsequent runs
-  if (!["expired", "canceled", "inactive"].includes(expiredRestaurant.subscriptionStatus)) {
+  if (
+    !["expired", "canceled", "inactive"].includes(
+      expiredRestaurant.subscriptionStatus
+    )
+  ) {
     await expiredRestaurant.update({
       subscriptionStatus: "expired",
       trialEndsAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
@@ -595,27 +594,29 @@ async function seedRolesAndPermissions(models) {
 
   const expiredRestaurantId = expiredRestaurant.id;
 
-  await models.User.findOrCreate({
-    where: { email: "expired-owner@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "expired-owner@gmail.com" },
+    {
       username: "Expired Owner",
       email: "expired-owner@gmail.com",
       password: await authService.hashPassword("expired123"),
-      roleId: 2, // Owner
+      roleId: 2,
       restaurantId: expiredRestaurantId,
     },
-  });
+  );
 
-  await models.User.findOrCreate({
-    where: { email: "expired-manager@gmail.com" },
-    defaults: {
+  await upsert(
+    models.User,
+    { email: "expired-manager@gmail.com" },
+    {
       username: "Expired Manager",
       email: "expired-manager@gmail.com",
       password: await authService.hashPassword("expired123"),
-      roleId: 3, // Manager
+      roleId: 3,
       restaurantId: expiredRestaurantId,
     },
-  });
+  );
 }
 
 module.exports = { seedRolesAndPermissions };

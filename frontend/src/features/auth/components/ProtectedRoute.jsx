@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 
-const SUBSCRIPTION_EXEMPT_PATHS = ["/subscription", "/subscription/success"];
+const SUBSCRIPTION_EXEMPT_PATHS = ["/subscription", "/subscription/success", "/change-password"];
 
 const ProtectedRoute = () => {
   const { user, isSubscriptionActive } = useAuth();
@@ -19,7 +19,10 @@ const ProtectedRoute = () => {
     return <Navigate to="/" replace />;
   }
 
-  if (!isSubscriptionActive && !SUBSCRIPTION_EXEMPT_PATHS.includes(location.pathname)) {
+  if (
+    !isSubscriptionActive &&
+    !SUBSCRIPTION_EXEMPT_PATHS.includes(location.pathname) 
+  ) {
     return <Navigate to="/subscription" replace />;
   }
 

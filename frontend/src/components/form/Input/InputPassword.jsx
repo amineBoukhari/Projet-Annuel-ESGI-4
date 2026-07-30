@@ -1,13 +1,12 @@
 import { Eye, EyeOff } from "lucide-react";
 import Input from "./Input";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
-export default function InputPassword({
-  ref,
+const InputPassword = forwardRef(function InputPassword({
   errorMessage,
   label,
   disableLink = false,
-}) {
+}, ref) {
   const [inputType, setInputType] = useState("password");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -42,4 +41,6 @@ export default function InputPassword({
       )}
     </div>
   );
-}
+});
+
+export default InputPassword;

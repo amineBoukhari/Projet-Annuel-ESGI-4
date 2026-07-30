@@ -16,6 +16,13 @@ const PurchaseOrderItem = require("../modules/purchaseOrder/purchaseOrderItem.mo
 const PurchaseReturn = require("../modules/purchaseReturn/purchaseReturn.model");
 const PurchaseReturnItem = require("../modules/purchaseReturn/purchaseReturnItem.model");
 const Payment = require("../modules/payment/payment.model");
+const Invoice = require("../modules/invoice/invoice.model");
+const InvoiceItem = require("../modules/invoice/invoiceItem.model");
+const Expense = require("../modules/expense/expense.model");
+const GoodsReceipt = require("../modules/goodsReceipt/goodsReceipt.model");
+const GoodsReceiptItem = require("../modules/goodsReceipt/goodsReceiptItem.model");
+const SupplierInvoice = require("../modules/supplierInvoice/supplierInvoice.model");
+const SupplierInvoiceItem = require("../modules/supplierInvoice/supplierInvoiceItem.model");
 
 const models = {
   User,
@@ -33,7 +40,21 @@ const models = {
   PurchaseReturn,
   PurchaseReturnItem,
   Payment,
+  Invoice,
+  InvoiceItem,
+  Expense,
+  GoodsReceipt,
+  GoodsReceiptItem,
+  SupplierInvoice,
+  SupplierInvoiceItem,
 };
+
+// Setup associations
+Object.values(models).forEach((model) => {
+  if (model.associate) {
+    model.associate(models);
+  }
+});
 
 async function runSeed() {
   try {
