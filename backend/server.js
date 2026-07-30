@@ -24,8 +24,8 @@ const expenseRoutes = require('./src/modules/expense/expense.routes');
 const goodsReceiptRoutes = require('./src/modules/goodsReceipt/goodsReceipt.routes');
 const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInvoice.routes');
 const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
+const wasteRoutes = require('./src/modules/waste/waste.routes');
 //const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
-
 // Import models
 const User = require('./src/modules/user/user.model');
 const Restaurant = require('./src/modules/restaurant/restaurant.model');
@@ -135,6 +135,7 @@ app.use('/api/supplierInvoices', authMiddleware, requireActiveSubscription, supp
 app.use('/api/subscription', authMiddleware, require('./src/modules/subscription/subscription.routes'));
 app.use("/api/restaurants", restaurantRoutes);
 app.use('/api/dashboard', authMiddleware, dashboardRoutes);
+app.use('/api/waste', authMiddleware, requireActiveSubscription, wasteRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Restaurant Management API");

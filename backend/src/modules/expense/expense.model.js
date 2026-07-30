@@ -12,7 +12,7 @@ const Expense = sequelize.define('Expense', {
     allowNull: false,
   },
   category: {
-    type: DataTypes.ENUM('utility', 'rent', 'transport', 'supplies', 'maintenance', 'other'),
+    type: DataTypes.ENUM('utility', 'rent', 'transport', 'supplies', 'maintenance', 'waste', 'other'),
     allowNull: false,
     defaultValue: 'other',
   },

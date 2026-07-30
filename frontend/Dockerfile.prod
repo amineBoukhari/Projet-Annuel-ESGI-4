@@ -1,6 +1,6 @@
-FROM node:lts-alpine
+FROM node:lts-alpine as build
 
-RUN npm install -g http-server
+RUN npm install -g serve
 
 WORKDIR /app
 
@@ -12,6 +12,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 5173
+EXPOSE 8080
 
-CMD [ "http-server", "dist" ]
+CMD [ "serve", "-s", "dist", "-l", "tcp://0.0.0.0:8080" ]
