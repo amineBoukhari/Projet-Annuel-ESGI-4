@@ -26,7 +26,6 @@ const supplierInvoiceRoutes = require('./src/modules/supplierInvoice/supplierInv
 const dashboardRoutes = require('./src/modules/dashboard/dashboard.routes');
 const wasteRoutes = require('./src/modules/waste/waste.routes');
 //const { scheduleDailySummaryJob } = require('./src/jobs/dailySummary.job');
-
 // Import models
 const User = require('./src/modules/user/user.model');
 const Restaurant = require('./src/modules/restaurant/restaurant.model');
